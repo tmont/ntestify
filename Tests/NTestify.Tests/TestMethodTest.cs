@@ -4,16 +4,18 @@ using NUnit.Framework;
 
 namespace NTestify.Tests {
 	[TestFixture]
-	public class Test {
+	public class TestMethodTest {
 
 		private ILogger logger;
 		private object instance;
 		private bool beforeTest, afterTest, testFailed, testPassed, testErred, testIgnored;
+		private ExecutionContext executionContext;
 
 		[SetUp]
-		public void SetUp() {
+		public void SetUp(){
 			logger = new Logger();
 			instance = new FakeTestClass();
+			executionContext = new ExecutionContext { Instance = instance };
 
 			beforeTest = false;
 			afterTest = false;
@@ -23,8 +25,8 @@ namespace NTestify.Tests {
 			testIgnored = false;
 		}
 
-		private TestResult RunTest(string name) {
-			return GetTest(name).Run(new ExecutionContext { Instance = instance });
+		private void RunTest(string name) {
+			GetTest(name).Run(executionContext);
 		}
 
 		private TestMethod GetTest(string name) {
@@ -53,39 +55,40 @@ namespace NTestify.Tests {
 
 		[Test]
 		public void Should_run_test_and_pass() {
-			var result = RunTest("TestMethodThatPasses");
-			Assert.That(result.Status, Is.EqualTo(TestStatus.Pass));
+			RunTest("TestMethodThatPasses");
+			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Pass));
 			AssertEvents(true, true, true, false, false, false);
 		}
 
 		[Test]
 		public void Should_run_test_and_err() {
-			var result = RunTest("TestMethodThatErrs");
-			Assert.That(result.Status, Is.EqualTo(TestStatus.Error));
-			Assert.That(result.Errors.Count(), Is.EqualTo(1));
-			Assert.That(result.Errors.First().Message, Is.EqualTo("hi there!"));
+			RunTest("TestMethodThatErrs");
+			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
+			Assert.That(executionContext.Result.Errors.Count(), Is.EqualTo(1));
+			Assert.That(executionContext.Result.Errors.First().Message, Is.EqualTo("hi there!"));
 			AssertEvents(true, true, false, false, false, true);
 		}
 
 		[Test]
 		public void Should_not_run_test_due_to_invalid_method() {
-			var result = RunTest("TestMethodThatIsInvalid");
-			Assert.That(result.Status, Is.EqualTo(TestStatus.Error));
-			Assert.That(result.Message, Is.EqualTo("Method is invalid"));
+			RunTest("TestMethodThatIsInvalid");
+			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
+			Assert.That(executionContext.Result.Message, Is.EqualTo("Method is invalid"));
 			AssertEvents(false, false, false, false, false, true);
 		}
 
 		[Test]
 		public void Should_run_test_and_fail(){
-			var result = RunTest("TestMethodThatFails");
-			Assert.That(result.Status, Is.EqualTo(TestStatus.Fail));
+			RunTest("TestMethodThatFails");
+			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Fail));
 			AssertEvents(true, true, false, false, true, false);
 		}
 
 		[Test]
 		public void Should_ignore_test() {
-			var result = RunTest("TestMethodThatIsIgnored");
-			Assert.That(result.Status, Is.EqualTo(TestStatus.Ignore));
+			RunTest("TestMethodThatIsIgnored");
+			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Ignore));
+			Assert.That(executionContext.Result.Message, Is.EqualTo("this test sux!"));
 			AssertEvents(true, true, false, true, false, false);
 		}
 
@@ -104,8 +107,9 @@ namespace NTestify.Tests {
 
 		public void TestMethodThatIsInvalid(int foo) { }
 
+		[Ignore(Reason = "this test sux!")]
 		public void TestMethodThatIsIgnored(){
-			throw new TestIgnoredException();
+			
 		}
 	}
 }

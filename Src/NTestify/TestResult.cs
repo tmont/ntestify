@@ -3,9 +3,19 @@ using System.Collections.Generic;
 
 namespace NTestify {
 	/// <summary>
-	/// Represents the result of a completed test
+	/// Base class for strongly typed test results
 	/// </summary>
-	public class TestResult : ILoggable {
+	/// <typeparam name="TTest">The type of test this result corresponds to</typeparam>
+	public abstract class TestResult<TTest> : ITestResult where TTest : ITest {
+		private readonly TTest test;
+		private readonly List<Exception> errors;
+
+		protected TestResult(TTest test) {
+			this.test = test;
+			errors = new List<Exception>();
+			Status = TestStatus.HasNotRun;
+		}
+
 		/// <summary>
 		/// The status of a test. The default is HasNotRun.
 		/// </summary>
@@ -13,45 +23,40 @@ namespace NTestify {
 		/// <summary>
 		/// The time the test started
 		/// </summary>
-		public long StartTime { get; set; }
+		public DateTime StartTime { get; set; }
 		/// <summary>
 		/// The time the test ended
 		/// </summary>
-		public long EndTime { get; set; }
+		public DateTime EndTime { get; set; }
 		/// <summary>
 		/// How long the test took to execute
 		/// </summary>
-		public long ExecutionTime { get { return EndTime - StartTime; } }
+		public long ExecutionTime { get { return EndTime.Ticks - StartTime.Ticks; } }
+		/// <summary>
+		/// How long the test took to execute in seconds
+		/// </summary>
+		public decimal ExecutionTimeInSeconds { get { return ExecutionTime / 10000000m; } }
 		/// <summary>
 		/// Any message that needs to be relayed to the end-user
 		/// </summary>
 		public string Message { get; set; }
-
-		private readonly IList<Exception> errors;
-		private ILogger logger;
-
 		/// <summary>
 		/// All errors that occurred during test execution
 		/// </summary>
 		public IEnumerable<Exception> Errors { get { return errors; } }
 
-		public TestResult() {
-			Status = TestStatus.HasNotRun;
-			errors = new List<Exception>();
-			logger = new NullLogger();
-		}
-
 		/// <summary>
 		/// [fluent] Adds an error to the error stack
 		/// </summary>
 		/// <param name="exception"></param>
-		public TestResult AddError(Exception exception) {
+		public ITestResult AddError(Exception exception) {
 			errors.Add(exception);
 			return this;
 		}
-		/// <inheritdoc/>
-		public void SetLogger(ILogger logger) {
-			this.logger = logger;
-		}
+
+		/// <summary>
+		/// The test that was executed
+		/// </summary>
+		public ITest Test { get { return test; } }
 	}
 }
