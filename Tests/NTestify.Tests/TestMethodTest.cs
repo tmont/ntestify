@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Moq;
 using NUnit.Framework;
 
 namespace NTestify.Tests {
@@ -12,7 +13,7 @@ namespace NTestify.Tests {
 		private ExecutionContext executionContext;
 
 		[SetUp]
-		public void SetUp(){
+		public void SetUp() {
 			logger = new Logger();
 			instance = new FakeTestClass();
 			executionContext = new ExecutionContext { Instance = instance };
@@ -70,26 +71,47 @@ namespace NTestify.Tests {
 		}
 
 		[Test]
-		public void Should_not_run_test_due_to_invalid_method() {
+		public void Invalid_method_should_err() {
 			RunTest("TestMethodThatIsInvalid");
 			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
-			Assert.That(executionContext.Result.Message, Is.EqualTo("Method is invalid"));
-			AssertEvents(false, false, false, false, false, true);
+			Assert.That(executionContext.Result.Message, Is.EqualTo("The test method is invalid"));
+			AssertEvents(true, true, false, false, false, true);
 		}
 
 		[Test]
-		public void Should_run_test_and_fail(){
+		public void Should_run_test_and_fail() {
 			RunTest("TestMethodThatFails");
 			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Fail));
 			AssertEvents(true, true, false, false, true, false);
 		}
 
 		[Test]
-		public void Should_ignore_test() {
+		public void Should_ignore_test_and_bypass_all_other_filters() {
 			RunTest("TestMethodThatIsIgnored");
 			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Ignore));
 			Assert.That(executionContext.Result.Message, Is.EqualTo("this test sux!"));
 			AssertEvents(true, true, false, true, false, false);
+		}
+
+		[Test]
+		public void Should_err_when_filter_throws() {
+			RunTest("TestMethodThatHasABadFilter");
+
+			const string expectedMessage = "Encountered an error while trying to run method filter \"NTestify.Tests.FilterThatThrowsException\"";
+
+			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
+			Assert.That(executionContext.Result.Message, Is.EqualTo(expectedMessage));
+			Assert.That(executionContext.Result.Errors.Count(), Is.EqualTo(1));
+			Assert.That(executionContext.Result.Errors.First().Message, Is.EqualTo("OH HAI!"));
+			AssertEvents(true, true, false, false, false, true);
+		}
+
+		[Test]
+		public void Should_execute_filters_and_continue() {
+			RunTest("TestMethodThatHasFilters");
+			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Pass));
+			Assert.That(FilterThatSetsProperty.Executed, "Filter never got executed, oh noes!!");
+			AssertEvents(true, true, true, false, false, false);
 		}
 
 	}
@@ -107,9 +129,30 @@ namespace NTestify.Tests {
 
 		public void TestMethodThatIsInvalid(int foo) { }
 
-		[Ignore(Reason = "this test sux!")]
-		public void TestMethodThatIsIgnored(){
-			
+		[FilterThatThrowsException, Ignore(Reason = "this test sux!")]
+		public void TestMethodThatIsIgnored() {
+			throw new Exception("This should never get thrown");
 		}
+		[FilterThatThrowsException]
+		public void TestMethodThatHasABadFilter() {
+			throw new Exception("This should never get thrown");
+		}
+
+		[FilterThatSetsProperty]
+		public void TestMethodThatHasFilters() { }
+	}
+
+	internal class FilterThatThrowsException : TestifyAttribute {
+		public override void Execute(ExecutionContext executionContext) {
+			throw new Exception("OH HAI!");
+		}
+	}
+
+	internal class FilterThatSetsProperty : TestifyAttribute {
+		public override void Execute(ExecutionContext executionContext) {
+			Executed = true;
+		}
+
+		public static bool Executed { get; private set; }
 	}
 }

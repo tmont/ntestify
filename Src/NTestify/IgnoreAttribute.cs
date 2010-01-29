@@ -14,6 +14,6 @@ namespace NTestify {
 		/// <summary>
 		/// Does nothing
 		/// </summary>
-		public override void Execute() { }
+		public override void Execute(ExecutionContext executionContext) { }
 	}
 }

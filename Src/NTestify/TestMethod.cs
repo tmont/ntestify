@@ -104,35 +104,73 @@ namespace NTestify {
 
 			var result = CreateTestResult();
 			result.StartTime = DateTime.Now;
-			if (VerifyMethod(method)) {
-				result.Status = TestStatus.Running;
-				try {
-					BeforeTestRunEvent.Invoke(executionContext);
-					if (method.ShouldBeIgnored()) {
-						result.Status = TestStatus.Ignore;
-						result.Message = method.GetIgnoreReason();
-					} else {
-						RunTestMethod(method, executionContext, result);
-						result.Status = TestStatus.Pass;
-					}
-				} catch (TargetInvocationException invocationException) {
-					//this exception is not what we're interested in, but it's what gets thrown from
-					//the reflected method
-					HandleInvocationException(invocationException, executionContext, result);
-				} catch (Exception exception) {
-					HandleError(exception.InnerException ?? exception, executionContext, result);
-				} finally {
-					AfterTestRunEvent.Invoke(executionContext, result);
+			result.Status = TestStatus.Running;
+			try {
+				BeforeTestRunEvent.Invoke(executionContext);
+				RunMethodFilters(executionContext, result);
+				VerifyMethod(result);
+				if (result.Status == TestStatus.Running) {
+					//only run the test if the filters didn't modify the test status
+					RunTestMethod(method, executionContext, result);
+					result.Status = TestStatus.Pass;
 				}
-			} else {
-				result.Status = TestStatus.Error;
-				result.Message = "Method is invalid";
+			} catch (TargetInvocationException invocationException) {
+				//this exception is not what we're interested in, but it's what gets thrown from
+				//the reflected method
+				HandleInvocationException(invocationException, executionContext, result);
+			} catch (Exception exception) {
+				HandleError(exception.InnerException ?? exception, executionContext, result);
+			} finally {
+				AfterTestRunEvent.Invoke(executionContext, result);
 			}
 
 			result.EndTime = DateTime.Now;
 			InvokeStatusEvent(executionContext, result);
 
 			executionContext.Result = result;
+		}
+
+		/// <summary>
+		/// Runs the method filters
+		/// </summary>
+		protected virtual void RunMethodFilters(ExecutionContext executionContext, TestMethodResult result) {
+			var filters = method.GetAttributes<TestifyAttribute>();
+			if (filters.Any(attribute => attribute is IgnoreAttribute)) {
+				//if the test should be ignored, then we bail immediately without executing any other filters
+				IgnoreTest(result, ((IgnoreAttribute)filters.First(attribute => attribute is IgnoreAttribute)).Reason);
+				return;
+			}
+
+			foreach (var filter in filters) {
+				try {
+					filter.Execute(executionContext);
+				} catch (Exception exception) {
+					OnFilterError(exception, filter, result);
+					break;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Called when a filter encounters an error
+		/// </summary>
+		/// <param name="exception">The raised exception</param>
+		/// <param name="filter">The filter that encountered the error</param>
+		/// <param name="result">The test method result</param>
+		protected virtual void OnFilterError(Exception exception, object filter, TestMethodResult result) {
+			result.Status = TestStatus.Error;
+			result.Message = string.Format("Encountered an error while trying to run method filter \"{0}\"", filter.GetType().FullName);
+			result.AddError(exception);
+		}
+
+		/// <summary>
+		/// Ignores the test and updates the test result accordingly
+		/// </summary>
+		/// <param name="result">The test method result</param>
+		/// <param name="reason">The reason the test was ignored</param>
+		protected void IgnoreTest(TestMethodResult result, string reason) {
+			result.Status = TestStatus.Ignore;
+			result.Message = reason;
 		}
 
 		/// <summary>
@@ -153,7 +191,7 @@ namespace NTestify {
 
 		/// <summary>
 		/// Creates the test result that will be attached to the execution
-		/// context after the test has run
+		/// context after the test has been run
 		/// </summary>
 		protected virtual TestMethodResult CreateTestResult() {
 			var result = new TestMethodResult(this);
@@ -203,13 +241,13 @@ namespace NTestify {
 		}
 
 		/// <summary>
-		/// Verifies that the method is a valid, testable method
+		/// Verifies that the test method is a valid, testable method
 		/// </summary>
-		/// <param name="methodToExecute">The test method that will be executed</param>
-		protected virtual bool VerifyMethod(MethodInfo methodToExecute) {
-			return
-				!methodToExecute.IsConstructor && !methodToExecute.IsAbstract &&
-				!methodToExecute.IsStatic && !methodToExecute.GetParameters().Any();
+		protected void VerifyMethod(TestMethodResult result) {
+			if (!method.IsRunnable()) {
+				result.Status = TestStatus.Error;
+				result.Message = "The test method is invalid";
+			}
 		}
 
 		/// <inheritdoc/>

@@ -9,6 +9,6 @@ namespace NTestify {
 		/// <summary>
 		/// This method gets called before running a test
 		/// </summary>
-		public abstract void Execute();
+		public abstract void Execute(ExecutionContext executionContext);
 	}
 }

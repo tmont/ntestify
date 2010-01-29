@@ -26,5 +26,15 @@ namespace NTestify {
 		public static IEnumerable<TAttribute> GetAttributes<TAttribute>(this MemberInfo member) where TAttribute : Attribute {
 			return member.GetCustomAttributes(typeof(TAttribute), true).Cast<TAttribute>();
 		}
+
+		/// <summary>
+		/// Determines if the method is able to be invoked by the NTestify framework
+		/// as a test method
+		/// </summary>
+		public static bool IsRunnable(this MethodInfo method){
+			return
+				!method.IsConstructor && !method.IsAbstract &&
+				!method.IsStatic && !method.GetParameters().Any();
+		}
 	}
 }
