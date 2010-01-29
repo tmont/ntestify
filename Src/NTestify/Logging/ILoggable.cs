@@ -1,4 +1,4 @@
-﻿namespace NTestify {
+﻿namespace NTestify.Logging {
 	/// <summary>
 	/// Indicates that this class is able to log messages
 	/// </summary>

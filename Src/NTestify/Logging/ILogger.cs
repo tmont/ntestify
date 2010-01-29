@@ -1,4 +1,4 @@
-﻿namespace NTestify {
+﻿namespace NTestify.Logging {
 	public interface ILogger {
 		void Debug(object message);
 

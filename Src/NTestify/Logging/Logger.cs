@@ -2,7 +2,7 @@
 using log4net;
 using log4net.Config;
 
-namespace NTestify {
+namespace NTestify.Logging {
 	public class Logger : ILogger {
 
 		private readonly ILog logger;

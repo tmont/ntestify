@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Moq;
+using NTestify.Logging;
 using NUnit.Framework;
 
 namespace NTestify.Tests {

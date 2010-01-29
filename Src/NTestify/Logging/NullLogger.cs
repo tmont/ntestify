@@ -1,4 +1,4 @@
-﻿namespace NTestify {
+﻿namespace NTestify.Logging {
 	/// <summary>
 	/// Boring logging class that does nothing. Its only purpose is
 	/// to ease the pain of null reference exceptions

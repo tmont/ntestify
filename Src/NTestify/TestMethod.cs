@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using NTestify.Logging;
 
 namespace NTestify {
 	/// <summary>

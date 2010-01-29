@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using NTestify.Logging;
 
 namespace NTestify {
 	/// <summary>
