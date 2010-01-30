@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="IgnoreAttribute.cs" />
     <Compile Include="ITestResult.cs" />
     <Compile Include="ITestSuite.cs" />
@@ -58,8 +59,10 @@
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\NullLogger.cs" />
     <Compile Include="ReflectionExtensions.cs" />
+    <Compile Include="Test.cs" />
     <Compile Include="TestifyAttribute.cs" />
     <Compile Include="TestResult.cs" />
+    <Compile Include="TestRunner.cs" />
     <Compile Include="TestSuite.cs" />
     <Compile Include="ITest.cs" />
     <Compile Include="TestAssertionException.cs" />

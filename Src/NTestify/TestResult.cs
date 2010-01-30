@@ -48,8 +48,12 @@ namespace NTestify {
 		/// <summary>
 		/// [fluent] Adds an error to the error stack
 		/// </summary>
-		/// <param name="exception"></param>
+		/// <param name="exception">The exception that caused the error. Cannot be null.</param>
 		public ITestResult AddError(Exception exception) {
+			if (exception == null) {
+				throw new ArgumentNullException("exception");
+			}
+
 			errors.Add(exception);
 			return this;
 		}

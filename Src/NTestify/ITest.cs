@@ -6,5 +6,7 @@
 		/// </summary>
 		/// <param name="executionContext">The current test execution context</param>
 		void Run(ExecutionContext executionContext);
+
+		string Name { get; set; }
 	}
 }

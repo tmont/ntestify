@@ -1,41 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using NTestify.Logging;
 
 namespace NTestify {
 	/// <summary>
 	/// Represents a single testable method, i.e. an instance method that is annotated
 	/// with an attribute signifying that it is a test
 	/// </summary>
-	public class TestMethod : ITest, ILoggable {
+	public class TestMethod : Test {
 		private readonly MethodInfo method;
-		private ILogger logger;
-
-		/// <summary>
-		/// Event that fires before a test runs
-		/// </summary>
-		public event Action<ExecutionContext> BeforeTestRunEvent;
-		/// <summary>
-		/// Event that fires after a test runs
-		/// </summary>
-		public event Action<ExecutionContext> AfterTestRunEvent;
-		/// <summary>
-		/// Event that fires if a test is ignored
-		/// </summary>
-		public event Action<ExecutionContext> TestIgnoredEvent;
-		/// <summary>
-		/// Event that fires when a test passes
-		/// </summary>
-		public event Action<ExecutionContext> TestPassedEvent;
-		/// <summary>
-		/// Event that fires when a test fails
-		/// </summary>
-		public event Action<ExecutionContext> TestFailedEvent;
-		/// <summary>
-		/// Event that fires when a test errs
-		/// </summary>
-		public event Action<ExecutionContext> TestErredEvent;
 
 		/// <param name="method">The test method to run. Cannot be null.</param>
 		public TestMethod(MethodInfo method) {
@@ -43,101 +16,29 @@ namespace NTestify {
 				throw new ArgumentNullException("method");
 			}
 
-			logger = new NullLogger();
-
 			this.method = method;
-
-			BeforeTestRunEvent += OnBeforeTestRun;
-			AfterTestRunEvent += OnAfterTestRun;
-			TestIgnoredEvent += OnTestIgnored;
-			TestFailedEvent += OnTestFailed;
-			TestErredEvent += OnTestErred;
-			TestPassedEvent += OnTestPassed;
 		}
-
-		#region Default event handlers
-		/// <summary>
-		/// Default AfterTestRunEvent handler
-		/// </summary>
-		protected virtual void OnAfterTestRun(ExecutionContext executioncontext) {
-			logger.Debug("After test run");
-		}
-
-		/// <summary>
-		/// Default BeforeTestRunEvent handler
-		/// </summary>
-		protected virtual void OnBeforeTestRun(ExecutionContext executionContext) {
-			logger.Debug("Before test run");
-		}
-
-		/// <summary>
-		/// Default TestPassedEvent handler
-		/// </summary>
-		protected virtual void OnTestPassed(ExecutionContext executioncontext) {
-			logger.Debug("Test passed");
-		}
-
-		/// <summary>
-		/// Default TestFailedEvent handler
-		/// </summary>
-		protected virtual void OnTestFailed(ExecutionContext executionContext) {
-			logger.Debug("Test failed");
-		}
-
-		/// <summary>
-		/// Default TestIgnoredEvent handler
-		/// </summary>
-		protected virtual void OnTestIgnored(ExecutionContext executionContext) {
-			logger.Debug("Test ignored");
-		}
-
-		/// <summary>
-		/// Default TestErredEvent handler
-		/// </summary>
-		protected virtual void OnTestErred(ExecutionContext executionContext) {
-			logger.Debug("Test erred");
-		}
-		#endregion
 
 		/// <inheritdoc/>
-		public void Run(ExecutionContext executionContext) {
-			executionContext.Test = this;
+		protected override void RunTest(ExecutionContext executionContext) {
+			VerifyMethod(executionContext);
 
-			BeforeTestRunEvent.Invoke(executionContext);
-			executionContext.Result = CreateTestResult();
-			executionContext.Result.StartTime = DateTime.Now;
-			executionContext.Result.Status = TestStatus.Running;
 			try {
-				
-				RunMethodFilters(executionContext);
-				VerifyMethod(executionContext);
-				if (executionContext.Result.Status == TestStatus.Running) {
-					//only run the test if the filters didn't modify the test status
-					RunTestMethod(method, executionContext);
-					executionContext.Result.Status = TestStatus.Pass;
-				}
-			} catch (TargetInvocationException invocationException) {
-				//this exception is not what we're interested in, but it's what gets thrown from
-				//the reflected method
-				HandleInvocationException(invocationException, executionContext);
+				RunTestMethod(executionContext);
 			} catch (Exception exception) {
-				HandleError(exception.InnerException ?? exception, executionContext);
+				HandleException(exception, executionContext);
 			}
-
-			executionContext.Result.EndTime = DateTime.Now;
-			InvokeStatusEvent(executionContext);
-			AfterTestRunEvent.Invoke(executionContext);
 		}
 
 		/// <summary>
-		/// Runs the method filters
+		/// Finds and executes each of the method filters
 		/// </summary>
-		protected virtual void RunMethodFilters(ExecutionContext executionContext) {
+		/// <exception cref="Test.TestIgnoredException">If the method is annotated with [Ignore]</exception>
+		protected override void RunFilters(ExecutionContext executionContext) {
 			var filters = method.GetAttributes<TestifyAttribute>();
 			if (filters.Any(attribute => attribute is IgnoreAttribute)) {
 				//if the test should be ignored, then we bail immediately without executing any other filters
-				IgnoreTest(executionContext.Result, ((IgnoreAttribute)filters.First(attribute => attribute is IgnoreAttribute)).Reason);
-				return;
+				throw new TestIgnoredException(((IgnoreAttribute)filters.First(attribute => attribute is IgnoreAttribute)).Reason);
 			}
 
 			foreach (var filter in filters) {
@@ -156,20 +57,10 @@ namespace NTestify {
 		/// <param name="exception">The raised exception</param>
 		/// <param name="filter">The filter that encountered the error</param>
 		/// <param name="executionContext">The current test execution context</param>
+		/// <exception cref="Test.TestErredException"/>
 		protected virtual void OnFilterError(Exception exception, object filter, ExecutionContext executionContext) {
-			executionContext.Result.Status = TestStatus.Error;
-			executionContext.Result.Message = string.Format("Encountered an error while trying to run method filter \"{0}\"", filter.GetType().FullName);
-			executionContext.Result.AddError(exception);
-		}
-
-		/// <summary>
-		/// Ignores the test and updates the test result accordingly
-		/// </summary>
-		/// <param name="result">The test method result</param>
-		/// <param name="reason">The reason the test was ignored</param>
-		protected void IgnoreTest(ITestResult result, string reason) {
-			result.Status = TestStatus.Ignore;
-			result.Message = reason;
+			var message = string.Format("Encountered an error while trying to run method filter \"{0}\"", filter.GetType().FullName);
+			throw new TestErredException(exception, message);
 		}
 
 		/// <summary>
@@ -178,78 +69,44 @@ namespace NTestify {
 		/// TargetInvocationException. This method examines the InnerException (if any)
 		/// and sets the result accordingly.
 		/// </summary>
-		private void HandleInvocationException(TargetInvocationException invocationException, ExecutionContext executionContext) {
-			if (invocationException.InnerException is TestAssertionException) {
+		/// <exception cref="Test.TestFailedException">If an assertion failed</exception>
+		/// <exception cref="Test.TestErredException">If anything other a TestAssertionException was thrown</exception>
+		private static void HandleException(Exception exception, ExecutionContext executionContext) {
+			var actualException = exception.GetInnermostException();
+			if (actualException is TestAssertionException) {
 				//an assertion failed
-				executionContext.Result.Status = TestStatus.Fail;
-				executionContext.Result.Message = invocationException.InnerException.Message;
-			} else {
-				HandleError(invocationException.InnerException ?? invocationException, executionContext);
+				throw new TestFailedException(actualException.Message);
 			}
+
+			throw new TestErredException(actualException, actualException.Message);
 		}
 
 		/// <summary>
 		/// Creates the test result that will be attached to the execution
 		/// context after the test has been run
 		/// </summary>
-		protected virtual TestMethodResult CreateTestResult() {
+		protected override ITestResult CreateTestResult() {
 			var result = new TestMethodResult(this);
-			result.SetLogger(logger);
+			result.SetLogger(Logger);
 			return result;
 		}
 
 		/// <summary>
-		/// Fires the appropriate events based on the status of the test result
+		/// Invokes the test method with zero arguments, using the execution context's 
+		/// Instance as the invocation context
 		/// </summary>
-		private void InvokeStatusEvent(ExecutionContext executionContext) {
-			switch (executionContext.Result.Status) {
-				case TestStatus.Pass:
-					TestPassedEvent.Invoke(executionContext);
-					break;
-				case TestStatus.Fail:
-					TestFailedEvent.Invoke(executionContext);
-					break;
-				case TestStatus.Error:
-					TestErredEvent.Invoke(executionContext);
-					break;
-				case TestStatus.Ignore:
-					TestIgnoredEvent.Invoke(executionContext);
-					break;
-			}
-		}
-
-		/// <summary>
-		/// Invokes the test method
-		/// </summary>
-		/// <param name="methodInfo">The test method to invoke</param>
-		/// <param name="executionContext">The current test execution context</param>
-		protected virtual void RunTestMethod(MethodInfo methodInfo, ExecutionContext executionContext) {
+		protected virtual void RunTestMethod(ExecutionContext executionContext) {
 			method.Invoke(executionContext.Instance, new object[] { });
-		}
-
-		/// <summary>
-		/// Handles an erred test (i.e. sets the test result status)
-		/// </summary>
-		/// <param name="exception">The raised exception</param>
-		/// <param name="executionContext">The current test execution context</param>
-		protected void HandleError(Exception exception, ExecutionContext executionContext) {
-			executionContext.Result.AddError(exception);
-			executionContext.Result.Status = TestStatus.Error;
 		}
 
 		/// <summary>
 		/// Verifies that the test method is a valid, testable method
 		/// </summary>
+		/// <exception cref="Test.TestErredException">If the method is not runnable</exception>
 		protected void VerifyMethod(ExecutionContext executionContext) {
 			if (!method.IsRunnable()) {
-				executionContext.Result.Status = TestStatus.Error;
-				executionContext.Result.Message = "The test method is invalid";
+				throw new TestErredException(null, "The test method is invalid");
 			}
-		}
-
-		/// <inheritdoc/>
-		public void SetLogger(ILogger logger) {
-			this.logger = logger;
 		}
 	}
 }

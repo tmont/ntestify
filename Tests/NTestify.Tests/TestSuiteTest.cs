@@ -12,11 +12,11 @@ namespace NTestify.Tests {
 		#region Helper methods
 		private TestSuite CreateTestSuite(IEnumerable<ITest> tests) {
 			var suite = new TestSuite(tests);
-			suite.BeforeTestSuiteRunEvent += context => testSuiteBegan = true;
-			suite.AfterTestSuiteRunEvent += context => testSuiteFinished = true;
-			suite.TestSuiteFailedEvent += context => testSuiteFailed = true;
-			suite.TestSuitePassedEvent += context => testSuitePassed = true;
-			suite.TestSuiteIgnoredEvent += context => testSuiteIgnored = true;
+			suite.OnBeforeRun += context => testSuiteBegan = true;
+			suite.OnAfterRun += context => testSuiteFinished = true;
+			suite.OnFail += context => testSuiteFailed = true;
+			suite.OnPass += context => testSuitePassed = true;
+			suite.OnIgnore += context => testSuiteIgnored = true;
 			return suite;
 		}
 
@@ -117,13 +117,6 @@ namespace NTestify.Tests {
 
 	}
 
-	public static class TestResultExtensionsForTesting {
-		public static TTestResult CastTo<TTestResult>(this ITestResult result) where TTestResult : ITestResult {
-			Assert.That(result, Is.InstanceOf(typeof(TTestResult)), string.Format("Test result expected to be of type {0}", typeof(TTestResult).GetType().FullName));
-			return (TTestResult)result;
-		}
-	}
-
 	#region Mocks
 	internal class FakeTestSuite {
 
@@ -133,24 +126,32 @@ namespace NTestify.Tests {
 		public void Run(ExecutionContext executionContext) {
 			executionContext.Result = new TestResult<TestThatFails>(this) { Status = TestStatus.Fail };
 		}
+
+		public string Name { get; set; }
 	}
 
 	internal class TestThatErrs : ITest {
 		public void Run(ExecutionContext executionContext) {
 			executionContext.Result = new TestResult<TestThatErrs>(this) { Status = TestStatus.Error };
 		}
+
+		public string Name { get; set; }
 	}
 
 	internal class TestThatPasses : ITest {
 		public void Run(ExecutionContext executionContext) {
 			executionContext.Result = new TestResult<TestThatPasses>(this) { Status = TestStatus.Pass };
 		}
+
+		public string Name { get; set; }
 	}
 
 	internal class TestThatIsIgnored : ITest {
 		public void Run(ExecutionContext executionContext) {
 			executionContext.Result = new TestResult<TestThatIsIgnored>(this) { Status = TestStatus.Ignore };
 		}
+
+		public string Name { get; set; }
 	}
 
 	#endregion

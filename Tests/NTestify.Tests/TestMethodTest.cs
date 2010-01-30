@@ -35,12 +35,12 @@ namespace NTestify.Tests {
 			var test = new TestMethod(method);
 			test.SetLogger(logger);
 
-			test.BeforeTestRunEvent += context => beforeTest = true;
-			test.AfterTestRunEvent += context => afterTest = true;
-			test.TestErredEvent += context => testErred = true;
-			test.TestFailedEvent += context => testFailed = true;
-			test.TestPassedEvent += context => testPassed = true;
-			test.TestIgnoredEvent += context => testIgnored = true;
+			test.OnBeforeRun += context => beforeTest = true;
+			test.OnAfterRun += context => afterTest = true;
+			test.OnError += context => testErred = true;
+			test.OnFail += context => testFailed = true;
+			test.OnPass += context => testPassed = true;
+			test.OnIgnore += context => testIgnored = true;
 
 			return test;
 		}
