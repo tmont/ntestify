@@ -6,11 +6,11 @@ namespace NTestify {
 	/// Base class for strongly typed test results
 	/// </summary>
 	/// <typeparam name="TTest">The type of test this result corresponds to</typeparam>
-	public abstract class TestResult<TTest> : ITestResult where TTest : ITest {
+	public class TestResult<TTest> : ITestResult where TTest : ITest {
 		private readonly TTest test;
 		private readonly List<Exception> errors;
 
-		protected TestResult(TTest test) {
+		public TestResult(TTest test) {
 			this.test = test;
 			errors = new List<Exception>();
 			Status = TestStatus.HasNotRun;

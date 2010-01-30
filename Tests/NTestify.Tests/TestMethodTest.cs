@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Moq;
 using NTestify.Logging;
 using NUnit.Framework;
 
@@ -37,11 +36,11 @@ namespace NTestify.Tests {
 			test.SetLogger(logger);
 
 			test.BeforeTestRunEvent += context => beforeTest = true;
-			test.AfterTestRunEvent += (context, result) => afterTest = true;
-			test.TestErredEvent += (context, result) => testErred = true;
-			test.TestFailedEvent += (context, result) => testFailed = true;
-			test.TestPassedEvent += (context, result) => testPassed = true;
-			test.TestIgnoredEvent += (context, result) => testIgnored = true;
+			test.AfterTestRunEvent += context => afterTest = true;
+			test.TestErredEvent += context => testErred = true;
+			test.TestFailedEvent += context => testFailed = true;
+			test.TestPassedEvent += context => testPassed = true;
+			test.TestIgnoredEvent += context => testIgnored = true;
 
 			return test;
 		}
