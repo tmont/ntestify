@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
@@ -67,10 +68,10 @@ namespace NTestify.Tests {
 
 			Assert.That(result.Status, Is.EqualTo(TestStatus.Fail));
 			AssertTestSuiteFailed();
-			Assert.That(result.IgnoredTests.Count(), Is.EqualTo(1));
-			Assert.That(result.PassedTests.Count(), Is.EqualTo(1));
-			Assert.That(result.FailedTests.Count(), Is.EqualTo(1));
-			Assert.That(result.ErredTests.Count(), Is.EqualTo(0));
+			Assert.That(result.InnerIgnoredTests.Count(), Is.EqualTo(1));
+			Assert.That(result.InnerPassedTests.Count(), Is.EqualTo(1));
+			Assert.That(result.InnerFailedTests.Count(), Is.EqualTo(1));
+			Assert.That(result.InnerErredTests.Count(), Is.EqualTo(0));
 		}
 
 		[Test]
@@ -81,10 +82,10 @@ namespace NTestify.Tests {
 
 			Assert.That(result.Status, Is.EqualTo(TestStatus.Fail));
 			AssertTestSuiteFailed();
-			Assert.That(result.IgnoredTests.Count(), Is.EqualTo(1));
-			Assert.That(result.PassedTests.Count(), Is.EqualTo(1));
-			Assert.That(result.FailedTests.Count(), Is.EqualTo(0));
-			Assert.That(result.ErredTests.Count(), Is.EqualTo(1));
+			Assert.That(result.InnerIgnoredTests.Count(), Is.EqualTo(1));
+			Assert.That(result.InnerPassedTests.Count(), Is.EqualTo(1));
+			Assert.That(result.InnerFailedTests.Count(), Is.EqualTo(0));
+			Assert.That(result.InnerErredTests.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -95,10 +96,10 @@ namespace NTestify.Tests {
 
 			Assert.That(result.Status, Is.EqualTo(TestStatus.Ignore));
 			AssertTestSuiteWasIgnored();
-			Assert.That(result.IgnoredTests.Count(), Is.EqualTo(1));
-			Assert.That(result.PassedTests.Count(), Is.EqualTo(0));
-			Assert.That(result.FailedTests.Count(), Is.EqualTo(0));
-			Assert.That(result.ErredTests.Count(), Is.EqualTo(0));
+			Assert.That(result.InnerIgnoredTests.Count(), Is.EqualTo(1));
+			Assert.That(result.InnerPassedTests.Count(), Is.EqualTo(0));
+			Assert.That(result.InnerFailedTests.Count(), Is.EqualTo(0));
+			Assert.That(result.InnerErredTests.Count(), Is.EqualTo(0));
 		}
 
 		[Test]
@@ -109,10 +110,48 @@ namespace NTestify.Tests {
 
 			Assert.That(result.Status, Is.EqualTo(TestStatus.Pass));
 			AssertTestSuitePassed();
-			Assert.That(result.IgnoredTests.Count(), Is.EqualTo(1));
-			Assert.That(result.PassedTests.Count(), Is.EqualTo(1));
-			Assert.That(result.FailedTests.Count(), Is.EqualTo(0));
-			Assert.That(result.ErredTests.Count(), Is.EqualTo(0));
+			Assert.That(result.InnerIgnoredTests.Count(), Is.EqualTo(1));
+			Assert.That(result.InnerPassedTests.Count(), Is.EqualTo(1));
+			Assert.That(result.InnerFailedTests.Count(), Is.EqualTo(0));
+			Assert.That(result.InnerErredTests.Count(), Is.EqualTo(0));
+		}
+
+		[Test]
+		public void Suite_properties_should_be_correct() {
+			var innerInnerSuite = CreateTestSuite(new List<ITest> { new TestThatIsIgnored(), new TestThatPasses(), new TestThatErrs() });
+			var innerSuite = CreateTestSuite(new List<ITest> { new TestThatFails(), new TestThatPasses(), innerInnerSuite });
+			var anotherInnerSuite = CreateTestSuite(new List<ITest> { new TestThatFails(), new TestThatPasses(), new TestThatErrs() });
+			var suite = CreateTestSuite(new List<ITest> { innerSuite, anotherInnerSuite, new TestThatPasses(), new TestThatFails() });
+
+			suite.Run(executionContext);
+
+			var result = executionContext.Result.CastTo<TestSuiteResult>();
+
+			Assert.That(result.Status, Is.EqualTo(TestStatus.Fail));
+
+			//check properties
+			Assert.That(result.OuterResults.Count(), Is.EqualTo(4)); //two suites, two tests
+			Assert.That(result.OuterCount, Is.EqualTo(4));
+			Assert.That(result.OuterTests.Count(), Is.EqualTo(4));
+
+			Assert.That(result.InnerResults.Count(), Is.EqualTo(10)); //ten tests that do not contain other tests
+			Assert.That(result.InnerTests.Count(), Is.EqualTo(10));
+			Assert.That(result.InnerCount, Is.EqualTo(10));
+
+			Assert.That(result.InnerErrors.Count(), Is.EqualTo(2));
+			Assert.That(result.OuterErrors.Count(), Is.EqualTo(0)); //suites can't error, and the only erring test were inside an inner suite
+
+			Assert.That(result.InnerErredTests.Count(), Is.EqualTo(2));
+			Assert.That(result.OuterErredTests.Count(), Is.EqualTo(0));
+
+			Assert.That(result.InnerFailedTests.Count(), Is.EqualTo(3));
+			Assert.That(result.OuterFailedTests.Count(), Is.EqualTo(3)); //both inner suites, and one test
+
+			Assert.That(result.InnerIgnoredTests.Count(), Is.EqualTo(1));
+			Assert.That(result.OuterIgnoredTests.Count(), Is.EqualTo(0)); //no suites were ignored
+
+			Assert.That(result.InnerPassedTests.Count(), Is.EqualTo(4));
+			Assert.That(result.OuterPassedTests.Count(), Is.EqualTo(1));
 		}
 
 	}
@@ -133,6 +172,7 @@ namespace NTestify.Tests {
 	internal class TestThatErrs : ITest {
 		public void Run(ExecutionContext executionContext) {
 			executionContext.Result = new TestResult<TestThatErrs>(this) { Status = TestStatus.Error };
+			executionContext.Result.AddError(new Exception("I AM ERROR."));
 		}
 
 		public string Name { get; set; }

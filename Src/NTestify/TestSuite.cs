@@ -70,10 +70,10 @@ namespace NTestify {
 		/// <exception cref="Test.TestFailedException">If any inner tests erred or failed</exception>
 		/// <exception cref="Test.TestIgnoredException">If all inner tests were ignored</exception>
 		protected void ExamineInnerResults(TestSuiteResult result) {
-			if (result.Results.Any(r => r.Status == TestStatus.Error || r.Status == TestStatus.Fail)) {
+			if (result.OuterResults.Any(r => r.Status == TestStatus.Error || r.Status == TestStatus.Fail)) {
 				throw new TestFailedException("At least one inner test erred or failed");
 			}
-			if (!result.IsEmpty && result.Results.All(r => r.Status == TestStatus.Ignore)) {
+			if (!result.IsEmpty && result.OuterResults.All(r => r.Status == TestStatus.Ignore)) {
 				throw new TestIgnoredException("All inner tests were ignored");
 			}
 		}

@@ -53,7 +53,6 @@
     <Compile Include="IgnoreAttribute.cs" />
     <Compile Include="ITestResult.cs" />
     <Compile Include="ITestSuite.cs" />
-    <Compile Include="ITestSuiteResult.cs" />
     <Compile Include="Logging\ILoggable.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Logger.cs" />

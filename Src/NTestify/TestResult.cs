@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using NTestify.Logging;
 
 namespace NTestify {
 	/// <summary>
 	/// Base class for strongly typed test results
 	/// </summary>
 	/// <typeparam name="TTest">The type of test this result corresponds to</typeparam>
-	public class TestResult<TTest> : ITestResult where TTest : ITest {
+	public class TestResult<TTest> : ITestResult, ILoggable where TTest : ITest {
 		private readonly TTest test;
 		private readonly List<Exception> errors;
 
@@ -62,5 +63,15 @@ namespace NTestify {
 		/// The test that was executed
 		/// </summary>
 		public ITest Test { get { return test; } }
+
+		///<inheritdoc/>
+		public void SetLogger(ILogger logger){
+			Logger = logger;
+		}
+
+		/// <summary>
+		/// Gets the logger for this result
+		/// </summary>
+		protected ILogger Logger { get; private set; }
 	}
 }
