@@ -149,13 +149,7 @@ namespace NTestify {
 		/// <summary>
 		/// Gets the logger associated with this test
 		/// </summary>
-		protected ILogger Logger { get; private set; }
-
-		///<inheritdoc/>
-		public Test SetLogger(ILogger logger) {
-			Logger = logger;
-			return this;
-		}
+		public ILogger Logger { get; set; }
 
 		/// <summary>
 		/// Marks the test result ignored

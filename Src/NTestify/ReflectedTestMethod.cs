@@ -93,9 +93,9 @@ namespace NTestify {
 		/// context after the test has been run
 		/// </summary>
 		protected override ITestResult CreateTestResult() {
-			var result = new TestMethodResult(this);
-			result.SetLogger(Logger);
-			return result;
+			return new TestMethodResult(this) {
+				Logger = Logger
+			};
 		}
 
 		/// <summary>

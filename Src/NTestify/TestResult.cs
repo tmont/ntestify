@@ -64,16 +64,10 @@ namespace NTestify {
 		/// </summary>
 		public ITest Test { get { return test; } }
 
-		///<inheritdoc/>
-		public TestResult<TTest> SetLogger(ILogger logger){
-			Logger = logger;
-			return this;
-		}
-
 		/// <summary>
 		/// Gets the logger for this result
 		/// </summary>
-		protected ILogger Logger { get; private set; }
+		public ILogger Logger { get; set; }
 
 		///<inheritdoc/>
 		public override string ToString() {

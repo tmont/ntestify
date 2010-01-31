@@ -34,9 +34,9 @@ namespace NTestify {
 		/// Creates a test result for use by the execution context
 		/// </summary>
 		protected override ITestResult CreateTestResult() {
-			var result = new TestSuiteResult(this);
-			result.SetLogger(Logger);
-			return result;
+			return new TestSuiteResult(this) {
+				Logger = Logger
+			};
 		}
 
 		///<inheritdoc/>

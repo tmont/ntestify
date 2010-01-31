@@ -12,6 +12,7 @@ namespace NTestify {
 	/// and methods. This is the default test runner in NTestify.
 	/// </summary>
 	public class AssemblyTestRunner : ITestRunner, ILoggable<AssemblyTestRunner> {
+		private ILogger logger;
 
 		/// <summary>
 		/// Runs all available tests in the assembly
@@ -24,26 +25,20 @@ namespace NTestify {
 				let instance = Activator.CreateInstance(type)
 				let innerTests = type
 					.GetTestMethods()
-					.Select(methodInfo => new ReflectedTestMethod(methodInfo, instance).SetLogger(Logger))
+					.Select(methodInfo => new ReflectedTestMethod(methodInfo, instance) { Logger = Logger })
 					.Cast<ITest>()
-				select new TestSuite(innerTests) { Name = instance.GetType().Name})
+				select new TestSuite(innerTests) { Name = instance.GetType().Name, Logger = Logger })
 				.ToList();
 
 			//create free floating tests out of test methods that aren't part of a test class
 			var freeFloatingTestMethods = (
 				from method in assembly.GetUnattachedTestMethods()
 				let instance = Activator.CreateInstance(method.DeclaringType)
-				select new ReflectedTestMethod(method, instance)).ToList();
+				select new ReflectedTestMethod(method, instance) { Logger = Logger }).ToList();
 
-			//set up logging
-			freeFloatingTestMethods.ForEach(method => method.SetLogger(Logger));
-			classSuites.ForEach(method => method.SetLogger(Logger));
-
-			var assemblySuite = new TestSuite { Name = assembly.GetName().Name }
+			var assemblySuite = new TestSuite { Name = assembly.GetName().Name, Logger = Logger }
 				.AddTests(classSuites.Cast<ITest>())
 				.AddTests(freeFloatingTestMethods.Cast<ITest>());
-
-			((TestSuite)assemblySuite).SetLogger(Logger);
 
 			return ((ITestRunner)this).RunTest(assemblySuite, new ExecutionContext { Test = assemblySuite });
 		}
@@ -55,23 +50,11 @@ namespace NTestify {
 		}
 
 		/// <summary>
-		/// Sets the logger that this test will use. Calling this method
-		/// has a chain reaction effect, in that every test found in the assembly
-		/// will have this logger attached to it.
+		/// Gets or sets the logger used by this test runner
 		/// </summary>
-		/// <param name="logger">The logger to attach to the test. If null, a NullLogger is attached.</param>
-		public AssemblyTestRunner SetLogger(ILogger logger){
-			if (logger == null) {
-				logger = new NullLogger();
-			}
-
-			Logger = logger;
-			return this;
+		public ILogger Logger {
+			get { return logger ?? (logger = new NullLogger()); }
+			set { logger = value; }
 		}
-
-		/// <summary>
-		/// The logger used by this test runner
-		/// </summary>
-		protected ILogger Logger { get; private set; }
 	}
 }

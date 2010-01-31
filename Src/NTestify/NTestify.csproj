@@ -56,7 +56,7 @@
     <Compile Include="ITestSuite.cs" />
     <Compile Include="Logging\ILoggable.cs" />
     <Compile Include="Logging\ILogger.cs" />
-    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\Log4NetLogger.cs" />
     <Compile Include="Logging\NullLogger.cs" />
     <Compile Include="ReflectedTestMethod.cs" />
     <Compile Include="ReflectionExtensions.cs" />
