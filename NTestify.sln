@@ -5,6 +5,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NTestify", "Src\NTestify\NT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NTestify.Tests", "Tests\NTestify.Tests\NTestify.Tests.csproj", "{0BCC1AE4-CA8D-460B-B5CC-4F2AFE3D5E20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NTestify.ConsoleRunner", "Src\NTestify.ConsoleRunner\NTestify.ConsoleRunner.csproj", "{E8F8F752-CC42-4AB9-8357-87502A9FA5D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NTestify.Sample", "Sample\NTestify.Sample\NTestify.Sample.csproj", "{5C84E8CA-6945-449F-BEAD-70568E7D1B4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +23,14 @@ Global
 		{0BCC1AE4-CA8D-460B-B5CC-4F2AFE3D5E20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BCC1AE4-CA8D-460B-B5CC-4F2AFE3D5E20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0BCC1AE4-CA8D-460B-B5CC-4F2AFE3D5E20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8F8F752-CC42-4AB9-8357-87502A9FA5D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8F8F752-CC42-4AB9-8357-87502A9FA5D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8F8F752-CC42-4AB9-8357-87502A9FA5D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8F8F752-CC42-4AB9-8357-87502A9FA5D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C84E8CA-6945-449F-BEAD-70568E7D1B4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C84E8CA-6945-449F-BEAD-70568E7D1B4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C84E8CA-6945-449F-BEAD-70568E7D1B4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C84E8CA-6945-449F-BEAD-70568E7D1B4E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

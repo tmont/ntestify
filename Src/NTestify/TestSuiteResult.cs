@@ -117,5 +117,17 @@ namespace NTestify {
 		/// </summary>
 		public int InnerCount { get { return InnerTests.Count(); } }
 		#endregion
+
+		///<inheritdoc/>
+		public override string ToString() {
+			return string.Format(
+				"{0} ({1} inner tests, {2} outer tests): Status = {3}, ExecutionTime = {4}",
+				GetType().FullName,
+				InnerCount,
+				OuterCount,
+				Status,
+				ExecutionTimeInSeconds
+			);
+		}
 	}
 }

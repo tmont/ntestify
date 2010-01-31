@@ -21,13 +21,16 @@ namespace NTestify {
 		/// </summary>
 		public string Category { get; set; }
 
+		public TestAttribute()
+			: this(new NullLogger()) {
+
+		}
+
 		public TestAttribute(ILogger logger){
 			Logger = logger;
 		}
 
-		public TestAttribute(){
-			Logger = new NullLogger();
-		}
+		
 
 		///<inheritdoc/>
 		public override void Execute(ExecutionContext executionContext) {

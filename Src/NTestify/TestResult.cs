@@ -73,5 +73,16 @@ namespace NTestify {
 		/// Gets the logger for this result
 		/// </summary>
 		protected ILogger Logger { get; private set; }
+
+		///<inheritdoc/>
+		public override string ToString() {
+			return string.Format(
+				"{0} ({1} total tests): Status = {2}, ExecutionTime = {3}", 
+				GetType().FullName,
+				1, 
+				Status, 
+				ExecutionTimeInSeconds
+			);
+		}
 	}
 }
