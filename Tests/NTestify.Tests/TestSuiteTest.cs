@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using TestMethod = NUnit.Framework.TestAttribute;
 
 namespace NTestify.Tests {
 	[TestFixture]
@@ -53,14 +54,14 @@ namespace NTestify.Tests {
 			testSuitePassed = false;
 		}
 
-		[Test]
+		[TestMethod]
 		public void Should_pass_if_suite_is_empty() {
 			CreateTestSuite(null).Run(executionContext);
 			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Pass));
 			AssertTestSuitePassed();
 		}
 
-		[Test]
+		[TestMethod]
 		public void Should_fail_because_at_least_one_inner_test_failed() {
 			var tests = new List<ITest> { new TestThatFails(), new TestThatPasses(), new TestThatIsIgnored() };
 			CreateTestSuite(tests).Run(executionContext);
@@ -74,7 +75,7 @@ namespace NTestify.Tests {
 			Assert.That(result.InnerErredTests.Count(), Is.EqualTo(0));
 		}
 
-		[Test]
+		[TestMethod]
 		public void Should_fail_because_at_least_one_inner_test_erred() {
 			var tests = new List<ITest> { new TestThatErrs(), new TestThatPasses(), new TestThatIsIgnored() };
 			CreateTestSuite(tests).Run(executionContext);
@@ -88,7 +89,7 @@ namespace NTestify.Tests {
 			Assert.That(result.InnerErredTests.Count(), Is.EqualTo(1));
 		}
 
-		[Test]
+		[TestMethod]
 		public void Should_be_ignored_because_all_inner_tests_were_ignored() {
 			var tests = new List<ITest> { new TestThatIsIgnored() };
 			CreateTestSuite(tests).Run(executionContext);
@@ -102,7 +103,7 @@ namespace NTestify.Tests {
 			Assert.That(result.InnerErredTests.Count(), Is.EqualTo(0));
 		}
 
-		[Test]
+		[TestMethod]
 		public void Should_pass_if_an_inner_test_passes_and_others_were_ignored() {
 			var tests = new List<ITest> { new TestThatIsIgnored(), new TestThatPasses() };
 			CreateTestSuite(tests).Run(executionContext);
@@ -116,8 +117,8 @@ namespace NTestify.Tests {
 			Assert.That(result.InnerErredTests.Count(), Is.EqualTo(0));
 		}
 
-		[Test]
-		public void Suite_properties_should_be_correct() {
+		[TestMethod]
+		public void Inner_and_outer_calculations_should_be_correct() {
 			var innerInnerSuite = CreateTestSuite(new List<ITest> { new TestThatIsIgnored(), new TestThatPasses(), new TestThatErrs() });
 			var innerSuite = CreateTestSuite(new List<ITest> { new TestThatFails(), new TestThatPasses(), innerInnerSuite });
 			var anotherInnerSuite = CreateTestSuite(new List<ITest> { new TestThatFails(), new TestThatPasses(), new TestThatErrs() });

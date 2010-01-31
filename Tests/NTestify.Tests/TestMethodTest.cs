@@ -2,6 +2,7 @@
 using System.Linq;
 using NTestify.Logging;
 using NUnit.Framework;
+using TestMethod = NUnit.Framework.TestAttribute;
 
 namespace NTestify.Tests {
 	[TestFixture]
@@ -30,9 +31,9 @@ namespace NTestify.Tests {
 			GetTest(name).Run(executionContext);
 		}
 
-		private TestMethod GetTest(string name) {
+		private ReflectedTestMethod GetTest(string name) {
 			var method = instance.GetType().GetMethod(name);
-			var test = new TestMethod(method);
+			var test = new ReflectedTestMethod(method, instance);
 			test.SetLogger(logger);
 
 			test.OnBeforeRun += context => beforeTest = true;
@@ -54,14 +55,14 @@ namespace NTestify.Tests {
 			Assert.That(testErred, Is.EqualTo(erred));
 		}
 
-		[Test]
+		[TestMethod]
 		public void Should_run_test_and_pass() {
 			RunTest("TestMethodThatPasses");
 			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Pass));
 			AssertEvents(true, true, true, false, false, false);
 		}
 
-		[Test]
+		[TestMethod]
 		public void Should_run_test_and_err() {
 			RunTest("TestMethodThatErrs");
 			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
@@ -70,7 +71,7 @@ namespace NTestify.Tests {
 			AssertEvents(true, true, false, false, false, true);
 		}
 
-		[Test]
+		[TestMethod]
 		public void Invalid_method_should_err() {
 			RunTest("TestMethodThatIsInvalid");
 			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
@@ -78,14 +79,14 @@ namespace NTestify.Tests {
 			AssertEvents(true, true, false, false, false, true);
 		}
 
-		[Test]
+		[TestMethod]
 		public void Should_run_test_and_fail() {
 			RunTest("TestMethodThatFails");
 			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Fail));
 			AssertEvents(true, true, false, false, true, false);
 		}
 
-		[Test]
+		[TestMethod]
 		public void Should_ignore_test_and_bypass_all_other_filters() {
 			RunTest("TestMethodThatIsIgnored");
 			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Ignore));
@@ -93,7 +94,7 @@ namespace NTestify.Tests {
 			AssertEvents(true, true, false, true, false, false);
 		}
 
-		[Test]
+		[TestMethod]
 		public void Should_err_when_filter_throws() {
 			RunTest("TestMethodThatHasABadFilter");
 
@@ -106,7 +107,7 @@ namespace NTestify.Tests {
 			AssertEvents(true, true, false, false, false, true);
 		}
 
-		[Test]
+		[TestMethod]
 		public void Should_execute_filters_and_continue() {
 			RunTest("TestMethodThatHasFilters");
 			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Pass));

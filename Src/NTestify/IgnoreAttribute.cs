@@ -5,7 +5,7 @@ namespace NTestify {
 	/// Signifies that a test should not be run
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-	public class IgnoreAttribute : TestifyAttribute {
+	public class IgnoreAttribute : TestableAttribute {
 		/// <summary>
 		/// The reason the test is being ignored
 		/// </summary>

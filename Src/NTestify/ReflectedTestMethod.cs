@@ -5,28 +5,36 @@ using System.Reflection;
 namespace NTestify {
 	/// <summary>
 	/// Represents a single testable method, i.e. an instance method that is annotated
-	/// with an attribute signifying that it is a test
+	/// with the [Test] attribute
 	/// </summary>
-	public class TestMethod : Test {
+	public class ReflectedTestMethod : Test {
 		private readonly MethodInfo method;
+		private readonly object instance;
 
 		/// <param name="method">The test method to run. Cannot be null.</param>
-		public TestMethod(MethodInfo method) {
+		/// <param name="instance">The object instance that the method belongs to</param>
+		public ReflectedTestMethod(MethodInfo method, object instance) {
 			if (method == null) {
 				throw new ArgumentNullException("method");
 			}
+			if (instance == null) {
+				throw new ArgumentNullException("instance");
+			}
 
 			this.method = method;
+			this.instance = instance;
+			Name = instance.GetType().Name + "." + method.Name;
 		}
 
 		/// <inheritdoc/>
 		protected override void RunTest(ExecutionContext executionContext) {
-			VerifyMethod(executionContext);
+			executionContext.Instance = instance;
+			VerifyMethod();
 
 			try {
 				RunTestMethod(executionContext);
 			} catch (Exception exception) {
-				HandleException(exception, executionContext);
+				HandleException(exception);
 			}
 		}
 
@@ -46,7 +54,6 @@ namespace NTestify {
 					filter.Execute(executionContext);
 				} catch (Exception exception) {
 					OnFilterError(exception, filter, executionContext);
-					break;
 				}
 			}
 		}
@@ -71,8 +78,8 @@ namespace NTestify {
 		/// </summary>
 		/// <exception cref="Test.TestFailedException">If an assertion failed</exception>
 		/// <exception cref="Test.TestErredException">If anything other a TestAssertionException was thrown</exception>
-		private static void HandleException(Exception exception, ExecutionContext executionContext) {
-			var actualException = exception.GetInnermostException();
+		private static void HandleException(Exception exception) {
+			var actualException = exception.GetBaseException();
 			if (actualException is TestAssertionException) {
 				//an assertion failed
 				throw new TestFailedException(actualException.Message);
@@ -103,7 +110,7 @@ namespace NTestify {
 		/// Verifies that the test method is a valid, testable method
 		/// </summary>
 		/// <exception cref="Test.TestErredException">If the method is not runnable</exception>
-		protected void VerifyMethod(ExecutionContext executionContext) {
+		private void VerifyMethod() {
 			if (!method.IsRunnable()) {
 				throw new TestErredException(null, "The test method is invalid");
 			}

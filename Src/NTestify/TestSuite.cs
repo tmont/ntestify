@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace NTestify {
@@ -14,7 +13,6 @@ namespace NTestify {
 		/// All tests that have been added to this suite
 		/// </summary>
 		public IEnumerable<ITest> Tests { get { return tests; } }
-
 
 		public TestSuite() {
 			tests = new List<ITest>();
@@ -81,6 +79,12 @@ namespace NTestify {
 		///<inheritdoc/>
 		public ITestSuite AddTest(ITest test) {
 			tests.Add(test);
+			return this;
+		}
+
+		///<inheritdoc/>
+		public ITestSuite AddTests(IEnumerable<ITest> listOfTests){
+			tests.AddRange(listOfTests);
 			return this;
 		}
 
