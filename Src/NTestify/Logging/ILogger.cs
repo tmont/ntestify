@@ -5,5 +5,6 @@
 		void Warn(object message);
 
 		void Error(object message);
+		void Info(object message);
 	}
 }

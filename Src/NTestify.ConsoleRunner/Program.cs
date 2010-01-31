@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
+using NTestify.Logging;
 
 namespace NTestify.ConsoleRunner {
 	class Program {
@@ -13,7 +15,16 @@ namespace NTestify.ConsoleRunner {
 			string dllPath = args[0];
 			var assembly = Assembly.LoadFrom(dllPath);
 
+			Console.WindowWidth = Console.LargestWindowWidth;
+
+			var file = new FileInfo(@"log4net.xml");
+
+			var logger = new Logger(file, "tnet");
+			logger.Error("OH NOES!!");
+			logger.Error("Seriously!");
+
 			var runner = new AssemblyTestRunner();
+			runner.SetLogger(logger);
 			var result = runner.RunAll(assembly);
 			Console.WriteLine(result);
 			Console.ReadLine();

@@ -28,4 +28,10 @@ namespace NTestify.Sample {
 		}
 
 	}
+
+	public class TestSuiteSample2 {
+		[Test]
+		public void LollerSk8(){
+		}
+	}
 }

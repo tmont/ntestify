@@ -8,14 +8,12 @@ namespace NTestify.Tests {
 	[TestFixture]
 	public class TestMethodTest {
 
-		private ILogger logger;
 		private object instance;
 		private bool beforeTest, afterTest, testFailed, testPassed, testErred, testIgnored;
 		private ExecutionContext executionContext;
 
 		[SetUp]
 		public void SetUp() {
-			logger = new Logger();
 			instance = new FakeTestClass();
 			executionContext = new ExecutionContext { Instance = instance };
 
@@ -34,7 +32,6 @@ namespace NTestify.Tests {
 		private ReflectedTestMethod GetTest(string name) {
 			var method = instance.GetType().GetMethod(name);
 			var test = new ReflectedTestMethod(method, instance);
-			test.SetLogger(logger);
 
 			test.OnBeforeRun += context => beforeTest = true;
 			test.OnAfterRun += context => afterTest = true;

@@ -7,13 +7,9 @@ namespace NTestify.Logging {
 
 		private readonly ILog logger;
 
-		public Logger() : this(@"log4net.xml") {
-
-		}
-
-		public Logger(string file) {
-			XmlConfigurator.Configure(new FileInfo(file));
-			logger = LogManager.GetLogger("console-color");
+		public Logger(FileInfo file, string name) {
+			XmlConfigurator.Configure(file);
+			logger = LogManager.GetLogger(name);
 		}
 
 		public void Debug(object message) {
@@ -26,6 +22,10 @@ namespace NTestify.Logging {
 
 		public void Error(object message) {
 			logger.Error(message);
+		}
+
+		public void Info(object message){
+			logger.Info(message);
 		}
 	}
 }

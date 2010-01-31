@@ -5,7 +5,7 @@ namespace NTestify {
 	/// <summary>
 	/// Base class for all built-in, runnable tests
 	/// </summary>
-	public abstract class Test : ITest, ILoggable {
+	public abstract class Test : ITest, ILoggable<Test> {
 
 		#region Inner exceptions
 		/// <summary>
@@ -70,10 +70,10 @@ namespace NTestify {
 		/// Sets the default event handlers, which just log a boring message
 		/// </summary>
 		private void SetDefaultEventHandlers() {
-			OnBeforeRun += context => Logger.Debug("Test [" + Name + "] is starting at " + context.Result.StartTime.ToString("{0:YYYY-MM-dd hh:mm:ss}"));
-			OnAfterRun += context => Logger.Debug("Test [" + Name + "] is finished at " + context.Result.EndTime.ToString("{0:YYYY-MM-dd hh:mm:ss}") + " (" + context.Result.ExecutionTimeInSeconds + " seconds)");
-			OnIgnore += context => Logger.Warn("Test [" + Name + "] is ignored");
-			OnPass += context => Logger.Debug("Test [" + Name + "] passed");
+			OnBeforeRun += context => Logger.Debug("Test [" + Name + "] is starting at " + context.Result.StartTime.ToString("yyyy-MM-dd hh:mm:ss.fff"));
+			OnAfterRun += context => Logger.Debug("Test [" + Name + "] finished at " + context.Result.EndTime.ToString("yyyy-MM-dd hh:mm:ss.fff") + " (" + context.Result.ExecutionTimeInSeconds + " seconds)");
+			OnIgnore += context => Logger.Warn("Test [" + Name + "] was ignored");
+			OnPass += context => Logger.Info("Test [" + Name + "] passed");
 			OnFail += context => Logger.Error("Test [" + Name + "] failed");
 			OnError += context => Logger.Error("Test [" + Name + "] erred");
 		}
@@ -91,7 +91,6 @@ namespace NTestify {
 			OnBeforeRun.Invoke(executionContext);
 
 			executionContext.Result.Status = TestStatus.Running;
-			executionContext.Result.StartTime = DateTime.Now;
 			try {
 				RunFilters(executionContext);
 				RunTest(executionContext);
@@ -126,6 +125,7 @@ namespace NTestify {
 		private void InitializeContext(ExecutionContext executionContext) {
 			executionContext.Test = this;
 			executionContext.Result = CreateTestResult();
+			executionContext.Result.StartTime = DateTime.Now;
 		}
 
 		/// <summary>
@@ -152,8 +152,9 @@ namespace NTestify {
 		protected ILogger Logger { get; private set; }
 
 		///<inheritdoc/>
-		public void SetLogger(ILogger logger) {
+		public Test SetLogger(ILogger logger) {
 			Logger = logger;
+			return this;
 		}
 
 		/// <summary>

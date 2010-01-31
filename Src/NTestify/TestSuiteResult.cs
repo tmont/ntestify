@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using NTestify.Logging;
 
@@ -7,6 +8,7 @@ namespace NTestify {
 	/// <summary>
 	/// Represents the result of a completed test suite
 	/// </summary>
+	[DebuggerDisplay("Status = {Status}, Execution Time = {ExecutionTimeInSeconds}s, Test = {Test.Name}")]
 	public class TestSuiteResult : TestResult<TestSuite> {
 		private readonly IList<ITestResult> results;
 
