@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NTestify.Constraint;
 
 namespace NTestify {
@@ -20,15 +21,16 @@ namespace NTestify {
 		/// <typeparam name="TArg">The argument type of the to-be-negated constraint</typeparam>
 		/// <param name="message">The message to display if the constraint is invalid</param>
 		/// <param name="args">Arguments to pass to the to-be-negated constraint</param>
-		public static void Not<TConstraint, TArg>(string message, params TArg[] args) where TConstraint : IConstraint<TArg> {
-			ExecuteConstraint<NotConstraint<TArg>, IConstraint<TArg>>(message, BuildConstraint<TConstraint, TArg>(args));
+		public static void Not<TConstraint, TArg>(string message, params TArg[] args) where TConstraint : IConstraint where TArg : class {
+			ExecuteConstraint<NotConstraint, IConstraint>(message, BuildConstraint<TConstraint, TArg>(args));
 		}
 
 		/// <summary>
 		/// Uses the Activator to create a constraint object from the type parameters and given arguments
 		/// </summary>
-		public static TConstraint BuildConstraint<TConstraint, TArg>(params TArg[] args) where TConstraint : IConstraint<TArg> {
-			return (TConstraint)Activator.CreateInstance(typeof(TConstraint), args);
+		public static TConstraint BuildConstraint<TConstraint, TArg>(params TArg[] args) where TConstraint : IConstraint where TArg : class {
+			var constructor = typeof(TConstraint).GetConstructor(args.Select(o =>  o != null ? o.GetType() : typeof(Nullable) ).ToArray());
+			return (TConstraint)constructor.Invoke(args);
 		}
 
 		/// <summary>
@@ -39,10 +41,12 @@ namespace NTestify {
 		/// <param name="message">The message to display if the constraint is invalid</param>
 		/// <param name="args">The arguments to assert</param>
 		/// <exception cref="TestAssertionException">If the constraint fails to validate</exception>
-		public static void ExecuteConstraint<TConstraint, TArg>(string message, params TArg[] args) where TConstraint : IConstraint<TArg> {
+		public static void ExecuteConstraint<TConstraint, TArg>(string message, params TArg[] args) where TConstraint : IConstraint where TArg : class {
 			var constraint = BuildConstraint<TConstraint, TArg>(args);
 			if (!constraint.Validate()) {
-				throw new TestAssertionException(message ?? string.Empty);
+				message = string.IsNullOrEmpty(message) ? string.Empty : message + "\n";
+				message += constraint.FailMessage;
+				throw new TestAssertionException(message);
 			}
 		}
 

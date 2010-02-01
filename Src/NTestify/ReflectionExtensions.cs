@@ -73,5 +73,27 @@ namespace NTestify {
 				.Where(type => !type.HasAttribute<TestableAttribute>())
 				.SelectMany(type => type.GetTestMethods());
 		}
+
+		/// <summary>
+		/// Gets the namespace + member name of the type, including generic arguments
+		/// </summary>
+		public static string GetFriendlyName(this Type type){
+			string name = type.Namespace + ".";
+			if (type.IsGenericType) {
+				//the substring crap gets rid of everything after the ` in Name, e.g. List`1 for List<T>
+				name += 
+					type.Name.Substring(0, type.Name.LastIndexOf("`")) +
+					"<" +
+					type
+						.GetGenericArguments()
+						.Select(genericType => genericType.GetFriendlyName())
+						.Aggregate((current, friendlyName) => current + ", " + friendlyName) +
+					">";
+			} else {
+				name += type.Name;
+			}
+
+			return name;
+		}
 	}
 }

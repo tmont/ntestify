@@ -1,11 +1,7 @@
 ﻿namespace NTestify.Constraint {
 
-	public interface IConstraint<T> {
+	public interface IConstraint {
 		bool Validate();
 		string FailMessage { get; }
-	}
-
-	public interface IConstraint : IConstraint<object> {
-
 	}
 }

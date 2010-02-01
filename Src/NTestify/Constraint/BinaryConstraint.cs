@@ -1,5 +1,5 @@
 ﻿namespace NTestify.Constraint {
-	public abstract class BinaryConstraint<T> : IConstraint<T> {
+	public abstract class BinaryConstraint<T> : IConstraint {
 		protected BinaryConstraint(T expected, T actual) {
 			Expected = expected;
 			Actual = actual;

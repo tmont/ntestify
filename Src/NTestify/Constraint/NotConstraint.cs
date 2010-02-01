@@ -1,8 +1,8 @@
 ﻿namespace NTestify.Constraint {
-	public class NotConstraint<T> : IConstraint<IConstraint<T>> {
-		private readonly IConstraint<T> positiveConstraint;
+	public class NotConstraint : IConstraint {
+		private readonly IConstraint positiveConstraint;
 
-		public NotConstraint(IConstraint<T> positiveConstraint) {
+		public NotConstraint(IConstraint positiveConstraint) {
 			this.positiveConstraint = positiveConstraint;
 		}
 
