@@ -7,7 +7,7 @@ namespace NTestify {
 	/// Base class for strongly typed test results
 	/// </summary>
 	/// <typeparam name="TTest">The type of test this result corresponds to</typeparam>
-	public class TestResult<TTest> : ITestResult, ILoggable<TestResult<TTest>> where TTest : ITest {
+	public class TestResult<TTest> : ITestResult, ILoggable where TTest : ITest {
 		private readonly TTest test;
 		private readonly List<Exception> errors;
 

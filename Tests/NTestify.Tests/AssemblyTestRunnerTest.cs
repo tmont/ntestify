@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Moq;
 using NUnit.Framework;
@@ -9,16 +10,17 @@ namespace NTestify.Tests {
 	public class AssemblyTestRunnerTest {
 
 		[TestMethod]
-		public void Should_do_something() {
+		public void Should_run_tests_in_assembly() {
 			//this is really an integration test...
 
 			var assembly = new Mock<_Assembly>();
+
 			assembly
 				.Setup(a => a.GetTypes())
 				.Returns(new[] { typeof(FakeAssemblyTestClass), typeof(FakeAssemblyTestClassThatIsNotATest) });
 			assembly
-				.SetupGet(a => a.FullName)
-				.Returns("A Fake Assembly");
+				.Setup(a => a.GetName())
+				.Returns(new AssemblyName("A Fake Assembly"));
 
 			var runner = new AssemblyTestRunner();
 

@@ -1,17 +1,45 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using NTestify.Logging;
 
 namespace NTestify {
 
+	public class Configurator {
+
+		private int currentLineLength;
+
+		public Configurator() : this(50) {
+
+		}
+		public Configurator(int maxLineLength) {
+			MaxLineLineLength = maxLineLength;
+		}
+
+		public int MaxLineLineLength { get; set; }
+
+		public void Configure(ITest test) {
+			test.OnError += context => WriteResult('E');
+			test.OnPass += context => WriteResult('.');
+			test.OnFail += context => WriteResult('F');
+			test.OnIgnore += context => WriteResult('I');
+		}
+
+		private void WriteResult(char indicator) {
+			Console.Write(indicator);
+			if (++currentLineLength >= MaxLineLineLength) {
+				Console.WriteLine();
+				currentLineLength = 0;
+			}
+		}
+
+	}
+
 	/// <summary>
 	/// Test runner that scans an assembly for testable classes
 	/// and methods. This is the default test runner in NTestify.
 	/// </summary>
-	public class AssemblyTestRunner : ITestRunner, ILoggable<AssemblyTestRunner> {
+	public class AssemblyTestRunner : ITestRunner, ILoggable {
 		private ILogger logger;
 
 		/// <summary>

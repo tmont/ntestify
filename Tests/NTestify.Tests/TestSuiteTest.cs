@@ -162,37 +162,42 @@ namespace NTestify.Tests {
 
 	}
 
-	internal class TestThatFails : ITest {
-		public void Run(ExecutionContext executionContext) {
-			executionContext.Result = new TestResult<TestThatFails>(this) { Status = TestStatus.Fail };
-		}
+	internal abstract class FakeTest : ITest {
+		public abstract void Run(ExecutionContext executionContext);
 
 		public string Name { get; set; }
+
+		public event Action<ExecutionContext> OnBeforeRun;
+		public event Action<ExecutionContext> OnAfterRun;
+		public event Action<ExecutionContext> OnIgnore;
+		public event Action<ExecutionContext> OnPass;
+		public event Action<ExecutionContext> OnFail;
+		public event Action<ExecutionContext> OnError;
 	}
 
-	internal class TestThatErrs : ITest {
-		public void Run(ExecutionContext executionContext) {
+	internal class TestThatFails : FakeTest {
+		public override void Run(ExecutionContext executionContext) {
+			executionContext.Result = new TestResult<TestThatFails>(this) { Status = TestStatus.Fail };
+		}
+	}
+
+	internal class TestThatErrs : FakeTest {
+		public override void Run(ExecutionContext executionContext) {
 			executionContext.Result = new TestResult<TestThatErrs>(this) { Status = TestStatus.Error };
 			executionContext.Result.AddError(new Exception("I AM ERROR."));
 		}
-
-		public string Name { get; set; }
 	}
 
-	internal class TestThatPasses : ITest {
-		public void Run(ExecutionContext executionContext) {
+	internal class TestThatPasses : FakeTest {
+		public override void Run(ExecutionContext executionContext) {
 			executionContext.Result = new TestResult<TestThatPasses>(this) { Status = TestStatus.Pass };
 		}
-
-		public string Name { get; set; }
 	}
 
-	internal class TestThatIsIgnored : ITest {
-		public void Run(ExecutionContext executionContext) {
+	internal class TestThatIsIgnored : FakeTest {
+		public override void Run(ExecutionContext executionContext) {
 			executionContext.Result = new TestResult<TestThatIsIgnored>(this) { Status = TestStatus.Ignore };
 		}
-
-		public string Name { get; set; }
 	}
 
 	#endregion

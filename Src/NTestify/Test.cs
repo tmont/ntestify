@@ -5,7 +5,7 @@ namespace NTestify {
 	/// <summary>
 	/// Base class for all built-in, runnable tests
 	/// </summary>
-	public abstract class Test : ITest, ILoggable<Test> {
+	public abstract class Test : ITest, ILoggable {
 
 		#region Inner exceptions
 		/// <summary>
@@ -41,29 +41,11 @@ namespace NTestify {
 		#endregion
 
 		#region Event stuff
-		/// <summary>
-		/// Event that fires before a test runs
-		/// </summary>
 		public event Action<ExecutionContext> OnBeforeRun;
-		/// <summary>
-		/// Event that fires after a test runs
-		/// </summary>
 		public event Action<ExecutionContext> OnAfterRun;
-		/// <summary>
-		/// Event that fires if a test is ignored
-		/// </summary>
 		public event Action<ExecutionContext> OnIgnore;
-		/// <summary>
-		/// Event that fires when a test passes
-		/// </summary>
 		public event Action<ExecutionContext> OnPass;
-		/// <summary>
-		/// Event that fires when a test fails
-		/// </summary>
 		public event Action<ExecutionContext> OnFail;
-		/// <summary>
-		/// Event that fires when a test errs
-		/// </summary>
 		public event Action<ExecutionContext> OnError;
 
 		/// <summary>
@@ -72,10 +54,10 @@ namespace NTestify {
 		private void SetDefaultEventHandlers() {
 			OnBeforeRun += context => Logger.Debug("Test [" + Name + "] is starting at " + context.Result.StartTime.ToString("yyyy-MM-dd hh:mm:ss.fff"));
 			OnAfterRun += context => Logger.Debug("Test [" + Name + "] finished at " + context.Result.EndTime.ToString("yyyy-MM-dd hh:mm:ss.fff") + " (" + context.Result.ExecutionTimeInSeconds + " seconds)");
-			OnIgnore += context => Logger.Warn("Test [" + Name + "] was ignored");
-			OnPass += context => Logger.Info("Test [" + Name + "] passed");
-			OnFail += context => Logger.Error("Test [" + Name + "] failed");
-			OnError += context => Logger.Error("Test [" + Name + "] erred");
+			OnIgnore += context => Logger.Debug("Test [" + Name + "] was ignored");
+			OnPass += context => Logger.Debug("Test [" + Name + "] passed");
+			OnFail += context => Logger.Debug("Test [" + Name + "] failed");
+			OnError += context => Logger.Debug("Test [" + Name + "] erred");
 		}
 		#endregion
 
@@ -147,7 +129,7 @@ namespace NTestify {
 		public string Name { get; set; }
 
 		/// <summary>
-		/// Gets the logger associated with this test
+		/// Gets or setsthe logger associated with this test
 		/// </summary>
 		public ILogger Logger { get; set; }
 
@@ -168,13 +150,12 @@ namespace NTestify {
 			var erredException = exception as TestErredException;
 			
 			if (erredException != null) {
-				var cause = ((TestErredException)exception).CauseError;
-				if (cause != null) {
-					executionContext.Result.AddError(cause);
+				if (erredException.CauseError != null) {
+					executionContext.Result.AddError(erredException.CauseError);
 				}
 			}
 
-			executionContext.Result.Message = exception.Message;
+			executionContext.Result.Message = (exception != null) ? exception.Message : "An error occurred during execution of the test";
 			OnError.Invoke(executionContext);
 		}
 
