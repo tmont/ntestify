@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using NTestify.Logging;
 using NDesk.Options;
@@ -43,14 +44,17 @@ namespace NTestify.ConsoleRunner {
 					Console.WindowWidth = Console.LargestWindowWidth - 10;
 				}
 
-				logger = new Log4NetLogger(new FileInfo(loggerConfig ?? @"log4net.xml"), loggerName);
+				logger = new Log4NetLogger(new FileInfo(loggerConfig ?? "log4net.xml"), loggerName);
 			}
 
-			var result = new AssemblyTestRunner { Logger = logger }
-				.RunAll(assembly);
+			var runner = new AssemblyTestRunner {
+				Logger = logger,
+				TestMethodConfigurator = new ConsoleTestMethodConfigurator(),
+				TestSuiteConfigurator = new ConsoleTestSuiteConfigurator()
+			};
 
-			Console.WriteLine(result);
-			Console.ReadLine();
+			PrintVersionString();
+			runner.RunAll(assembly);
 		}
 
 		private static void ShowError(string message) {
@@ -61,6 +65,13 @@ namespace NTestify.ConsoleRunner {
 		private static void ShowError(string messageFormat, params object[] args) {
 			Console.WriteLine(messageFormat, args);
 			Console.ReadLine();
+		}
+
+		private static void PrintVersionString() {
+			var assembly = Assembly.GetExecutingAssembly();
+			var name = assembly.GetName();
+
+			Console.WriteLine(name.Name + " " + name.Version + " by " + assembly.GetAttributes<AssemblyCompanyAttribute>().First().Company);
 		}
 
 		private static void ShowUsage(OptionSet options) {

@@ -41,6 +41,14 @@ namespace NTestify {
 		#endregion
 
 		#region Event stuff
+
+		private ITestConfigurator configurator;
+
+		public ITestConfigurator Configurator {
+			get { return configurator ?? (configurator = new NullConfigurator()); }
+			set { configurator = value; }
+		}
+
 		public event Action<ExecutionContext> OnBeforeRun;
 		public event Action<ExecutionContext> OnAfterRun;
 		public event Action<ExecutionContext> OnIgnore;
@@ -52,7 +60,7 @@ namespace NTestify {
 		/// Sets the default event handlers, which just log a boring message
 		/// </summary>
 		private void SetDefaultEventHandlers() {
-			OnBeforeRun += context => Logger.Debug("Test [" + Name + "] is starting at " + context.Result.StartTime.ToString("yyyy-MM-dd hh:mm:ss.fff"));
+			OnBeforeRun += context => Logger.Debug("Test [" + Name + "] started at " + context.Result.EndTime.ToString("yyyy-MM-dd hh:mm:ss.fff"));
 			OnAfterRun += context => Logger.Debug("Test [" + Name + "] finished at " + context.Result.EndTime.ToString("yyyy-MM-dd hh:mm:ss.fff") + " (" + context.Result.ExecutionTimeInSeconds + " seconds)");
 			OnIgnore += context => Logger.Debug("Test [" + Name + "] was ignored");
 			OnPass += context => Logger.Debug("Test [" + Name + "] passed");
@@ -69,6 +77,7 @@ namespace NTestify {
 		///<inheritdoc/>
 		public void Run(ExecutionContext executionContext) {
 			InitializeContext(executionContext);
+			Configurator.Configure(executionContext.Test);
 
 			OnBeforeRun.Invoke(executionContext);
 
@@ -88,7 +97,7 @@ namespace NTestify {
 		/// <summary>
 		/// Handles an exception thrown by a test
 		/// </summary>
-		private void HandleException(Exception exception, ExecutionContext executionContext){
+		private void HandleException(Exception exception, ExecutionContext executionContext) {
 			if (exception is TestFailedException) {
 				Fail(executionContext, exception.Message);
 			} else if (exception is TestErredException) {
@@ -148,7 +157,7 @@ namespace NTestify {
 		protected void Error(ExecutionContext executionContext, Exception exception) {
 			executionContext.Result.Status = TestStatus.Error;
 			var erredException = exception as TestErredException;
-			
+
 			if (erredException != null) {
 				if (erredException.CauseError != null) {
 					executionContext.Result.AddError(erredException.CauseError);

@@ -49,8 +49,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleTestMethodConfigurator.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="IgnoreAttribute.cs" />
+    <Compile Include="ITestConfigurator.cs" />
     <Compile Include="ITestResult.cs" />
     <Compile Include="ITestRunner.cs" />
     <Compile Include="ITestSuite.cs" />
@@ -58,6 +60,7 @@
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Log4NetLogger.cs" />
     <Compile Include="Logging\NullLogger.cs" />
+    <Compile Include="NullConfigurator.cs" />
     <Compile Include="ReflectedTestMethod.cs" />
     <Compile Include="ReflectionExtensions.cs" />
     <Compile Include="Test.cs" />

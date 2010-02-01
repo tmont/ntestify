@@ -166,7 +166,7 @@ namespace NTestify.Tests {
 		public abstract void Run(ExecutionContext executionContext);
 
 		public string Name { get; set; }
-
+		public ITestConfigurator Configurator { get; set; }
 		public event Action<ExecutionContext> OnBeforeRun;
 		public event Action<ExecutionContext> OnAfterRun;
 		public event Action<ExecutionContext> OnIgnore;

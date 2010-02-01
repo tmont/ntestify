@@ -24,16 +24,16 @@ namespace NTestify {
 		/// A generic version of GetCustomAttributes
 		/// </summary>
 		/// <typeparam name="TAttribute">The type of attribue to retrieve</typeparam>
-		public static IEnumerable<TAttribute> GetAttributes<TAttribute>(this MemberInfo member) where TAttribute : Attribute {
-			return member.GetCustomAttributes(typeof(TAttribute), true).Cast<TAttribute>();
+		public static IEnumerable<TAttribute> GetAttributes<TAttribute>(this ICustomAttributeProvider attributeProvider) where TAttribute : Attribute {
+			return attributeProvider.GetCustomAttributes(typeof(TAttribute), true).Cast<TAttribute>();
 		}
 
 		/// <summary>
-		/// Determines whether or not a member has an attribute
+		/// Determines whether or not this object has an attribute
 		/// </summary>
 		/// <typeparam name="TAttribute">The type of the attribute to look for</typeparam>
-		public static bool HasAttribute<TAttribute>(this MemberInfo member) where TAttribute : Attribute {
-			return member.GetAttributes<TAttribute>().Any();
+		public static bool HasAttribute<TAttribute>(this ICustomAttributeProvider attributeProvider) where TAttribute : Attribute {
+			return attributeProvider.GetAttributes<TAttribute>().Any();
 		}
 
 		/// <summary>

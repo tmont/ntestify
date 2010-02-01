@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("NTestify.ConsoleRunner")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Command line interface for NTestify")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("NTestify.ConsoleRunner")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2010")]
+[assembly: AssemblyCompany("Tommy Montgomery")]
+[assembly: AssemblyProduct("NTestify")]
+[assembly: AssemblyCopyright("Copyright © Tommy Montgomery 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

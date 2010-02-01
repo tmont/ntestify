@@ -10,9 +10,14 @@ namespace NTestify {
 		void Run(ExecutionContext executionContext);
 
 		/// <summary>
-		/// The name of the test
+		/// Gets or sets the name of the test
 		/// </summary>
 		string Name { get; set; }
+		/// <summary>
+		/// Gets or sets the configurator that will be executed before running
+		/// the test
+		/// </summary>
+		ITestConfigurator Configurator { get; set; }
 
 		/// <summary>
 		/// Event that fires before a test runs
