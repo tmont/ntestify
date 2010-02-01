@@ -1,6 +1,10 @@
 ﻿using System;
 
 namespace NTestify {
+	
+	/// <summary>
+	/// Represents a testable object by the NTestify framework
+	/// </summary>
 	public interface ITest {
 		/// <summary>
 		/// Runs the test, and sets the ExecutionContext's Result property

@@ -9,7 +9,7 @@ namespace NTestify.Sample {
 
 		[Test]
 		public void Should_pass() {
-
+			//Assert.True();
 		}
 
 		[Test]

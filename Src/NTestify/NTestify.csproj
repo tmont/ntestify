@@ -49,8 +49,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assert.cs" />
+    <Compile Include="AssertionExtensionPoint.cs" />
     <Compile Include="ConsoleTestMethodConfigurator.cs" />
+    <Compile Include="Constraint\BinaryConstraint.cs" />
+    <Compile Include="Constraint\EqualConstraint.cs" />
+    <Compile Include="Constraint\NotConstraint.cs" />
+    <Compile Include="EqualityAssertions.cs">
+      <DependentUpon>Assert.cs</DependentUpon>
+    </Compile>
     <Compile Include="ExceptionExtensions.cs" />
+    <Compile Include="Constraint\IConstraint.cs" />
     <Compile Include="IgnoreAttribute.cs" />
     <Compile Include="ITestConfigurator.cs" />
     <Compile Include="ITestResult.cs" />

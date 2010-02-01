@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
-using NTestify.Logging;
 using NUnit.Framework;
 using TestMethod = NUnit.Framework.TestAttribute;
+using Ass = NUnit.Framework.Assert;
+
 
 namespace NTestify.Tests {
 	[TestFixture]
@@ -44,50 +45,50 @@ namespace NTestify.Tests {
 		}
 
 		private void AssertEvents(bool before, bool after, bool passed, bool ignored, bool failed, bool erred) {
-			Assert.That(beforeTest, Is.EqualTo(before));
-			Assert.That(afterTest, Is.EqualTo(after));
-			Assert.That(testPassed, Is.EqualTo(passed));
-			Assert.That(testIgnored, Is.EqualTo(ignored));
-			Assert.That(testFailed, Is.EqualTo(failed));
-			Assert.That(testErred, Is.EqualTo(erred));
+			Ass.That(beforeTest, Is.EqualTo(before));
+			Ass.That(afterTest, Is.EqualTo(after));
+			Ass.That(testPassed, Is.EqualTo(passed));
+			Ass.That(testIgnored, Is.EqualTo(ignored));
+			Ass.That(testFailed, Is.EqualTo(failed));
+			Ass.That(testErred, Is.EqualTo(erred));
 		}
 
 		[TestMethod]
 		public void Should_run_test_and_pass() {
 			RunTest("TestMethodThatPasses");
-			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Pass));
+			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Pass));
 			AssertEvents(true, true, true, false, false, false);
 		}
 
 		[TestMethod]
 		public void Should_run_test_and_err() {
 			RunTest("TestMethodThatErrs");
-			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
-			Assert.That(executionContext.Result.Errors.Count(), Is.EqualTo(1));
-			Assert.That(executionContext.Result.Errors.First().Message, Is.EqualTo("hi there!"));
+			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
+			Ass.That(executionContext.Result.Errors.Count(), Is.EqualTo(1));
+			Ass.That(executionContext.Result.Errors.First().Message, Is.EqualTo("hi there!"));
 			AssertEvents(true, true, false, false, false, true);
 		}
 
 		[TestMethod]
 		public void Invalid_method_should_err() {
 			RunTest("TestMethodThatIsInvalid");
-			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
-			Assert.That(executionContext.Result.Message, Is.EqualTo("The test method is invalid"));
+			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
+			Ass.That(executionContext.Result.Message, Is.EqualTo("The test method is invalid"));
 			AssertEvents(true, true, false, false, false, true);
 		}
 
 		[TestMethod]
 		public void Should_run_test_and_fail() {
 			RunTest("TestMethodThatFails");
-			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Fail));
+			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Fail));
 			AssertEvents(true, true, false, false, true, false);
 		}
 
 		[TestMethod]
 		public void Should_ignore_test_and_bypass_all_other_filters() {
 			RunTest("TestMethodThatIsIgnored");
-			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Ignore));
-			Assert.That(executionContext.Result.Message, Is.EqualTo("this test sux!"));
+			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Ignore));
+			Ass.That(executionContext.Result.Message, Is.EqualTo("this test sux!"));
 			AssertEvents(true, true, false, true, false, false);
 		}
 
@@ -97,18 +98,18 @@ namespace NTestify.Tests {
 
 			const string expectedMessage = "Encountered an error while trying to run method filter \"NTestify.Tests.FilterThatThrowsException\"";
 
-			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
-			Assert.That(executionContext.Result.Message, Is.EqualTo(expectedMessage));
-			Assert.That(executionContext.Result.Errors.Count(), Is.EqualTo(1));
-			Assert.That(executionContext.Result.Errors.First().Message, Is.EqualTo("OH HAI!"));
+			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
+			Ass.That(executionContext.Result.Message, Is.EqualTo(expectedMessage));
+			Ass.That(executionContext.Result.Errors.Count(), Is.EqualTo(1));
+			Ass.That(executionContext.Result.Errors.First().Message, Is.EqualTo("OH HAI!"));
 			AssertEvents(true, true, false, false, false, true);
 		}
 
 		[TestMethod]
 		public void Should_execute_filters_and_continue() {
 			RunTest("TestMethodThatHasFilters");
-			Assert.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Pass));
-			Assert.That(FilterThatSetsProperty.Executed, "Filter never got executed, oh noes!!");
+			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Pass));
+			Ass.That(FilterThatSetsProperty.Executed, "Filter never got executed, oh noes!!");
 			AssertEvents(true, true, true, false, false, false);
 		}
 
