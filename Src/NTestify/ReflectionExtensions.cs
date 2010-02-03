@@ -40,12 +40,13 @@ namespace NTestify {
 
 		/// <summary>
 		/// Determines if the method is able to be invoked by the NTestify framework
-		/// as a test method
+		/// as a test method. The method must be public, non-abstract, non-static
+		/// non-generic and parameterless.
 		/// </summary>
 		public static bool IsRunnable(this MethodInfo method) {
 			return
-				!method.IsConstructor && !method.IsAbstract &&
-				!method.IsStatic && !method.GetParameters().Any();
+				!method.IsConstructor && !method.IsAbstract && !method.IsGenericMethod &&
+				!method.IsGenericMethodDefinition && !method.IsStatic && !method.GetParameters().Any();
 		}
 
 		/// <summary>
