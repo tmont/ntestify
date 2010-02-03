@@ -154,14 +154,14 @@ namespace NTestify.Tests {
 		}
 
 		[TestMethod]
-		[ExpectedException(ExpectedException = typeof(TestAssertionException), ExpectedMessage = "Failed asserting that two objects are equal.\nActual does not contain an item in Expected at index 2: 3.")]
+		[ExpectedException(ExpectedException = typeof(TestAssertionException), ExpectedMessage = "Failed asserting that two objects are equal.\n4 is not equal to 3.\nActual does not contain an item in Expected at index 2: System.Int32.")]
 		public void Should_fail_because_actual_does_not_contain_an_item_in_expected() {
 			Assert.NotEqual(new List<int> { 1, 2, 3 }, new List<int> { 1, 2, 4 });
 			Assert.Equal(new List<int> { 1, 2, 3 }, new List<int> { 1, 2, 4 });
 		}
 
 		[TestMethod]
-		[ExpectedException(ExpectedException = typeof(TestAssertionException), ExpectedMessage = "Failed asserting that two objects are equal.\nActual does not contain an item in Expected at index 0: NTestify.Tests.ObjectThatIsNeverEqual.")]
+		[ExpectedException(ExpectedException = typeof(TestAssertionException), ExpectedMessage = "Failed asserting that two objects are equal.\nobject.Equals() returned false.\nActual does not contain an item in Expected at index 0: NTestify.Tests.ObjectThatIsNeverEqual.")]
 		public void Should_fail_because_complex_items_in_list_are_not_equal() {
 			Assert.NotEqual(new List<object> { new ObjectThatIsNeverEqual() }, new List<object> { new ObjectThatIsNeverEqual() });
 			Assert.Equal(new List<object> { new ObjectThatIsNeverEqual() }, new List<object> { new ObjectThatIsNeverEqual() });
@@ -247,7 +247,7 @@ namespace NTestify.Tests {
 		}
 
 		[TestMethod]
-		[ExpectedException(ExpectedException = typeof(TestAssertionException), ExpectedMessage = "Failed asserting that two objects are equal.\nActual value does not match expected value at key foo: 1.")]
+		[ExpectedException(ExpectedException = typeof(TestAssertionException), ExpectedMessage = "Failed asserting that two objects are equal.\n2 is not equal to 1.\nActual value does not match expected value at key foo: 1.")]
 		public void Should_fail_because_actual_value_is_incorrect() {
 			Assert.NotEqual(new Dictionary<string, int> { { "foo", 1 } }, new Dictionary<string, int> { { "foo", 2 } });
 			Assert.Equal(new Dictionary<string, int> { { "foo", 1 } }, new Dictionary<string, int> { { "foo", 2 } });
@@ -263,18 +263,24 @@ namespace NTestify.Tests {
 			Assert.Equal(new ObjectThatIsAlwaysEqual(), new ObjectThatIsNeverEqual());
 		}
 
+		[TestMethod]
 		public void Should_pass_because_objectEquals_returns_true() {
 			Assert.Equal(new ObjectThatIsAlwaysEqual(), new ObjectThatIsAlwaysEqual());
 		}
 
+		[TestMethod]
 		public void Should_pass_because_objects_are_the_same_reference() {
 			var obj = new ObjectThatIsNeverEqual();
 			Assert.Equal(obj, obj);
+			
+			var obj2 = new ObjectThatIsAlwaysEqual();
+			Assert.Equal(obj2, obj2);
 		}
 		#endregion
 
 	}
 
+	#region Mocks
 	internal class ObjectThatIsAlwaysEqual {
 #pragma warning disable 659
 		public override bool Equals(object obj) {
@@ -290,5 +296,6 @@ namespace NTestify.Tests {
 			return false;
 		}
 	}
+	#endregion
 
 }
