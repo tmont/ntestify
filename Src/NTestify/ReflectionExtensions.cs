@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace NTestify {
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public static class ReflectionExtensions {
 		/// <summary>
 		/// Gets whether or not this member should be ignored by NTestify
@@ -82,7 +84,7 @@ namespace NTestify {
 			if (type.IsGenericType) {
 				//the substring crap gets rid of everything after the ` in Name, e.g. List`1 for List<T>
 				name += 
-					type.Name.Substring(0, type.Name.LastIndexOf("`")) +
+					type.Name.Substring(0, type.Name.IndexOf("`")) +
 					"<" +
 					type
 						.GetGenericArguments()
@@ -94,6 +96,14 @@ namespace NTestify {
 			}
 
 			return name;
+		}
+
+		/// <summary>
+		/// Determines whether a type is a numeric type (int, long, short, byte, float, double, decimal, and
+		/// all the un/signed flavors)
+		/// </summary>
+		public static bool IsNumeric(this Type type){
+			return type.IsPrimitive && (type != typeof(object) && type != typeof(bool) && type != typeof(string) && type != typeof(char));
 		}
 	}
 }

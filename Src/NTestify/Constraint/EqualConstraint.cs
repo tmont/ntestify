@@ -40,9 +40,8 @@ namespace NTestify.Constraint {
 			var expectedType = expected.GetType();
 			var actualType = actual.GetType();
 
-			if (expectedType.IsValueType && actualType.IsValueType) {
-				//if they are both value types, a simple comparison is all that is needed
-				//need to convert the actual value to the expected type or else comparisons are a big fail
+			//numbers are special, because we want 1 == 1.0 == 1.0m == 1.0f
+			if (expectedType.IsNumeric() && actualType.IsNumeric()) {
 				if (!expected.Equals(Convert.ChangeType(actual, expectedType))) {
 					reasonForFailure = string.Format("{1} is not equal to {0}.", expected, actual);
 					return false;
@@ -61,11 +60,18 @@ namespace NTestify.Constraint {
 				return false;
 			}
 
-			if (expected is string) {
-				//special case strings, since they can be treated like value types, even though they aren't
-				//also, both types need to be strings or else there will be some unexpected ToString() magic
+			if (expected is string || expected is char || expected is bool) {
+				//prettify the failure messages for primitive types
 				if (!expected.Equals(actual)) {
-					reasonForFailure = string.Format("\"{1}\" is not equal to \"{0}\".", expected, actual);
+					if (expected is string) {
+						reasonForFailure = string.Format("Expected \"{0}\"\nbut got  \"{1}\"", expected, actual);
+					} else if (expected is char) {
+						reasonForFailure = string.Format("'{1}' is not equal to '{0}'.", expected, actual);
+					} else {
+						//bool
+						reasonForFailure = string.Format("{1} is not equal to {0}.", expected, actual);
+					}
+
 					return false;
 				}
 
@@ -126,19 +132,20 @@ namespace NTestify.Constraint {
 		}
 
 		private bool CompareDictionaries(IDictionary expected, IDictionary actual) {
-			foreach (KeyValuePair<object, object> kvp in expected) {
-				if (!actual.Contains(kvp.Key)) {
+			foreach (var key in expected.Keys) {
+				if (!actual.Contains(key)) {
 					reasonForFailure = string.Format(
-						"Actual does not contain key {0}",
-						kvp.Key
+						"Actual does not contain key {0}.",
+						(key is string || key.GetType().IsPrimitive) ? key : "fix me" //TODO this needs to show some sort of friendly object description
 					);
 					return false;
 				}
-				if (!AreEqual(kvp.Value, actual[kvp.Key])) {
+				if (!AreEqual(expected[key], actual[key])) {
 					reasonForFailure = string.Format(
-						"Actual value does not match expected value at key {0}: {1}",
-						kvp.Key,
-						kvp.Value
+						//TODO this failure message should use the failure reason that AreEqual() returns
+						"Actual value does not match expected value at key {0}: {1}.",
+						key,
+						expected[key]
 					);
 					return false;
 				}
