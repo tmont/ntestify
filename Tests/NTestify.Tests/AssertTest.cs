@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using NUnit.Framework;
 using TestMethod = NUnit.Framework.TestAttribute;
 
@@ -6,6 +8,7 @@ namespace NTestify.Tests {
 	[TestFixture]
 	public class AssertTest {
 
+		#region Equality
 		#region Primitive types and strings
 		[TestMethod]
 		public void Integers_should_be_equal() {
@@ -276,6 +279,111 @@ namespace NTestify.Tests {
 			var obj2 = new ObjectThatIsAlwaysEqual();
 			Assert.Equal(obj2, obj2);
 		}
+		#endregion
+		#endregion
+
+		#region Simple Assertions
+		#region Boolean Assertions
+		[TestMethod]
+		public void Should_be_true(){
+			Assert.True(true);
+		}
+
+		[TestMethod]
+		public void Should_be_false() {
+			Assert.False(false);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that false is true.")]
+		public void False_should_not_be_true(){
+			Assert.True(false);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that true is false.")]
+		public void True_should_not_be_false() {
+			Assert.False(true);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that an object of type System.Object is true.")]
+		public void Object_should_not_be_true() {
+			Assert.True(new object());
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that an object of type System.Object is false.")]
+		public void Object_should_not_be_false() {
+			Assert.False(new object());
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that null is false.")]
+		public void Null_should_not_be_false() {
+			Assert.False(null);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that null is true.")]
+		public void Null_should_not_be_true() {
+			Assert.True(null);
+		}
+		#endregion
+
+		
+
+		#region Emptiness
+		[TestMethod]
+		public void Null_should_be_empty() {
+			Assert.Empty(null);
+		}
+
+		[TestMethod]
+		public void Empty_string_should_be_empty() {
+			Assert.Empty(string.Empty);
+		}
+
+		[TestMethod]
+		public void Empty_string_builder_should_be_empty() {
+			Assert.Empty(new StringBuilder());
+		}
+
+		[TestMethod]
+		public void Empty_enumerable_should_be_empty() {
+			Assert.Empty(Enumerable.Empty<object>());
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that an object of type System.Object is empty.")]
+		public void Non_enumerable_should_not_be_empty() {
+			Assert.NotEmpty(new object());
+			Assert.Empty(new object());
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that an IEnumerable of type System.Int32[] (count=2) is empty.")]
+		public void Non_empty_enumerable_should_not_be_empty() {
+			var array = new[] { 1, 2 };
+			Assert.NotEmpty(array);
+			Assert.Empty(array);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that the string \"foo\" is empty.")]
+		public void Non_empty_string_should_not_be_empty() {
+			Assert.NotEmpty("foo");
+			Assert.Empty("foo");
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that the string \"foo\" is empty.")]
+		public void Non_empty_stringbuilder_not_be_empty() {
+			var sb = new StringBuilder("foo");
+			Assert.NotEmpty(sb);
+			Assert.Empty(sb);
+		}
+		#endregion
 		#endregion
 
 	}

@@ -12,7 +12,8 @@ namespace NTestify.Constraint {
 		private readonly StringBuilder reasonForFailure;
 		private const string TheCorrectNewLineChar = "\n";
 
-		public EqualConstraint(object expected, object actual) : base(expected, actual) {
+		public EqualConstraint(object expected, object actual)
+			: base(expected, actual) {
 			reasonForFailure = new StringBuilder();
 		}
 
@@ -148,7 +149,6 @@ namespace NTestify.Constraint {
 				}
 				if (!AreEqual(expected[key], actual[key])) {
 					reasonForFailure.Append(TheCorrectNewLineChar).Append(string.Format(
-						//TODO this failure message should use the failure reason that AreEqual() returns
 						"Actual value does not match expected value at key {0}: {1}.",
 						key,
 						expected[key]
@@ -161,13 +161,9 @@ namespace NTestify.Constraint {
 		}
 
 		///<inheritdoc/>
-		public override string FailMessage {
-			get {
-				return string.Format(
-					"Failed asserting that two objects are equal.\n{0}",
-					reasonForFailure
-				);
-			}
-		}
+		public override string FailMessage { get { return string.Format("Failed asserting that two objects are equal.\n{0}", reasonForFailure); } }
+		
+		///<inheritdoc/>
+		public override string NegatedFailMessage { get { return "Failed asserting that two objects are not equal."; } }
 	}
 }

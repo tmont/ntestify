@@ -3,9 +3,9 @@
 	/// Constraint composite that negates another constraint
 	/// </summary>
 	public class NotConstraint : IConstraint {
-		private readonly IConstraint positiveConstraint;
+		private readonly INegatableConstraint positiveConstraint;
 
-		public NotConstraint(IConstraint positiveConstraint) {
+		public NotConstraint(INegatableConstraint positiveConstraint) {
 			this.positiveConstraint = positiveConstraint;
 		}
 
@@ -16,7 +16,7 @@
 
 		///<inheritdoc/>
 		public string FailMessage {
-			get { return string.Format("The opposite of the following: \"{0}\"", positiveConstraint.FailMessage); }
+			get { return positiveConstraint.NegatedFailMessage; }
 		}
 	}
 }

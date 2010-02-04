@@ -1,9 +1,11 @@
-﻿namespace NTestify.Constraint {
+﻿using System;
+
+namespace NTestify.Constraint {
 	/// <summary>
 	/// Represents a constraint against two values
 	/// </summary>
 	/// <typeparam name="T">The type of object to validate</typeparam>
-	public abstract class BinaryConstraint<T> : IConstraint {
+	public abstract class BinaryConstraint<T> : INegatableConstraint {
 		protected BinaryConstraint(T expected, T actual) {
 			Expected = expected;
 			Actual = actual;
@@ -23,5 +25,8 @@
 
 		///<inheritdoc/>
 		public abstract string FailMessage { get; }
+
+		///<inheritdoc/>
+		public abstract string NegatedFailMessage { get; }
 	}
 }

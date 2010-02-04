@@ -33,10 +33,8 @@ namespace NTestify {
 		/// <param name="message">The message to display if the constraint is invalid</param>
 		/// <param name="args">Arguments to pass to the to-be-negated constraint</param>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public static void Not<TConstraint, TArg>(string message, params TArg[] args)
-			where TConstraint : IConstraint
-			where TArg : class {
-			ExecuteConstraint<NotConstraint, IConstraint>(message, BuildConstraint<TConstraint, TArg>(args));
+		public static void Not<TConstraint, TArg>(string message, params TArg[] args) where TConstraint : INegatableConstraint where TArg : class {
+			ExecuteConstraint<NotConstraint, INegatableConstraint>(message, BuildConstraint<TConstraint, TArg>(args));
 		}
 
 		/// <summary>
@@ -57,9 +55,7 @@ namespace NTestify {
 		/// <param name="args">The arguments to assert</param>
 		/// <exception cref="TestAssertionException">If the constraint fails to validate</exception>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public static void ExecuteConstraint<TConstraint, TArg>(string message, params TArg[] args)
-			where TConstraint : IConstraint
-			where TArg : class {
+		public static void ExecuteConstraint<TConstraint, TArg>(string message, params TArg[] args) where TConstraint : IConstraint where TArg : class {
 			var constraint = BuildConstraint<TConstraint, TArg>(args);
 			if (!constraint.Validate()) {
 				message = string.IsNullOrEmpty(message) ? string.Empty : message + "\n";
