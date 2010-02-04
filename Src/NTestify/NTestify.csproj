@@ -58,7 +58,7 @@
     <Compile Include="Constraint\INegatableConstraint.cs" />
     <Compile Include="Constraint\NotConstraint.cs" />
     <Compile Include="Constraint\NullConstraint.cs" />
-    <Compile Include="Constraint\TrueConstraint.cs" />
+    <Compile Include="Constraint\BooleanConstraint.cs" />
     <Compile Include="Constraint\SimpleConstraint.cs" />
     <Compile Include="SimpleAssertions.cs">
       <DependentUpon>Assert.cs</DependentUpon>

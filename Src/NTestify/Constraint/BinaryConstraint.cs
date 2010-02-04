@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace NTestify.Constraint {
+﻿namespace NTestify.Constraint {
 	/// <summary>
-	/// Represents a constraint against two values
+	/// Represents a constraint that compares two values
 	/// </summary>
 	/// <typeparam name="T">The type of object to validate</typeparam>
 	public abstract class BinaryConstraint<T> : INegatableConstraint {

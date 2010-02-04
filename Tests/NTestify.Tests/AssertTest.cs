@@ -8,7 +8,7 @@ namespace NTestify.Tests {
 	[TestFixture]
 	public class AssertTest {
 
-		#region Equality
+		#region Equality Assertions
 		#region Primitive types and strings
 		[TestMethod]
 		public void Integers_should_be_equal() {
@@ -331,8 +331,6 @@ namespace NTestify.Tests {
 		}
 		#endregion
 
-		
-
 		#region Emptiness
 		[TestMethod]
 		public void Null_should_be_empty() {
@@ -384,6 +382,21 @@ namespace NTestify.Tests {
 			Assert.Empty(sb);
 		}
 		#endregion
+
+		#region Nullness
+		[TestMethod]
+		public void Null_should_be_null() {
+			Assert.Null(null);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that an object of type System.Object is null.")]
+		public void Objects_should_not_be_null() {
+			Assert.NotNull(new object());
+			Assert.Null(new object());
+		}
+		#endregion
+
 		#endregion
 
 	}
