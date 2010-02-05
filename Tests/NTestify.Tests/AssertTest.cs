@@ -403,6 +403,7 @@ namespace NTestify.Tests {
 		#endregion
 
 		#region Collection Assertions
+		#region Contains
 		[TestMethod]
 		public void Collection_should_contain_value(){
 			Assert.Contains(new[] { 1 }, 1);
@@ -432,7 +433,22 @@ namespace NTestify.Tests {
 			Assert.NotContains<object>(null, null);
 			Assert.Contains<object>(null, null);
 		}
+		#endregion
 
+		#region Count
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that the number of items in an object of type System.Object[] is 1.")]
+		public void Null_should_be_treated_as_empty_enumerable(){
+			Assert.Count<object>(null, 0); //should pass
+			Assert.Count<object>(null, 1);
+		}
+
+		[TestMethod]
+		public void Should_pass_because_count_is_valid() {
+			Assert.Count(new[] { 1, 2, 3 }, 3);
+			Assert.Count(new List<object> { new object(), new object() }, 2);
+		}
+		#endregion
 		#endregion
 	}
 

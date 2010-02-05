@@ -4,10 +4,11 @@ namespace NTestify.Constraint {
 	/// <summary>
 	/// Common base class for constraints on collections
 	/// </summary>
-	/// <typeparam name="T">The type of collection the constraint is for</typeparam>
-	public abstract class EnumerableConstraint<T> : INegatableConstraint where T : IEnumerable {
+	/// <typeparam name="TEnumerable">The type of collection the constraint is for</typeparam>
+	/// <typeparam name="TValue">The expected value type</typeparam>
+	public abstract class EnumerableConstraint<TEnumerable, TValue> : INegatableConstraint where TEnumerable : IEnumerable {
 
-		protected EnumerableConstraint(T enumerable, object value) {
+		protected EnumerableConstraint(TEnumerable enumerable, TValue value) {
 			Enumerable = enumerable;
 			Value = value;
 		}
@@ -21,12 +22,12 @@ namespace NTestify.Constraint {
 		/// <summary>
 		/// The enumerable to operate on
 		/// </summary>
-		protected T Enumerable { get; private set; }
+		protected TEnumerable Enumerable { get; private set; }
 
 		/// <summary>
 		/// The expected value
 		/// </summary>
-		protected object Value { get; private set; }
+		protected TValue Value { get; private set; }
 
 	}
 }

@@ -54,6 +54,7 @@
     <Compile Include="ConsoleTestMethodConfigurator.cs" />
     <Compile Include="Constraint\BinaryConstraint.cs" />
     <Compile Include="Constraint\ContainsConstraint.cs" />
+    <Compile Include="Constraint\CountConstraint.cs" />
     <Compile Include="Constraint\EmptyConstraint.cs" />
     <Compile Include="Constraint\EnumerableConstraint.cs" />
     <Compile Include="Constraint\EqualConstraint.cs" />
