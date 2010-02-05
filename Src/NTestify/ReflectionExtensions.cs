@@ -55,7 +55,7 @@ namespace NTestify {
 		public static IEnumerable<MethodInfo> GetTestMethods(this Type type) {
 			return type
 				.GetMethods()
-				.Where(methodInfo => methodInfo.HasAttribute<TestableAttribute>());
+				.Where(methodInfo => methodInfo.IsTestable());
 		}
 
 		/// <summary>
@@ -64,7 +64,7 @@ namespace NTestify {
 		public static IEnumerable<Type> GetTestClasses(this _Assembly assembly) {
 			return assembly
 				.GetTypes()
-				.Where(type => type.HasAttribute<TestableAttribute>());
+				.Where(type => type.IsTestable());
 		}
 
 		/// <summary>
@@ -73,7 +73,7 @@ namespace NTestify {
 		public static IEnumerable<MethodInfo> GetUnattachedTestMethods(this _Assembly assembly) {
 			return assembly
 				.GetTypes()
-				.Where(type => !type.HasAttribute<TestableAttribute>())
+				.Where(type => !type.IsTestable())
 				.SelectMany(type => type.GetTestMethods());
 		}
 
@@ -105,6 +105,16 @@ namespace NTestify {
 		/// </summary>
 		public static bool IsNumeric(this Type type){
 			return type.IsPrimitive && (type != typeof(object) && type != typeof(bool) && type != typeof(string) && type != typeof(char));
+		}
+
+		/// <summary>
+		/// Determines whether or not a method or class is testable by virtue of being annotated
+		/// with an attribute that is marked with a Testable attribute. That was quite a mouthful.
+		/// </summary>
+		public static bool IsTestable(this ICustomAttributeProvider attributeProvider){
+			return attributeProvider
+				.GetAttributes<Attribute>()
+				.Any(attribute => attribute.GetType().HasAttribute<TestableAttribute>());
 		}
 	}
 }

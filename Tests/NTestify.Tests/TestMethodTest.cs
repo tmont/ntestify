@@ -96,7 +96,7 @@ namespace NTestify.Tests {
 		public void Should_err_when_filter_throws() {
 			RunTest("TestMethodThatHasABadFilter");
 
-			const string expectedMessage = "Encountered an error while trying to run method filter \"NTestify.Tests.FilterThatThrowsException\"";
+			const string expectedMessage = "Encountered an error while trying to run method filter of type \"NTestify.Tests.FilterThatThrowsException\"";
 
 			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
 			Ass.That(executionContext.Result.Message, Is.EqualTo(expectedMessage));
@@ -141,13 +141,13 @@ namespace NTestify.Tests {
 		public void TestMethodThatHasFilters() { }
 	}
 
-	internal class FilterThatThrowsException : TestifyAttribute {
+	internal class FilterThatThrowsException : PreTestFilter {
 		public override void Execute(ExecutionContext executionContext) {
 			throw new Exception("OH HAI!");
 		}
 	}
 
-	internal class FilterThatSetsProperty : TestifyAttribute {
+	internal class FilterThatSetsProperty : PreTestFilter {
 		public override void Execute(ExecutionContext executionContext) {
 			Executed = true;
 		}

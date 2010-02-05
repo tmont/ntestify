@@ -11,7 +11,7 @@ namespace NTestify {
 		/// <summary>
 		/// Exception that indicates that a test encountered an error
 		/// </summary>
-		internal class TestErredException : Exception {
+		internal sealed class TestErredException : Exception {
 			/// <param name="error">The exception that caused the error</param>
 			/// <param name="reason">The reason the test erred</param>
 			public TestErredException(Exception error, string reason)
@@ -22,26 +22,25 @@ namespace NTestify {
 			/// <summary>
 			/// The exception that caused the error
 			/// </summary>
-			public Exception CauseError { get; protected set; }
+			public Exception CauseError { get; private set; }
 		}
 
 		/// <summary>
 		/// Exception that indicates that a test failed
 		/// </summary>
-		internal class TestFailedException : Exception {
+		internal sealed class TestFailedException : Exception {
 			public TestFailedException(string message) : base(message) { }
 		}
 
 		/// <summary>
 		/// Exception that indicates that a test was ignored
 		/// </summary>
-		internal class TestIgnoredException : Exception {
+		internal sealed class TestIgnoredException : Exception {
 			public TestIgnoredException(string reason) : base(reason) { }
 		}
 		#endregion
 
 		#region Event stuff
-
 		private ITestConfigurator configurator;
 
 		public ITestConfigurator Configurator {
@@ -57,15 +56,15 @@ namespace NTestify {
 		public event Action<ExecutionContext> OnError;
 
 		/// <summary>
-		/// Sets the default event handlers, which just log a boring message
+		/// Sets the default event handlers to empty lambda expressions, to eliminate null references
 		/// </summary>
 		private void SetDefaultEventHandlers() {
-			OnBeforeRun += context => Logger.Debug("Test [" + Name + "] started at " + context.Result.EndTime.ToString("yyyy-MM-dd hh:mm:ss.fff"));
-			OnAfterRun += context => Logger.Debug("Test [" + Name + "] finished at " + context.Result.EndTime.ToString("yyyy-MM-dd hh:mm:ss.fff") + " (" + context.Result.ExecutionTimeInSeconds + " seconds)");
-			OnIgnore += context => Logger.Debug("Test [" + Name + "] was ignored");
-			OnPass += context => Logger.Debug("Test [" + Name + "] passed");
-			OnFail += context => Logger.Debug("Test [" + Name + "] failed");
-			OnError += context => Logger.Debug("Test [" + Name + "] erred");
+			OnBeforeRun += context => { };
+			OnAfterRun += context => { };
+			OnIgnore += context => { };
+			OnPass += context => { };
+			OnFail += context => { };
+			OnError += context => { };
 		}
 		#endregion
 
@@ -83,29 +82,49 @@ namespace NTestify {
 
 			executionContext.Result.Status = TestStatus.Running;
 			try {
-				RunFilters(executionContext);
+				RunPreTestFilters(executionContext);
 				RunTest(executionContext);
 				Pass(executionContext);
 			} catch (Exception exception) {
-				HandleException(exception, executionContext);
+				executionContext.ThrownException = exception;
 			}
+
+			try {
+				RunPostTestFilters(executionContext);
+			} catch (Exception filterException) {
+				Error(executionContext, filterException);
+			}
+
+			if (executionContext.Result.Status == TestStatus.Running) {
+				SetResultStatus(executionContext);
+			}
+
 			executionContext.Result.EndTime = DateTime.Now;
 
 			OnAfterRun.Invoke(executionContext);
 		}
 
 		/// <summary>
-		/// Handles an exception thrown by a test
+		/// Runs any filters attached to the test after the test is run
 		/// </summary>
-		private void HandleException(Exception exception, ExecutionContext executionContext) {
+		protected virtual void RunPostTestFilters(ExecutionContext executionContext) { }
+
+		/// <summary>
+		/// Sets the result status
+		/// </summary>
+		private void SetResultStatus(ExecutionContext executionContext) {
+			var exception = executionContext.ThrownException;
+
 			if (exception is TestFailedException) {
 				Fail(executionContext, exception.Message);
 			} else if (exception is TestErredException) {
 				Error(executionContext, exception);
 			} else if (exception is TestIgnoredException) {
 				Ignore(executionContext, exception.Message);
+			} else if (exception != null) {
+				Error(executionContext, exception.GetBaseException());
 			} else {
-				Error(executionContext, exception.GetInnermostException());
+				Pass(executionContext); //this shouldn't ever happen, since if a test passes it gets set immediately after RunTest()
 			}
 		}
 
@@ -138,7 +157,7 @@ namespace NTestify {
 		public string Name { get; set; }
 
 		/// <summary>
-		/// Gets or setsthe logger associated with this test
+		/// Gets or sets the logger associated with this test
 		/// </summary>
 		public ILogger Logger { get; set; }
 
@@ -187,8 +206,8 @@ namespace NTestify {
 		}
 
 		/// <summary>
-		/// Runs any filters that are attached to the test 
+		/// Runs any filters that are attached to the test before the test is run
 		/// </summary>
-		protected virtual void RunFilters(ExecutionContext executionContext) { }
+		protected virtual void RunPreTestFilters(ExecutionContext executionContext) { }
 	}
 }

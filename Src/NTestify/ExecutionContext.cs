@@ -1,4 +1,6 @@
-﻿namespace NTestify {
+﻿using System;
+
+namespace NTestify {
 	/// <summary>
 	/// Represents the current test execution context
 	/// </summary>
@@ -18,5 +20,11 @@
 		/// The completed test result, or null if the test has not been run
 		/// </summary>
 		public ITestResult Result { get; set; }
+
+		/// <summary>
+		/// The exception that got thrown during test execution, or null if no
+		/// exception was ever raised
+		/// </summary>
+		public Exception ThrownException { get; set; }
 	}
 }

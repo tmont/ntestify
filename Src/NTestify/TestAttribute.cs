@@ -3,10 +3,11 @@ using NTestify.Logging;
 
 namespace NTestify {
 	/// <summary>
-	/// Marks a class or method as a test
+	/// Marks a class or method as a runnable test
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-	public class TestAttribute : TestableAttribute {
+	[Testable]
+	public class TestAttribute : PreTestFilter {
 		/// <summary>
 		/// Logger for this object
 		/// </summary>
@@ -21,16 +22,11 @@ namespace NTestify {
 		/// </summary>
 		public string Category { get; set; }
 
-		public TestAttribute()
-			: this(new NullLogger()) {
+		public TestAttribute() : this(new NullLogger()) { }
 
-		}
-
-		public TestAttribute(ILogger logger){
+		public TestAttribute(ILogger logger) {
 			Logger = logger;
 		}
-
-		
 
 		///<inheritdoc/>
 		public override void Execute(ExecutionContext executionContext) {

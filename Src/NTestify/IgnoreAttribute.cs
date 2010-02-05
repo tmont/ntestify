@@ -5,15 +5,11 @@ namespace NTestify {
 	/// Signifies that a test should not be run
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-	public class IgnoreAttribute : TestableAttribute {
+	[Testable]
+	public class IgnoreAttribute : PreTestFilter {
 		/// <summary>
 		/// The reason the test is being ignored
 		/// </summary>
 		public string Reason { get; set; }
-
-		/// <summary>
-		/// Does nothing
-		/// </summary>
-		public override void Execute(ExecutionContext executionContext) { }
 	}
 }

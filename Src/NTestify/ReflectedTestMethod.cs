@@ -42,7 +42,7 @@ namespace NTestify {
 		/// Finds and executes each of the method filters
 		/// </summary>
 		/// <exception cref="Test.TestIgnoredException">If the method is annotated with [Ignore]</exception>
-		protected override void RunFilters(ExecutionContext executionContext) {
+		protected override void RunPreTestFilters(ExecutionContext executionContext) {
 			var filters = method.GetAttributes<TestifyAttribute>();
 			if (filters.Any(attribute => attribute is IgnoreAttribute)) {
 				//if the test should be ignored, then we bail immediately without executing any other filters
@@ -66,15 +66,12 @@ namespace NTestify {
 		/// <param name="executionContext">The current test execution context</param>
 		/// <exception cref="Test.TestErredException"/>
 		protected virtual void OnFilterError(Exception exception, object filter, ExecutionContext executionContext) {
-			var message = string.Format("Encountered an error while trying to run method filter \"{0}\"", filter.GetType().FullName);
+			var message = string.Format("Encountered an error while trying to run method filter of type \"{0}\"", filter.GetType().GetFriendlyName());
 			throw new TestErredException(exception, message);
 		}
 
 		/// <summary>
-		/// Handles invocation exceptions. This is relevant because we're invoking the
-		/// test method via reflection, and any exception thrown from there raises a
-		/// TargetInvocationException. This method examines the InnerException (if any)
-		/// and sets the result accordingly.
+		/// Handles exceptions raised during a test
 		/// </summary>
 		/// <exception cref="Test.TestFailedException">If an assertion failed</exception>
 		/// <exception cref="Test.TestErredException">If anything other a TestAssertionException was thrown</exception>
