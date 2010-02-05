@@ -9,7 +9,7 @@ namespace NTestify {
 		/// <param name="expected">The object that is expected to be returned</param>
 		/// <param name="actual">The object that was actually returned</param>
 		public static void Equal(object expected, object actual) {
-			ExecuteConstraint<EqualConstraint, object>(null, expected, actual);
+			ExecuteConstraint(new EqualConstraint(expected, actual), null);
 		}
 
 		/// <summary>
@@ -19,7 +19,7 @@ namespace NTestify {
 		/// <param name="actual">The object that was actually returned</param>
 		/// <param name="message">The message to display if the assertion fails</param>
 		public static void Equal(object expected, object actual, string message) {
-			ExecuteConstraint<EqualConstraint, object>(message, expected, actual);
+			ExecuteConstraint(new EqualConstraint(expected, actual), message);
 		}
 
 		/// <summary>
@@ -28,7 +28,7 @@ namespace NTestify {
 		/// <param name="expected">The object that is expected to be returned</param>
 		/// <param name="actual">The object that was actually returned</param>
 		public static void NotEqual(object expected, object actual) {
-			Not<EqualConstraint, object>(null, expected, actual);
+			Not(new EqualConstraint(expected, actual), null);
 		}
 
 		/// <summary>
@@ -38,7 +38,7 @@ namespace NTestify {
 		/// <param name="actual">The object that was actually returned</param>
 		/// <param name="message">The message to display if the assertion fails</param>
 		public static void NotEqual(object expected, object actual, string message) {
-			Not<EqualConstraint, object>(message, expected, actual);
+			Not(new EqualConstraint(expected, actual), message);
 		}
 	}
 

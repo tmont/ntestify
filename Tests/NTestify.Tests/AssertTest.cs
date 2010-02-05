@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
@@ -350,6 +352,8 @@ namespace NTestify.Tests {
 		[TestMethod]
 		public void Empty_enumerable_should_be_empty() {
 			Assert.Empty(Enumerable.Empty<object>());
+			Assert.Empty(Enumerable.Empty<string>());
+			Assert.Empty(Enumerable.Empty<IEnumerable>());
 		}
 
 		[TestMethod]
@@ -396,9 +400,40 @@ namespace NTestify.Tests {
 			Assert.Null(new object());
 		}
 		#endregion
-
 		#endregion
 
+		#region Collection Assertions
+		[TestMethod]
+		public void Collection_should_contain_value(){
+			Assert.Contains(new[] { 1 }, 1);
+			Assert.Contains(new[] { "foo" }, "foo");
+			Assert.Contains(new[] { 'a' }, 'a');
+			Assert.Contains(new[] { 1m }, 1m);
+
+			var obj = new object();
+			Assert.Contains(new[] { obj }, obj);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that an IEnumerable of type System.Int32[] contains 3.")]
+		public void Collection_should_not_contain_value() {
+			Assert.Contains(new[] { 1 }, 3);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that an IEnumerable of type System.Int32[] does not contain 1.")]
+		public void Collection_contains_value_when_it_should_not() {
+			Assert.NotContains(new[] { 1 }, 1);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that null contains null.")]
+		public void Null_collection_never_contains_anything() {
+			Assert.NotContains<object>(null, null);
+			Assert.Contains<object>(null, null);
+		}
+
+		#endregion
 	}
 
 	#region Mocks

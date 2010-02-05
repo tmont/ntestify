@@ -2,7 +2,7 @@
 using System.Text;
 
 namespace NTestify.Constraint {
-	public class EmptyConstraint : IConstraint {
+	public class EmptyConstraint : INegatableConstraint {
 		private readonly object actual;
 		private string actualDisplayName;
 

@@ -53,13 +53,18 @@
     <Compile Include="AssertionExtensionPoint.cs" />
     <Compile Include="ConsoleTestMethodConfigurator.cs" />
     <Compile Include="Constraint\BinaryConstraint.cs" />
+    <Compile Include="Constraint\ContainsConstraint.cs" />
     <Compile Include="Constraint\EmptyConstraint.cs" />
+    <Compile Include="Constraint\EnumerableConstraint.cs" />
     <Compile Include="Constraint\EqualConstraint.cs" />
     <Compile Include="Constraint\INegatableConstraint.cs" />
     <Compile Include="Constraint\NotConstraint.cs" />
     <Compile Include="Constraint\NullConstraint.cs" />
     <Compile Include="Constraint\BooleanConstraint.cs" />
     <Compile Include="Constraint\SimpleConstraint.cs" />
+    <Compile Include="CollectionAssertions.cs">
+      <DependentUpon>Assert.cs</DependentUpon>
+    </Compile>
     <Compile Include="SimpleAssertions.cs">
       <DependentUpon>Assert.cs</DependentUpon>
     </Compile>
