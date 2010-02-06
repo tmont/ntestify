@@ -41,13 +41,6 @@ namespace NTestify {
 		#endregion
 
 		#region Event stuff
-		private ITestConfigurator configurator;
-
-		public ITestConfigurator Configurator {
-			get { return configurator ?? (configurator = new NullConfigurator()); }
-			set { configurator = value; }
-		}
-
 		public event Action<ExecutionContext> OnBeforeRun;
 		public event Action<ExecutionContext> OnAfterRun;
 		public event Action<ExecutionContext> OnIgnore;
@@ -67,6 +60,13 @@ namespace NTestify {
 			OnError += context => { };
 		}
 		#endregion
+
+		private ITestConfigurator configurator;
+
+		public ITestConfigurator Configurator {
+			get { return configurator ?? (configurator = new NullConfigurator()); }
+			set { configurator = value; }
+		}
 
 		protected Test() {
 			Logger = new NullLogger();
@@ -138,13 +138,13 @@ namespace NTestify {
 			if (exception is TestFailedException) {
 				Fail(executionContext, exception.Message);
 			} else if (exception is TestErredException) {
-				Error(executionContext, exception);
+				Error(executionContext, ((TestErredException)exception).CauseError);
 			} else if (exception is TestIgnoredException) {
 				Ignore(executionContext, exception.Message);
 			} else if (exception != null) {
 				Error(executionContext, exception.GetBaseException());
 			} else {
-				Pass(executionContext); //this shouldn't ever happen, since if a test passes it gets set immediately after RunTest()
+				Pass(executionContext); //this should only happen if a post test filter sets the status to Running or something
 			}
 		}
 

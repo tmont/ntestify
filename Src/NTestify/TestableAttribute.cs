@@ -5,10 +5,11 @@ namespace NTestify {
 	/// <summary>
 	/// When applied to another attribute, indicates that that attribute
 	/// will mark whatever it's annotating as a runnable test. For example,
-	/// this attribute is applied to IgnoreAttribute and TestAttribute.
+	/// this attribute is applied to IgnoreAttribute, TestAttribute and
+	/// ExpectedExceptionAttribute within NTestify.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-	public class TestableAttribute : Attribute { }
+	public sealed class TestableAttribute : Attribute { }
 
 	/// <summary>
 	/// When a method or class is annotated with a subclass, this filter will be executed after
