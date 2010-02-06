@@ -33,7 +33,7 @@ namespace NTestify {
 		/// <exception cref="ArgumentOutOfRangeException"/>
 		public ConsoleTestMethodConfigurator(int maxLineLength) {
 			if (maxLineLength < MinLineLength) {
-				throw new ArgumentOutOfRangeException("maxLineLength", maxLineLength, "Value must be greater than 10");
+				throw new ArgumentOutOfRangeException("maxLineLength", maxLineLength, "Value must be greater than " + MinLineLength);
 			}
 
 			MaxLineLineLength = maxLineLength;

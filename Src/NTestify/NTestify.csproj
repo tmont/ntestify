@@ -66,6 +66,7 @@
     <Compile Include="CollectionAssertions.cs">
       <DependentUpon>Assert.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExpectedExceptionAttribute.cs" />
     <Compile Include="SimpleAssertions.cs">
       <DependentUpon>Assert.cs</DependentUpon>
     </Compile>

@@ -9,7 +9,8 @@ namespace NTestify.Sample {
 
 		[Test]
 		public void Should_pass() {
-			//Assert.True();
+			Assert.True(true);
+			Assert.Equal(1, 1);
 		}
 
 		[Test]
@@ -23,15 +24,20 @@ namespace NTestify.Sample {
 		}
 
 		[Ignore(Reason = "This test sux!")]
-		public void Should_be_ignored(){
-			
+		public void Should_be_ignored() {
+
+		}
+
+		[ExpectedException(typeof(Exception), ExpectedMessage = "yay!")]
+		[Test]
+		public void Should_throw_exception_and_win() {
+			throw new Exception("yay!");
 		}
 
 	}
 
 	public class TestSuiteSample2 {
 		[Test]
-		public void LollerSk8(){
-		}
+		public void LollerSk8() { }
 	}
 }

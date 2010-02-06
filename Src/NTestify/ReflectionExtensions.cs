@@ -9,20 +9,6 @@ namespace NTestify {
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public static class ReflectionExtensions {
 		/// <summary>
-		/// Gets whether or not this member should be ignored by NTestify
-		/// </summary>
-		public static bool ShouldBeIgnored(this MemberInfo member) {
-			return member.GetAttributes<IgnoreAttribute>().Any();
-		}
-
-		/// <summary>
-		/// Gets the reason the test was ignored
-		/// </summary>
-		public static string GetIgnoreReason(this MemberInfo member) {
-			return member.GetAttributes<IgnoreAttribute>().First().Reason;
-		}
-
-		/// <summary>
 		/// A generic version of GetCustomAttributes
 		/// </summary>
 		/// <typeparam name="TAttribute">The type of attribue to retrieve</typeparam>

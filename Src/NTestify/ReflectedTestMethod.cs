@@ -42,11 +42,11 @@ namespace NTestify {
 		/// Finds and executes each of the method filters
 		/// </summary>
 		/// <exception cref="Test.TestIgnoredException">If the method is annotated with [Ignore]</exception>
-		protected override void RunPreTestFilters(ExecutionContext executionContext) {
-			var filters = method.GetAttributes<TestifyAttribute>();
+		protected override void RunFilters<TFilter>(ExecutionContext executionContext) {
+			var filters = method.GetAttributes<TFilter>();
 			if (filters.Any(attribute => attribute is IgnoreAttribute)) {
 				//if the test should be ignored, then we bail immediately without executing any other filters
-				throw new TestIgnoredException(((IgnoreAttribute)filters.First(attribute => attribute is IgnoreAttribute)).Reason);
+				throw new TestIgnoredException(filters.Where(attribute => attribute is IgnoreAttribute).Cast<IgnoreAttribute>().First().Reason);
 			}
 
 			foreach (var filter in filters) {

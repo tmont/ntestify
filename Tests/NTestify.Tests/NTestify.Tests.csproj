@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="AssemblyTestRunnerTest.cs" />
     <Compile Include="AssertTest.cs" />
+    <Compile Include="ExpectedExceptionTest.cs" />
     <Compile Include="TestResultExtensionsForTesting.cs" />
     <Compile Include="TestSuiteTest.cs" />
     <Compile Include="TestMethodTest.cs" />

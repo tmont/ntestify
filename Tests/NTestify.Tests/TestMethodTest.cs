@@ -4,7 +4,6 @@ using NUnit.Framework;
 using TestMethod = NUnit.Framework.TestAttribute;
 using Ass = NUnit.Framework.Assert;
 
-
 namespace NTestify.Tests {
 	[TestFixture]
 	public class TestMethodTest {

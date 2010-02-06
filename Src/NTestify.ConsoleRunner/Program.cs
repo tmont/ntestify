@@ -13,7 +13,7 @@ namespace NTestify.ConsoleRunner {
 			string loggerConfig = null;
 			bool showHelp = false;
 			var options = new OptionSet {
-				{ "dll=", "The {PATH} to the dll or eexe to scan for tests", v => dllPath = v},
+				{ "dll=", "The {PATH} to the dll or exe to scan for tests", v => dllPath = v},
 				{"logger-config=", "The {PATH} to the log4net config file to use", v => loggerConfig = v},
 				{"logger-name=", "The {NAME} of the logger to use", v => loggerName = v},
 				{"h|help|usage", "Show usage", v => showHelp = (v != null)}

@@ -82,7 +82,7 @@ namespace NTestify {
 
 			executionContext.Result.Status = TestStatus.Running;
 			try {
-				RunPreTestFilters(executionContext);
+				RunFilters<PreTestFilter>(executionContext);
 				RunTest(executionContext);
 				Pass(executionContext);
 			} catch (Exception exception) {
@@ -90,7 +90,7 @@ namespace NTestify {
 			}
 
 			try {
-				RunPostTestFilters(executionContext);
+				RunFilters<PostTestFilter>(executionContext);
 			} catch (Exception filterException) {
 				Error(executionContext, filterException);
 			}
@@ -107,7 +107,7 @@ namespace NTestify {
 		/// <summary>
 		/// Runs any filters attached to the test after the test is run
 		/// </summary>
-		protected virtual void RunPostTestFilters(ExecutionContext executionContext) { }
+		protected virtual void RunFilters<TFilter>(ExecutionContext executionContext) where TFilter : TestifyAttribute { }
 
 		/// <summary>
 		/// Sets the result status
@@ -205,9 +205,5 @@ namespace NTestify {
 			OnPass.Invoke(executionContext);
 		}
 
-		/// <summary>
-		/// Runs any filters that are attached to the test before the test is run
-		/// </summary>
-		protected virtual void RunPreTestFilters(ExecutionContext executionContext) { }
 	}
 }
