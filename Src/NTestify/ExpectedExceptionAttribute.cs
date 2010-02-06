@@ -52,6 +52,8 @@ namespace NTestify {
 					return;
 				}
 			}
+
+			executionContext.Result.Status = TestStatus.Pass;
 		}
 
 		/// <summary>

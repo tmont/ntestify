@@ -29,7 +29,6 @@ namespace NTestify.Sample {
 		}
 
 		[ExpectedException(typeof(Exception), ExpectedMessage = "yay!")]
-		[Test]
 		public void Should_throw_exception_and_win() {
 			throw new Exception("yay!");
 		}

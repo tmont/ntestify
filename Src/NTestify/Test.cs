@@ -77,16 +77,15 @@ namespace NTestify {
 		public void Run(ExecutionContext executionContext) {
 			InitializeContext(executionContext);
 			Configurator.Configure(executionContext.Test);
-
 			OnBeforeRun.Invoke(executionContext);
-
 			executionContext.Result.Status = TestStatus.Running;
+
 			try {
 				RunFilters<PreTestFilter>(executionContext);
 				RunTest(executionContext);
 				Pass(executionContext);
 			} catch (Exception exception) {
-				executionContext.ThrownException = exception;
+				executionContext.ThrownException = (exception is TestErredException) ? ((TestErredException)exception).CauseError : exception;
 			}
 
 			try {
@@ -99,9 +98,30 @@ namespace NTestify {
 				SetResultStatus(executionContext);
 			}
 
+			InvokeStatusEvent(executionContext);
 			executionContext.Result.EndTime = DateTime.Now;
-
 			OnAfterRun.Invoke(executionContext);
+		}
+
+		/// <summary>
+		/// Invokes the proper status event based on the execution context's result status
+		/// </summary>
+		/// <param name="executionContext"></param>
+		protected void InvokeStatusEvent(ExecutionContext executionContext) {
+			switch (executionContext.Result.Status) {
+				case TestStatus.Pass:
+					OnPass.Invoke(executionContext);
+					break;
+				case TestStatus.Fail:
+					OnFail.Invoke(executionContext);
+					break;
+				case TestStatus.Error:
+					OnError.Invoke(executionContext);
+					break;
+				case TestStatus.Ignore:
+					OnIgnore.Invoke(executionContext);
+					break;
+			}
 		}
 
 		/// <summary>
@@ -167,7 +187,6 @@ namespace NTestify {
 		protected void Ignore(ExecutionContext executionContext, string reason) {
 			executionContext.Result.Status = TestStatus.Ignore;
 			executionContext.Result.Message = reason;
-			OnIgnore.Invoke(executionContext);
 		}
 
 		/// <summary>
@@ -184,7 +203,6 @@ namespace NTestify {
 			}
 
 			executionContext.Result.Message = (exception != null) ? exception.Message : "An error occurred during execution of the test";
-			OnError.Invoke(executionContext);
 		}
 
 		/// <summary>
@@ -193,7 +211,6 @@ namespace NTestify {
 		protected void Fail(ExecutionContext executionContext, string message) {
 			executionContext.Result.Status = TestStatus.Fail;
 			executionContext.Result.Message = message;
-			OnFail.Invoke(executionContext);
 		}
 
 		/// <summary>
@@ -202,7 +219,6 @@ namespace NTestify {
 		/// <param name="executionContext"></param>
 		protected void Pass(ExecutionContext executionContext) {
 			executionContext.Result.Status = TestStatus.Pass;
-			OnPass.Invoke(executionContext);
 		}
 
 	}

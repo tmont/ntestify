@@ -65,10 +65,10 @@ namespace NTestify.Tests {
 		}
 
 		[NUnit.Framework.Test]
-		public void Should_do_nothing_to_result_status_when_exception_matches() {
+		public void Should_pass_when_exception_matches() {
 			var result = new Mock<ITestResult>();
 			result
-				.SetupSet(r => r.Status = It.IsAny<TestStatus>())
+				.SetupSet(r => r.Status = TestStatus.Pass)
 				.Verifiable();
 
 			var context = new ExecutionContext {
@@ -81,7 +81,7 @@ namespace NTestify.Tests {
 			};
 			attribute.Execute(context);
 
-			result.VerifySet(r => r.Status = It.IsAny<TestStatus>(), Times.Never());
+			result.VerifyAll();
 		}
 	}
 }
