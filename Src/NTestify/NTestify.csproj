@@ -67,6 +67,7 @@
       <DependentUpon>Assert.cs</DependentUpon>
     </Compile>
     <Compile Include="Mock\Expectation.cs" />
+    <Compile Include="Mock\ExpressionExtensions.cs" />
     <Compile Include="Mock\Expression\CallbackExpression.cs" />
     <Compile Include="Mock\Expression\ExpectExpression.cs" />
     <Compile Include="Mock\Expression\InvocationCountExpression.cs" />

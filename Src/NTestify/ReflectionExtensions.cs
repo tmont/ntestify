@@ -66,11 +66,11 @@ namespace NTestify {
 		/// <summary>
 		/// Gets the namespace + member name of the type, including generic arguments
 		/// </summary>
-		public static string GetFriendlyName(this Type type){
+		public static string GetFriendlyName(this Type type) {
 			string name = type.Namespace + ".";
 			if (type.IsGenericType) {
 				//the substring crap gets rid of everything after the ` in Name, e.g. List`1 for List<T>
-				name += 
+				name +=
 					type.Name.Substring(0, type.Name.IndexOf("`")) +
 					"<" +
 					type
@@ -89,7 +89,7 @@ namespace NTestify {
 		/// Determines whether a type is a numeric type (int, long, short, byte, float, double, decimal, and
 		/// all the un/signed flavors)
 		/// </summary>
-		public static bool IsNumeric(this Type type){
+		public static bool IsNumeric(this Type type) {
 			return type.IsPrimitive && (type != typeof(object) && type != typeof(bool) && type != typeof(string) && type != typeof(char));
 		}
 
@@ -97,10 +97,18 @@ namespace NTestify {
 		/// Determines whether or not a method or class is testable by virtue of being annotated
 		/// with an attribute that is marked with a Testable attribute. That was quite a mouthful.
 		/// </summary>
-		public static bool IsTestable(this ICustomAttributeProvider attributeProvider){
+		public static bool IsTestable(this ICustomAttributeProvider attributeProvider) {
 			return attributeProvider
 				.GetAttributes<Attribute>()
 				.Any(attribute => attribute.GetType().HasAttribute<TestableAttribute>());
+		}
+
+		/// <summary>
+		/// Determines whether or not a type is able to be mocked
+		/// </summary>
+		/// <typeparam name="T">The type to mock</typeparam>
+		public static bool IsMockable(this Type type) {
+			return !type.IsSealed;
 		}
 	}
 }

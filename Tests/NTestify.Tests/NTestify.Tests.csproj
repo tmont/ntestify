@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -60,6 +61,8 @@
     <Compile Include="AssemblyTestRunnerTest.cs" />
     <Compile Include="AssertTest.cs" />
     <Compile Include="ExpectedExceptionTest.cs" />
+    <Compile Include="ExpressionEqualityTest.cs" />
+    <Compile Include="MockObjectTest.cs" />
     <Compile Include="TestResultExtensionsForTesting.cs" />
     <Compile Include="TestSuiteTest.cs" />
     <Compile Include="TestMethodTest.cs" />

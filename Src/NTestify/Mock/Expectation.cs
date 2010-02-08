@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace NTestify.Mock {
 
@@ -33,6 +34,8 @@ namespace NTestify.Mock {
 			}
 		}
 
+		public int ActualInvocationCount { get; protected set; }
+
 		/// <summary>
 		/// The callback that is expected to be executed when the expectation
 		/// is invoked
@@ -47,12 +50,22 @@ namespace NTestify.Mock {
 	/// <typeparam name="TReturn">The type of the return value</typeparam>
 	internal class Expectation<T, TReturn> : InvocationExpectation<T> where T : class {
 		private readonly List<TReturn> returnValues;
-		private readonly Func<T, TReturn> invocation;
+		private readonly Expression<Func<T, TReturn>> invocation;
+
+		public TReturn Invoke(T context) {
+			if (ActualInvocationCount >= ExpectedInvocationCount) {
+				throw new MockInvocationException("Number of invocations exceeded expected");
+			}
+
+			ActualInvocationCount++;
+
+			throw new NotImplementedException();
+		}
 
 		/// <summary>
 		/// The invocation for this expectation
 		/// </summary>
-		public Func<T, TReturn> Invocation { get { return invocation; } }
+		public Func<T, TReturn> Invocation { get { return invocation.Compile(); } }
 
 		/// <summary>
 		/// Return values for this invocation, ordered by the expected order of
@@ -65,7 +78,7 @@ namespace NTestify.Mock {
 		/// Creates a new expectation with an invocation that requires a return value
 		/// </summary>
 		/// <param name="invocation">The expected invocation</param>
-		public Expectation(Func<T, TReturn> invocation) {
+		public Expectation(Expression<Func<T, TReturn>> invocation) {
 			returnValues = new List<TReturn>();
 			this.invocation = invocation;
 		}
@@ -88,6 +101,23 @@ namespace NTestify.Mock {
 			returnValues.AddRange(values);
 		}
 
+		public override bool Equals(object obj) {
+			Expression<Func<T, TReturn>> function = null;
+			if (obj is Func<T, TReturn> || obj is Expression<Func<T, TReturn>>) {
+				function = (Expression<Func<T, TReturn>>)obj;
+			}
+
+			if (function == null) {
+				return false;
+			}
+
+			return invocation.IsEqualTo(function);
+		}
+
+	}
+
+	public class MockInvocationException : Exception {
+		public MockInvocationException(string message) : base(message) { }
 	}
 
 	/// <summary>
@@ -96,13 +126,13 @@ namespace NTestify.Mock {
 	/// </summary>
 	/// <typeparam name="T">The mock object's type</typeparam>
 	internal class Expectation<T> : InvocationExpectation<T> where T : class {
-		private readonly Action<T> invocation;
+		private readonly Expression<Action<T>> invocation;
 
 		/// <summary>
 		/// Creates a new expectation with an invocation with no return value
 		/// </summary>
 		/// <param name="invocation">The expected invocation</param>
-		public Expectation(Action<T> invocation) {
+		public Expectation(Expression<Action<T>> invocation) {
 			this.invocation = invocation;
 		}
 
@@ -110,8 +140,11 @@ namespace NTestify.Mock {
 		/// The invocation for this expectation
 		/// </summary>
 		public Action<T> Invocation {
-			get { return invocation; }
+			get { return invocation.Compile(); }
 		}
 	}
+
+
+
 
 }

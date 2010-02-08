@@ -34,10 +34,10 @@ namespace NTestify {
 		}
 
 		/// <summary>
-		/// Executes a constraint on a variable number of arguments
+		/// Executes a constraint
 		/// </summary>
 		/// <param name="constraint">The constraint to execute</param>
-		/// /// <param name="message">The message to display if the constraint is invalid</param>
+		/// <param name="message">The message to display if the constraint is invalid</param>
 		/// <exception cref="TestAssertionException">If the constraint fails to validate</exception>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public static void ExecuteConstraint(IConstraint constraint, string message) {
