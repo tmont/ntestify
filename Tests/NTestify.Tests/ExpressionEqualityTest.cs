@@ -225,6 +225,14 @@ namespace NTestify.Tests {
 			), Is.False);
 		}
 
+		[TestMethod]
+		public void Should_ignore_parameter_names(){
+			Expression<Func<int, int>> expression1 = x => x + 1;
+			Expression<Func<int, int>> expression2 = y => y + 1;
+
+			Ass.That(expression1.IsEqualTo(expression2, false));
+		}
+
 	}
 
 	internal class ClassWithMembers {

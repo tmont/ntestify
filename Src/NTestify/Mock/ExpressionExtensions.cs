@@ -4,17 +4,18 @@ using System.Linq.Expressions;
 
 namespace NTestify.Mock {
 	public static class ExpressionExtensions {
-		public static bool IsEqualTo(this System.Linq.Expressions.Expression original, System.Linq.Expressions.Expression other) {
+
+		public static bool IsEqualTo(this System.Linq.Expressions.Expression original, System.Linq.Expressions.Expression other, bool parameterNamesMatter) {
 			if (other == null || original.NodeType != other.NodeType || original.Type != other.Type) {
 				return false;
 			}
 
 			if (original is LambdaExpression) {
-				return LambdaExpressionsAreEqual((LambdaExpression)original, (LambdaExpression)other);
+				return LambdaExpressionsAreEqual((LambdaExpression)original, (LambdaExpression)other, parameterNamesMatter);
 			} else if (original is BinaryExpression) {
-				return BinaryExpressionsAreEqual((BinaryExpression)original, (BinaryExpression)other);
+				return BinaryExpressionsAreEqual((BinaryExpression)original, (BinaryExpression)other, parameterNamesMatter);
 			} else if (original is ParameterExpression) {
-				return ((ParameterExpression)original).IsEqualTo((ParameterExpression)other);
+				return ParameterExpressionsAreEqual((ParameterExpression)original, (ParameterExpression)other, parameterNamesMatter);
 			} else if (original is UnaryExpression) {
 				return UnaryExpressionsAreEqual((UnaryExpression)original, (UnaryExpression)other);
 			} else if (original is ConstantExpression) {
@@ -31,7 +32,18 @@ namespace NTestify.Mock {
 				return NewExpressionsAreEqual((NewExpression)original, (NewExpression)other);
 			}
 
-			throw new NotImplementedException();
+			throw new NotImplementedException("That expression type is unhandleable");
+		}
+
+		private static bool ParameterExpressionsAreEqual(ParameterExpression expression1, ParameterExpression expression2, bool parameterNamesMatter) {
+			return
+				(!parameterNamesMatter || expression1.Name == expression2.Name) &&
+				expression1.NodeType == expression2.NodeType &&
+				expression1.Type == expression2.Type;
+		}
+
+		public static bool IsEqualTo(this System.Linq.Expressions.Expression original, System.Linq.Expressions.Expression other) {
+			return original.IsEqualTo(other, true);
 		}
 
 		private static bool ConditionalExpressionsAreEqual(ConditionalExpression expression1, ConditionalExpression expression2) {
@@ -66,7 +78,7 @@ namespace NTestify.Mock {
 			return true;
 		}
 
-		private static bool BindingsAreEqual(MemberBinding binding1, MemberBinding binding2){
+		private static bool BindingsAreEqual(MemberBinding binding1, MemberBinding binding2) {
 			if (binding1.BindingType != binding2.BindingType) {
 				return false;
 			}
@@ -209,7 +221,7 @@ namespace NTestify.Mock {
 			return true;
 		}
 
-		private static bool LambdaExpressionsAreEqual(LambdaExpression expression1, LambdaExpression expression2) {
+		private static bool LambdaExpressionsAreEqual(LambdaExpression expression1, LambdaExpression expression2, bool parameterNamesMatter) {
 			if (!NullCheck(expression1, expression2)) {
 				return false;
 			}
@@ -217,14 +229,14 @@ namespace NTestify.Mock {
 				return true;
 			}
 
-			if (!ParametersAreEqual(expression1.Parameters, expression2.Parameters)) {
+			if (!ParametersAreEqual(expression1.Parameters, expression2.Parameters, parameterNamesMatter)) {
 				return false;
 			}
 
-			return expression1.Body.IsEqualTo(expression2.Body);
+			return expression1.Body.IsEqualTo(expression2.Body, parameterNamesMatter);
 		}
 
-		private static bool BinaryExpressionsAreEqual(BinaryExpression expression1, BinaryExpression expression2) {
+		private static bool BinaryExpressionsAreEqual(BinaryExpression expression1, BinaryExpression expression2, bool parameterNamesMatter) {
 			if (expression1.IsLifted != expression2.IsLifted) {
 				return false;
 			}
@@ -237,30 +249,25 @@ namespace NTestify.Mock {
 				return false;
 			}
 
-			if (!LambdaExpressionsAreEqual(expression1.Conversion, expression2.Conversion)) {
+			if (!LambdaExpressionsAreEqual(expression1.Conversion, expression2.Conversion, parameterNamesMatter)) {
 				return false;
 			}
 
-			return expression1.Left.IsEqualTo(expression2.Left) && expression1.Right.IsEqualTo(expression2.Right);
+			return expression1.Left.IsEqualTo(expression2.Left, parameterNamesMatter) && expression1.Right.IsEqualTo(expression2.Right, parameterNamesMatter);
 		}
 
-		private static bool ParametersAreEqual(ReadOnlyCollection<ParameterExpression> params1, ReadOnlyCollection<ParameterExpression> params2) {
+		private static bool ParametersAreEqual(ReadOnlyCollection<ParameterExpression> params1, ReadOnlyCollection<ParameterExpression> params2, bool parameterNamesMatter) {
 			if (params1.Count != params2.Count) {
 				return false;
 			}
 
 			for (var i = 0; i < params1.Count; i++) {
-				if (!params1[i].IsEqualTo(params2[i])) {
+				if (!params1[i].IsEqualTo(params2[i], parameterNamesMatter)) {
 					return false;
 				}
 			}
 
 			return true;
 		}
-
-		public static bool IsEqualTo(this ParameterExpression param1, ParameterExpression param2) {
-			return param1.Name == param2.Name && param1.NodeType == param2.NodeType && param1.Type == param2.Type;
-		}
-
 	}
 }
