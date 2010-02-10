@@ -18,13 +18,15 @@ namespace NTestify {
 			tests = new List<ITest>();
 		}
 
-		public TestSuite(ITest test) : this() {
+		public TestSuite(ITest test)
+			: this() {
 			if (test != null) {
 				tests.Add(test);
 			}
 		}
 
-		public TestSuite(IEnumerable<ITest> tests) : this() {
+		public TestSuite(IEnumerable<ITest> tests)
+			: this() {
 			if (tests != null) {
 				this.tests.AddRange(tests);
 			}
@@ -83,7 +85,7 @@ namespace NTestify {
 		}
 
 		///<inheritdoc/>
-		public ITestSuite AddTests(IEnumerable<ITest> listOfTests){
+		public ITestSuite AddTests(IEnumerable<ITest> listOfTests) {
 			tests.AddRange(listOfTests);
 			return this;
 		}

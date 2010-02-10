@@ -216,7 +216,6 @@ namespace NTestify {
 		/// <summary>
 		/// Marks the test result passed
 		/// </summary>
-		/// <param name="executionContext"></param>
 		protected void Pass(ExecutionContext executionContext) {
 			executionContext.Result.Status = TestStatus.Pass;
 		}
