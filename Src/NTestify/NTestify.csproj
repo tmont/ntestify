@@ -68,11 +68,12 @@
     </Compile>
     <Compile Include="Mock\Expectation.cs" />
     <Compile Include="Mock\ExpressionExtensions.cs" />
-    <Compile Include="Mock\Expression\CallbackExpression.cs" />
-    <Compile Include="Mock\Expression\ExpectExpression.cs" />
-    <Compile Include="Mock\Expression\InvocationCountExpression.cs" />
+    <Compile Include="Mock\Expressions\CallbackExpression.cs" />
+    <Compile Include="Mock\Expressions\ExpectExpression.cs" />
+    <Compile Include="Mock\Expressions\InvocationCountExpression.cs" />
     <Compile Include="Mock\Mock.cs" />
     <Compile Include="ExpectedExceptionAttribute.cs" />
+    <Compile Include="Mock\MockObjectBuilder.cs" />
     <Compile Include="SimpleAssertions.cs">
       <DependentUpon>Assert.cs</DependentUpon>
     </Compile>

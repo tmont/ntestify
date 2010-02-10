@@ -5,16 +5,24 @@ using System.Linq.Expressions;
 
 namespace NTestify.Mock {
 
+	internal interface IExpectation {
+		int ExpectedInvocationCount { get; set; }
+		int ActualInvocationCount { get; }
+	}
+
 	/// <summary>
 	/// Represents an expectation. For example, "a method is expected
 	/// to be invoked once and return foo."
 	/// </summary>
 	/// <typeparam name="T">The type this invocation expects to operate on</typeparam>
-	internal abstract class InvocationExpectation<T> where T : class {
+	/// <typeparam name="TInvocation">The type of delegate the type invokes</typeparam>
+	internal abstract class InvocationExpectation<T, TInvocation> : IExpectation where T : class where TInvocation : Expression {
 		private int expectedInvocationCount;
+		private readonly TInvocation invocation;
 
-		protected InvocationExpectation() {
+		protected InvocationExpectation(TInvocation invocation) {
 			ExpectedInvocationCount = 1;
+			this.invocation = invocation;
 		}
 
 		/// <summary>
@@ -34,6 +42,9 @@ namespace NTestify.Mock {
 			}
 		}
 
+		/// <summary>
+		/// Gets the number of times this expectation has been invoked
+		/// </summary>
 		public int ActualInvocationCount { get; protected set; }
 
 		/// <summary>
@@ -41,6 +52,32 @@ namespace NTestify.Mock {
 		/// is invoked
 		/// </summary>
 		public Action<T> Callback { get; set; }
+
+		/// <summary>
+		/// The invocation for this expectation
+		/// </summary>
+		public TInvocation Invocation { get { return invocation; } }
+
+		/// <summary>
+		/// Creates and formats an exception to be raised when the number of actual
+		/// invocations exceeds the expected
+		/// </summary>
+		protected MockInvocationException CreateInvocationException(int expected, int actual) {
+			return new MockInvocationException(
+			   string.Format(
+				   "Invocation {0} was invoked {1} {2}, but only expected to be invoked {3} {4}",
+				   ToString(),
+				   expected,
+				   (expected == 1) ? "time" : "times",
+				   actual,
+				   (actual == 1) ? "time" : "times"
+			   )
+		   );
+		}
+
+		public override string ToString() {
+			return Invocation.ToString();
+		}
 	}
 
 	/// <summary>
@@ -48,39 +85,36 @@ namespace NTestify.Mock {
 	/// </summary>
 	/// <typeparam name="T">The mock object's type</typeparam>
 	/// <typeparam name="TReturn">The type of the return value</typeparam>
-	internal class Expectation<T, TReturn> : InvocationExpectation<T> where T : class {
+	internal class Expectation<T, TReturn> : InvocationExpectation<T, Expression<Func<T, TReturn>>> where T : class {
 		private readonly List<TReturn> returnValues;
-		private readonly Expression<Func<T, TReturn>> invocation;
-
-		public TReturn Invoke(T context) {
-			if (ActualInvocationCount >= ExpectedInvocationCount) {
-				throw new MockInvocationException("Number of invocations exceeded expected");
-			}
-
-			ActualInvocationCount++;
-
-			throw new NotImplementedException();
-		}
 
 		/// <summary>
-		/// The invocation for this expectation
+		/// Invokes the expectation
 		/// </summary>
-		public Func<T, TReturn> Invocation { get { return invocation.Compile(); } }
+		/// <exception cref="MockInvocationException">If the number of invocations exceeds the xpected</exception>
+		public TReturn Invoke() {
+			ActualInvocationCount++;
+			if (ActualInvocationCount > ExpectedInvocationCount) {
+				throw CreateInvocationException(ExpectedInvocationCount, ActualInvocationCount);
+			}
+
+			return ReturnValues[ActualInvocationCount - 1];
+		}
 
 		/// <summary>
 		/// Return values for this invocation, ordered by the expected order of
 		/// invocation (e.g. the return value at index 0 is expected to be returned
 		/// the first invocation, at index 1 the second, and so on)
 		/// </summary>
-		public IEnumerable<TReturn> ReturnValues { get { return returnValues; } }
+		public IList<TReturn> ReturnValues { get { return returnValues; } }
 
 		/// <summary>
 		/// Creates a new expectation with an invocation that requires a return value
 		/// </summary>
 		/// <param name="invocation">The expected invocation</param>
-		public Expectation(Expression<Func<T, TReturn>> invocation) {
+		public Expectation(Expression<Func<T, TReturn>> invocation)
+			: base(invocation) {
 			returnValues = new List<TReturn>();
-			this.invocation = invocation;
 		}
 
 		/// <summary>
@@ -101,19 +135,6 @@ namespace NTestify.Mock {
 			returnValues.AddRange(values);
 		}
 
-		public override bool Equals(object obj) {
-			Expression<Func<T, TReturn>> function = null;
-			if (obj is Func<T, TReturn> || obj is Expression<Func<T, TReturn>>) {
-				function = (Expression<Func<T, TReturn>>)obj;
-			}
-
-			if (function == null) {
-				return false;
-			}
-
-			return invocation.IsEqualTo(function);
-		}
-
 	}
 
 	public class MockInvocationException : Exception {
@@ -125,26 +146,25 @@ namespace NTestify.Mock {
 	/// return values
 	/// </summary>
 	/// <typeparam name="T">The mock object's type</typeparam>
-	internal class Expectation<T> : InvocationExpectation<T> where T : class {
-		private readonly Expression<Action<T>> invocation;
-
+	internal class Expectation<T> : InvocationExpectation<T, Expression<Action<T>>> where T : class {
 		/// <summary>
 		/// Creates a new expectation with an invocation with no return value
 		/// </summary>
 		/// <param name="invocation">The expected invocation</param>
-		public Expectation(Expression<Action<T>> invocation) {
-			this.invocation = invocation;
-		}
+		public Expectation(Expression<Action<T>> invocation) : base(invocation) { }
 
 		/// <summary>
-		/// The invocation for this expectation
+		/// Invokes the expectation
 		/// </summary>
-		public Action<T> Invocation {
-			get { return invocation.Compile(); }
+		/// <exception cref="MockInvocationException">If the number of invocations exceeds the xpected</exception>
+		public void Invoke() {
+			ActualInvocationCount++;
+
+			if (ActualInvocationCount > ExpectedInvocationCount) {
+				throw CreateInvocationException(ExpectedInvocationCount, ActualInvocationCount);
+			}
 		}
+
 	}
-
-
-
 
 }

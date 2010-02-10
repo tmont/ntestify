@@ -1,4 +1,4 @@
-﻿namespace NTestify.Mock.Expression {
+﻿namespace NTestify.Mock.Expressions {
 	/// <summary>
 	/// Represents the invocation count node in the mock expression
 	/// </summary>

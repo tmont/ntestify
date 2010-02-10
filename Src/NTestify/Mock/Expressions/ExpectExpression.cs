@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NTestify.Mock.Expression {
+namespace NTestify.Mock.Expressions {
 	/// <summary>
 	/// Represents the expects node in the mock expression for expectations
 	/// that do not have a return value

@@ -1,4 +1,4 @@
-﻿namespace NTestify.Mock.Expression {
+﻿namespace NTestify.Mock.Expressions {
 	/// <summary>
 	/// Represents the callback node in the mock expression tree
 	/// </summary>

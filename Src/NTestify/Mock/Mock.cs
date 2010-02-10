@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
-using System.Reflection.Emit;
-using NTestify.Mock.Expression;
+using System.Linq;
+using NTestify.Mock.Expressions;
 using System.Linq.Expressions;
 
 namespace NTestify.Mock {
@@ -28,15 +27,17 @@ namespace NTestify.Mock {
 	/// </summary>
 	/// <typeparam name="T">The type to mock</typeparam>
 	public class Mock<T> : IHideObjectMembers where T : class {
+		private readonly object[] constructorArguments;
 
-		private readonly IList<InvocationExpectation<T>> expectations;
+		private readonly IList<IExpectation> expectations;
 		private static readonly IMockObjectBuilder Builder = new MockObjectBuilder();
 
 		/// <summary>
 		/// Initializes a new mock object
 		/// </summary>
-		public Mock() {
-			expectations = new List<InvocationExpectation<T>>();
+		public Mock(params object[] constructorArguments) {
+			this.constructorArguments = constructorArguments;
+			expectations = new List<IExpectation>();
 		}
 
 		/// <summary>
@@ -63,88 +64,109 @@ namespace NTestify.Mock {
 		}
 
 		/// <summary>
-		/// Verifies that the expectation was met
+		/// Verifies that the expectations were met
 		/// </summary>
 		public void Verify() {
+			var errors = new List<string>();
+			foreach (var expectation in expectations) {
+				if (expectation.ActualInvocationCount != expectation.ExpectedInvocationCount) {
+					errors.Add(
+						string.Format(
+							"{0} was expected to be invoked {1} {2}, but was invoked {3} {4}",
+							expectation,
+							expectation.ExpectedInvocationCount,
+							expectation.ExpectedInvocationCount == 1 ? "time" : "times",
+							expectation.ActualInvocationCount,
+							expectation.ActualInvocationCount == 1 ? "time" : "times"
+						)
+					);
+				}
+			}
 
+			if (errors.Count > 0) {
+				throw new MockVerificationException(
+					string.Format(
+						"Expectations were not met for {0}:{1}",
+						ToString(),
+						errors.Aggregate((current, error) => current += "\n  " + error)
+					)
+				);
+			}
 		}
 
 		/// <summary>
 		/// Gets the actual object instance for this mock
 		/// </summary>
-		public T Object { get { return Builder.Build(expectations); } }
-	}
+		public T Object { get { return Builder.Build<T>(expectations, constructorArguments); } }
 
-	internal class MockObjectBuilder : IMockObjectBuilder {
-
-		private const MethodAttributes ExplicitImplementation =
-			MethodAttributes.Private | MethodAttributes.HideBySig |
-			MethodAttributes.NewSlot | MethodAttributes.Virtual |
-			MethodAttributes.Final;
-
-		public T Build<T>(IEnumerable<InvocationExpectation<T>> expectations) where T : class {
-			if (!typeof(T).IsMockable()) {
-				throw new InvalidOperationException(string.Format("The type {0} is unmockable", typeof(T).GetFriendlyName()));
-			}
-
-			var typeBuilder = CreateTypeBuilder<T>();
-			DefineInvokeExpectation<T>(typeBuilder);
-
-			throw new NotImplementedException();
-		}
-
-		private static void DefineInvokeExpectation<T>(TypeBuilder typeBuilder) where T : class {
-			var methodBuilder = typeBuilder.DefineMethod("IMock.InvokeExpectation", ExplicitImplementation, null, new[] { typeof(Expectation<T>) });
-			var il = methodBuilder.GetILGenerator();
-
-		}
-
-		private static TypeBuilder CreateTypeBuilder<T>() where T : class {
-			var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName("NTestify.Mock.Dynamic"), AssemblyBuilderAccess.Run);
-			var moduleBuilder = assemblyBuilder.DefineDynamicModule("NTestify.Mock.Dynamic");
-
-			var parentType = typeof(T);
-			var interfaces = new[] { typeof(IMock<T>) };
-
-			return moduleBuilder.DefineType(GetMockName(typeof(T)), TypeAttributes.Class | TypeAttributes.Public, parentType, interfaces);
-		}
-
-		private static string GetMockName(Type type) {
-			return "Mock_" + type.Name + "_" + Guid.NewGuid().ToString().Replace("-", "_");
+		public override string ToString() {
+			return GetType().GetFriendlyName();
 		}
 	}
 
-	internal interface IMockObjectBuilder {
-		T Build<T>(IEnumerable<InvocationExpectation<T>> expectations) where T : class;
+	public class MockVerificationException : Exception {
+		public MockVerificationException(string message) : base(message) { }
 	}
 
 	internal interface IMock<T> where T : class {
-		bool InvokeIfNeeded(Action<T> invocation);
-		bool InvokeIfNeeded<TReturn>(Func<T, TReturn> invocation);
-		IEnumerable<InvocationExpectation<T>> Expectations { get; set; }
+		void InvokeExpectation(Expression<Action<T>> invocation);
+		TReturn InvokeExpectation<TReturn>(Expression<Func<T, TReturn>> invocation);
+		IEnumerable<IExpectation> Expectations { get; }
 	}
 
 	internal class Example {
+
+		public Example(string foo) {
+		}
+
 		public virtual void DoSomething(int foo) {
 
+		}
+
+		public virtual int DoSomething() {
+			return default(int);
 		}
 
 	}
 
 	internal class MockExample : Example, IMock<Example> {
+		public MockExample(string foo) : base(foo) { }
 
 		public override void DoSomething(int foo) {
-			((IMock<Example>)this).InvokeIfNeeded(o => o.DoSomething(foo));
+			((IMock<Example>)this).InvokeExpectation(o => o.DoSomething(foo));
 		}
 
-		bool IMock<Example>.InvokeIfNeeded(Action<Example> invocation) {
-			throw new NotImplementedException();
+		public override int DoSomething() {
+			return ((IMock<Example>)this).InvokeExpectation(o => o.DoSomething());
 		}
 
-		bool IMock<Example>.InvokeIfNeeded<TReturn>(Func<Example, TReturn> invocation) {
-			throw new NotImplementedException();
+		void IMock<Example>.InvokeExpectation(Expression<Action<Example>> invocation) {
+			((IMock<Example>)this)
+				.Expectations
+				.Cast<Expectation<Action<Example>>>()
+				.First(e => e.Invocation.IsEqualTo(invocation, false))
+				.Invoke();
 		}
 
-		IEnumerable<InvocationExpectation<Example>> IMock<Example>.Expectations { get; set; }
+		TReturn IMock<Example>.InvokeExpectation<TReturn>(Expression<Func<Example, TReturn>> invocation) {
+			return ((IMock<Example>)this)
+				.Expectations
+				.Cast<Expectation<Func<Example, TReturn>, TReturn>>()
+				.First(e => e.Invocation.IsEqualTo(invocation, false))
+				.Invoke();
+		}
+
+		private IEnumerable<IExpectation> expectations;
+		IEnumerable<IExpectation> IMock<Example>.Expectations {
+			get {
+				if (expectations == null) {
+					expectations = Enumerable.Empty<IExpectation>();
+					//set expectations here
+				}
+
+				return expectations;
+			}
+		}
 	}
+
 }
