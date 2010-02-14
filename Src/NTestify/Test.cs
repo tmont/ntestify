@@ -85,7 +85,8 @@ namespace NTestify {
 				RunTest(executionContext);
 				Pass(executionContext);
 			} catch (Exception exception) {
-				executionContext.ThrownException = (exception is TestErredException) ? ((TestErredException)exception).CauseError : exception;
+				var erredException = exception as TestErredException;
+				executionContext.ThrownException = (erredException != null && erredException.CauseError != null) ? erredException.CauseError : exception;
 			}
 
 			try {
@@ -138,7 +139,7 @@ namespace NTestify {
 			if (exception is TestFailedException) {
 				Fail(executionContext, exception.Message);
 			} else if (exception is TestErredException) {
-				Error(executionContext, ((TestErredException)exception).CauseError);
+				Error(executionContext, ((TestErredException)exception).CauseError ?? exception);
 			} else if (exception is TestIgnoredException) {
 				Ignore(executionContext, exception.Message);
 			} else if (exception != null) {
@@ -200,6 +201,8 @@ namespace NTestify {
 				if (erredException.CauseError != null) {
 					executionContext.Result.AddError(erredException.CauseError);
 				}
+			} else {
+				executionContext.Result.AddError(exception);
 			}
 
 			executionContext.Result.Message = (exception != null) ? exception.Message : "An error occurred during execution of the test";

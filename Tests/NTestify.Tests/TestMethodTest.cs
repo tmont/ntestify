@@ -95,10 +95,8 @@ namespace NTestify.Tests {
 		public void Should_err_when_filter_throws() {
 			RunTest("TestMethodThatHasABadFilter");
 
-			const string expectedMessage = "Encountered an error while trying to run method filter of type \"NTestify.Tests.FilterThatThrowsException\"";
-
 			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
-			Ass.That(executionContext.Result.Message, Is.EqualTo(expectedMessage));
+			Ass.That(executionContext.Result.Message, Is.EqualTo("OH HAI!"));
 			Ass.That(executionContext.Result.Errors.Count(), Is.EqualTo(1));
 			Ass.That(executionContext.Result.Errors.First().Message, Is.EqualTo("OH HAI!"));
 			AssertEvents(true, true, false, false, false, true);

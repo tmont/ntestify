@@ -163,8 +163,8 @@ namespace NTestify.Mock {
 			for (var i = 0; i < Arguments.Count(); i++) {
 				var expectedArg = Arguments.ElementAt(i);
 				var actualArg = args.ElementAt(i);
-				if (expectedArg is AnyArg) {
-					if (actualArg.GetType() != ((AnyArg)expectedArg).Type) {
+				if (expectedArg is ISpecialArgument) {
+					if (!((ISpecialArgument)expectedArg).Matches(actualArg)) {
 						return false;
 					}
 				} else {

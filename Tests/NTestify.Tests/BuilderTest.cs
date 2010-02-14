@@ -11,7 +11,7 @@ namespace NTestify.Tests {
 	[TestFixture]
 	public class BuilderTest {
 
-		[NUnit.Framework.Test]
+		[NUnit.Framework.Test, NUnit.Framework.Ignore]
 		public void ILTest() {
 			var assemblyName = new AssemblyName("NTestify.Mock.Dynamic");
 			var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);

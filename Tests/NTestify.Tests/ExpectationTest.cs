@@ -37,7 +37,9 @@ namespace NTestify.Tests {
 
 			var any = expectation.Arguments.First() as AnyArg;
 			Ass.That(any, Is.Not.Null);
-			Ass.That(any.Type, Is.EqualTo(typeof(int)));
+			Ass.That(any.Matches(0));
+			Ass.That(any.Matches(int.MaxValue));
+			Ass.That(any.Matches(int.MinValue));
 
 			Ass.That(expectation.Arguments.Last(), Is.EqualTo("bar"));
 		}
