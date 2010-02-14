@@ -30,7 +30,7 @@ namespace NTestify.Mock {
 		private readonly object[] constructorArguments;
 
 		private readonly IList<IExpectation> expectations;
-		private static readonly IMockObjectBuilder Builder = new MockObjectBuilder();
+		private static readonly MockObjectBuilder Builder = new MockObjectBuilder();
 
 		/// <summary>
 		/// Initializes a new mock object
@@ -72,7 +72,7 @@ namespace NTestify.Mock {
 				if (expectation.ActualInvocationCount != expectation.ExpectedInvocationCount) {
 					errors.Add(
 						string.Format(
-							"{0} was expected to be invoked {1} {2}, but was invoked {3} {4}",
+							"{0} was expected to be invoked {1} {2}, but was actually invoked {3} {4}",
 							expectation,
 							expectation.ExpectedInvocationCount,
 							expectation.ExpectedInvocationCount == 1 ? "time" : "times",
@@ -88,7 +88,7 @@ namespace NTestify.Mock {
 					string.Format(
 						"Expectations were not met for {0}:{1}",
 						ToString(),
-						errors.Aggregate((current, error) => current += "\n  " + error)
+						errors.Aggregate((current, error) => current + "\n  " + error)
 					)
 				);
 			}
@@ -106,67 +106,6 @@ namespace NTestify.Mock {
 
 	public class MockVerificationException : Exception {
 		public MockVerificationException(string message) : base(message) { }
-	}
-
-	internal interface IMock<T> where T : class {
-		void InvokeExpectation(Expression<Action<T>> invocation);
-		TReturn InvokeExpectation<TReturn>(Expression<Func<T, TReturn>> invocation);
-		IEnumerable<IExpectation> Expectations { get; }
-	}
-
-	internal class Example {
-
-		public Example(string foo) {
-		}
-
-		public virtual void DoSomething(int foo) {
-
-		}
-
-		public virtual int DoSomething() {
-			return default(int);
-		}
-
-	}
-
-	internal class MockExample : Example, IMock<Example> {
-		public MockExample(string foo) : base(foo) { }
-
-		public override void DoSomething(int foo) {
-			((IMock<Example>)this).InvokeExpectation(o => o.DoSomething(foo));
-		}
-
-		public override int DoSomething() {
-			return ((IMock<Example>)this).InvokeExpectation(o => o.DoSomething());
-		}
-
-		void IMock<Example>.InvokeExpectation(Expression<Action<Example>> invocation) {
-			((IMock<Example>)this)
-				.Expectations
-				.Cast<Expectation<Action<Example>>>()
-				.First(e => e.Invocation.IsEqualTo(invocation, false))
-				.Invoke();
-		}
-
-		TReturn IMock<Example>.InvokeExpectation<TReturn>(Expression<Func<Example, TReturn>> invocation) {
-			return ((IMock<Example>)this)
-				.Expectations
-				.Cast<Expectation<Func<Example, TReturn>, TReturn>>()
-				.First(e => e.Invocation.IsEqualTo(invocation, false))
-				.Invoke();
-		}
-
-		private IEnumerable<IExpectation> expectations;
-		IEnumerable<IExpectation> IMock<Example>.Expectations {
-			get {
-				if (expectations == null) {
-					expectations = Enumerable.Empty<IExpectation>();
-					//set expectations here
-				}
-
-				return expectations;
-			}
-		}
 	}
 
 }

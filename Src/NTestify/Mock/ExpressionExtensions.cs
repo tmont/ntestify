@@ -1,11 +1,32 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 
 namespace NTestify.Mock {
-	public static class ExpressionExtensions {
 
-		public static bool IsEqualTo(this System.Linq.Expressions.Expression original, System.Linq.Expressions.Expression other, bool parameterNamesMatter) {
+	public static class ExpressionExtensions {
+		/// <summary>
+		/// Gets the calling object instance of a method call expression
+		/// </summary>
+		/// <typeparam name="T">The type of the calling object</typeparam>
+		public static bool VerifyCaller<T>(this MethodCallExpression methodCall) where T : class {
+			if (methodCall.Object is ParameterExpression) {
+				if (methodCall.Object.Type != typeof(T)) {
+					return false;
+				}
+			} else {
+				throw new NotImplementedException(string.Format("I don't know how to handle a {0}", methodCall.Object.Type.GetFriendlyName()));
+			}
+
+			return true;
+		}
+
+	}
+
+	public static class ExpressionEqualityExtensions {
+
+		public static bool IsEqualTo(this Expression original, Expression other, bool parameterNamesMatter) {
 			if (other == null || original.NodeType != other.NodeType || original.Type != other.Type) {
 				return false;
 			}

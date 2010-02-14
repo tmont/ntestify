@@ -60,6 +60,8 @@
   <ItemGroup>
     <Compile Include="AssemblyTestRunnerTest.cs" />
     <Compile Include="AssertTest.cs" />
+    <Compile Include="BuilderTest.cs" />
+    <Compile Include="ExpectationTest.cs" />
     <Compile Include="ExpectedExceptionTest.cs" />
     <Compile Include="ExpressionEqualityTest.cs" />
     <Compile Include="MockObjectTest.cs" />
