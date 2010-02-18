@@ -106,7 +106,6 @@ namespace NTestify {
 		/// <summary>
 		/// Determines whether or not a type is able to be mocked
 		/// </summary>
-		/// <typeparam name="T">The type to mock</typeparam>
 		public static bool IsMockable(this Type type) {
 			return !type.IsSealed;
 		}

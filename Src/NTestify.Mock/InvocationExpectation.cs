@@ -1,18 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
 namespace NTestify.Mock {
-
-	public interface IExpectation {
-		int ExpectedInvocationCount { get; set; }
-		int ActualInvocationCount { get; }
-		bool Matches(LambdaExpression expression);
-		string MethodOrPropertyName { get; }
-		IEnumerable<object> Arguments { get; }
-	}
-
 	/// <summary>
 	/// Represents an expectation. For example, "a method is expected
 	/// to be invoked once and return foo."
@@ -31,13 +22,17 @@ namespace NTestify.Mock {
 			ParseInvocation(invocation.Body);
 		}
 
-		private void ParseInvocation(Expression body) {
-			if (!(body is MethodCallExpression)) {
-				throw new InvalidExpectationException("Invocation must be a method call");
+		private void ParseMemberExpression(MemberExpression memberExpression) {
+			var caller = memberExpression.Expression as ParameterExpression;
+			if (caller == null || caller.Type != typeof(T)) {
+				throw new InvalidExpectationException(string.Format("Invocations on properties must operate on {0}", typeof(T).GetFriendlyName()));
 			}
 
-			var methodCall = (MethodCallExpression)body;
+			MethodOrPropertyName = memberExpression.Member.Name;
+			Arguments = Enumerable.Empty<object>();
+		}
 
+		private void ParseMethodCallExpression(MethodCallExpression methodCall) {
 			if (!methodCall.VerifyCaller<T>()) {
 				throw new InvalidExpectationException(string.Format("Invocation must make a call to a method or invoke a property on {0}", typeof(T).GetFriendlyName()));
 			}
@@ -65,6 +60,16 @@ namespace NTestify.Mock {
 
 			Arguments = arguments;
 		}
+
+		private void ParseInvocation(Expression body) {
+			if (body is MemberExpression) {
+				ParseMemberExpression((MemberExpression)body);
+			} else if (body is MethodCallExpression) {
+				ParseMethodCallExpression((MethodCallExpression)body);
+			} else {
+				throw new InvalidExpectationException("Invocation must be a MemberExpression or a MethodCallExpression");
+			}
+		}		
 
 		/// <summary>
 		/// Gets the name of the property or method that will be invoked
@@ -115,15 +120,15 @@ namespace NTestify.Mock {
 		/// </summary>
 		protected MockInvocationException CreateInvocationException(int expected, int actual) {
 			return new MockInvocationException(
-			   string.Format(
-				   "Invocation {0} was invoked {1} {2}, but only expected to be invoked {3} {4}",
-				   ToString(),
-				   expected,
-				   (expected == 1) ? "time" : "times",
-				   actual,
-				   (actual == 1) ? "time" : "times"
-			   )
-		   );
+				string.Format(
+					"Invocation {0} was invoked {1} {2}, but only expected to be invoked {3} {4}",
+					ToString(),
+					expected,
+					(expected == 1) ? "time" : "times",
+					actual,
+					(actual == 1) ? "time" : "times"
+					)
+				);
 		}
 
 		/// <summary>
@@ -139,24 +144,46 @@ namespace NTestify.Mock {
 				return false;
 			}
 
-			var body = expression.Body as MethodCallExpression;
-			if (body == null) {
+			if (expression.Body is MethodCallExpression) {
+				return MatchMethodCall((MethodCallExpression)expression.Body);
+			} else if (expression.Body is MemberExpression) {
+				return MatchMemberCall((MemberExpression)expression.Body);
+			}
+
+			return false;
+		}
+
+		private bool MatchMemberCall(MemberExpression member){
+			if (member.Member.Name != MethodOrPropertyName) {
 				return false;
 			}
 
-			if (!body.VerifyCaller<T>()) {
+			var caller = member.Expression as ParameterExpression;
+			if (caller == null) {
 				return false;
 			}
 
-			if (body.Method.Name != MethodOrPropertyName) {
+			if (caller.Type != typeof(T)) {
 				return false;
 			}
 
-			if (body.Arguments.Count != Arguments.Count()) {
+			return true;
+		}
+
+		private bool MatchMethodCall(MethodCallExpression methodCall){
+			if (!methodCall.VerifyCaller<T>()) {
 				return false;
 			}
 
-			var args = body
+			if (methodCall.Method.Name != MethodOrPropertyName) {
+				return false;
+			}
+
+			if (methodCall.Arguments.Count != Arguments.Count()) {
+				return false;
+			}
+
+			var args = methodCall
 				.Arguments
 				.Select(argExpression => Expression.Lambda(argExpression).Compile().DynamicInvoke());
 
@@ -184,89 +211,5 @@ namespace NTestify.Mock {
 		public override string ToString() {
 			return Invocation.ToString();
 		}
-	}
-
-	/// <summary>
-	/// Expectation for property getters and methods that have a return type
-	/// </summary>
-	/// <typeparam name="T">The mock object's type</typeparam>
-	/// <typeparam name="TReturn">The type of the return value</typeparam>
-	public class Expectation<T, TReturn> : InvocationExpectation<T, Expression<Func<T, TReturn>>> where T : class {
-		private readonly List<TReturn> returnValues;
-
-		/// <summary>
-		/// Invokes the expectation
-		/// </summary>
-		/// <exception cref="MockInvocationException">If the number of invocations exceeds the xpected</exception>
-		public TReturn Invoke() {
-			ActualInvocationCount++;
-			if (ActualInvocationCount > ExpectedInvocationCount) {
-				throw CreateInvocationException(ExpectedInvocationCount, ActualInvocationCount);
-			}
-
-			return ReturnValues[ActualInvocationCount - 1];
 		}
-
-		/// <summary>
-		/// Return values for this invocation, ordered by the expected order of
-		/// invocation (e.g. the return value at index 0 is expected to be returned
-		/// the first invocation, at index 1 the second, and so on)
-		/// </summary>
-		public IList<TReturn> ReturnValues { get { return returnValues; } }
-
-		/// <summary>
-		/// Creates a new expectation with an invocation that requires a return value
-		/// </summary>
-		/// <param name="invocation">The expected invocation</param>
-		public Expectation(Expression<Func<T, TReturn>> invocation)
-			: base(invocation) {
-			returnValues = new List<TReturn>();
-		}
-
-		/// <summary>
-		/// Adds a range of return values to the ReturnValues enumerable
-		/// </summary>
-		public void AddReturnValues(IEnumerable<TReturn> values) {
-			if (values.Count() != ExpectedInvocationCount) {
-				throw new ArgumentException(
-					string.Format(
-						"The number of return values must be equal to the expected invocation count: expected {0} but got {1}",
-						ExpectedInvocationCount,
-						values.Count()
-					),
-					"values"
-				);
-			}
-
-			returnValues.AddRange(values);
-		}
-
-	}
-
-	/// <summary>
-	/// Expectation for property setters and methods that don't have
-	/// return values
-	/// </summary>
-	/// <typeparam name="T">The mock object's type</typeparam>
-	public class Expectation<T> : InvocationExpectation<T, Expression<Action<T>>> where T : class {
-		/// <summary>
-		/// Creates a new expectation with an invocation with no return value
-		/// </summary>
-		/// <param name="invocation">The expected invocation</param>
-		public Expectation(Expression<Action<T>> invocation) : base(invocation) { }
-
-		/// <summary>
-		/// Invokes the expectation
-		/// </summary>
-		/// <exception cref="MockInvocationException">If the number of invocations exceeds the xpected</exception>
-		public void Invoke() {
-			ActualInvocationCount++;
-
-			if (ActualInvocationCount > ExpectedInvocationCount) {
-				throw CreateInvocationException(ExpectedInvocationCount, ActualInvocationCount);
-			}
-		}
-
-	}
-
 }

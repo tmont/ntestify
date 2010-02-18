@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0BCC1AE4-CA8D-460B-B5CC-4F2AFE3D5E20}</ProjectGuid>
+    <ProjectGuid>{3C4D948E-3B21-4429-9DD1-5F5543F2BA1E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NTestify.Tests</RootNamespace>
-    <AssemblyName>NTestify.Tests</AssemblyName>
+    <RootNamespace>ClassLibrary1</RootNamespace>
+    <AssemblyName>ClassLibrary1</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -17,33 +17,20 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lib\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Moq, Version=4.0.812.4, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lib\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.5.3.9345, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lib\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -58,18 +45,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyTestRunnerTest.cs" />
-    <Compile Include="AssertTest.cs" />
-    <Compile Include="ExpectationTest.cs" />
-    <Compile Include="ExpectedExceptionTest.cs" />
-    <Compile Include="ExpressionEqualityTest.cs" />
-    <Compile Include="TestResultExtensionsForTesting.cs" />
-    <Compile Include="TestSuiteTest.cs" />
-    <Compile Include="TestMethodTest.cs" />
+    <Compile Include="Arg.cs" />
+    <Compile Include="Expectation.cs" />
+    <Compile Include="ExpectationRegistry.cs" />
+    <Compile Include="ExpressionExtensions.cs" />
+    <Compile Include="Expressions\CallbackExpression.cs" />
+    <Compile Include="Expressions\ExpectExpression.cs" />
+    <Compile Include="Expressions\InvocationCountExpression.cs" />
+    <Compile Include="IExpectation.cs" />
+    <Compile Include="InvalidExpectationException.cs" />
+    <Compile Include="InvocationExpectation.cs" />
+    <Compile Include="Mock.cs" />
+    <Compile Include="MockInvocationException.cs" />
+    <Compile Include="MockObjectBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Src\NTestify\NTestify.csproj">
+    <ProjectReference Include="..\NTestify\NTestify.csproj">
       <Project>{F7D5A8C5-1B6D-40FA-A229-EC9DBDCFA6CD}</Project>
       <Name>NTestify</Name>
     </ProjectReference>
