@@ -85,8 +85,7 @@ namespace NTestify {
 				RunTest(executionContext);
 				Pass(executionContext);
 			} catch (Exception exception) {
-				var erredException = exception as TestErredException;
-				executionContext.ThrownException = (erredException != null && erredException.CauseError != null) ? erredException.CauseError : exception;
+				executionContext.ThrownException = exception;
 			}
 
 			try {
@@ -139,7 +138,7 @@ namespace NTestify {
 			if (exception is TestFailedException) {
 				Fail(executionContext, exception.Message);
 			} else if (exception is TestErredException) {
-				Error(executionContext, ((TestErredException)exception).CauseError ?? exception);
+				Error(executionContext, exception);
 			} else if (exception is TestIgnoredException) {
 				Ignore(executionContext, exception.Message);
 			} else if (exception != null) {

@@ -43,9 +43,9 @@ namespace NTestify.Tests {
 			return test;
 		}
 
-		private void AssertEvents(bool before, bool after, bool passed, bool ignored, bool failed, bool erred) {
-			Ass.That(beforeTest, Is.EqualTo(before));
-			Ass.That(afterTest, Is.EqualTo(after));
+		private void AssertEvents(bool passed, bool ignored, bool failed, bool erred) {
+			Ass.That(beforeTest);
+			Ass.That(afterTest);
 			Ass.That(testPassed, Is.EqualTo(passed));
 			Ass.That(testIgnored, Is.EqualTo(ignored));
 			Ass.That(testFailed, Is.EqualTo(failed));
@@ -56,7 +56,7 @@ namespace NTestify.Tests {
 		public void Should_run_test_and_pass() {
 			RunTest("TestMethodThatPasses");
 			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Pass));
-			AssertEvents(true, true, true, false, false, false);
+			AssertEvents(true, false, false, false);
 		}
 
 		[TestMethod]
@@ -65,7 +65,7 @@ namespace NTestify.Tests {
 			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
 			Ass.That(executionContext.Result.Errors.Count(), Is.EqualTo(1));
 			Ass.That(executionContext.Result.Errors.First().Message, Is.EqualTo("hi there!"));
-			AssertEvents(true, true, false, false, false, true);
+			AssertEvents(false, false, false, true);
 		}
 
 		[TestMethod]
@@ -73,14 +73,14 @@ namespace NTestify.Tests {
 			RunTest("TestMethodThatIsInvalid");
 			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
 			Ass.That(executionContext.Result.Message, Is.EqualTo("The test method is invalid"));
-			AssertEvents(true, true, false, false, false, true);
+			AssertEvents(false, false, false, true);
 		}
 
 		[TestMethod]
 		public void Should_run_test_and_fail() {
 			RunTest("TestMethodThatFails");
 			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Fail));
-			AssertEvents(true, true, false, false, true, false);
+			AssertEvents(false, false, true, false);
 		}
 
 		[TestMethod]
@@ -88,18 +88,20 @@ namespace NTestify.Tests {
 			RunTest("TestMethodThatIsIgnored");
 			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Ignore));
 			Ass.That(executionContext.Result.Message, Is.EqualTo("this test sux!"));
-			AssertEvents(true, true, false, true, false, false);
+			AssertEvents(false, true, false, false);
 		}
 
 		[TestMethod]
 		public void Should_err_when_filter_throws() {
 			RunTest("TestMethodThatHasABadFilter");
 
+			const string message = "Encountered an error while trying to run method filter of type \"NTestify.Tests.FilterThatThrowsException\"";
+
 			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Error));
-			Ass.That(executionContext.Result.Message, Is.EqualTo("OH HAI!"));
+			Ass.That(executionContext.Result.Message, Is.EqualTo(message));
 			Ass.That(executionContext.Result.Errors.Count(), Is.EqualTo(1));
 			Ass.That(executionContext.Result.Errors.First().Message, Is.EqualTo("OH HAI!"));
-			AssertEvents(true, true, false, false, false, true);
+			AssertEvents(false, false, false, true);
 		}
 
 		[TestMethod]
@@ -107,7 +109,7 @@ namespace NTestify.Tests {
 			RunTest("TestMethodThatHasFilters");
 			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Pass));
 			Ass.That(FilterThatSetsProperty.Executed, "Filter never got executed, oh noes!!");
-			AssertEvents(true, true, true, false, false, false);
+			AssertEvents(true, false, false, false);
 		}
 
 	}
