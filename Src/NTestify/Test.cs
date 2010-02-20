@@ -75,13 +75,13 @@ namespace NTestify {
 
 		///<inheritdoc/>
 		public void Run(ExecutionContext executionContext) {
-			InitializeContext(executionContext);
+			Initialize(executionContext);
 			Configurator.Configure(executionContext.Test);
 			OnBeforeRun.Invoke(executionContext);
 			executionContext.Result.Status = TestStatus.Running;
 
 			try {
-				RunFilters<PreTestFilter>(executionContext);
+				RunPreTestFilters(executionContext);
 				RunTest(executionContext);
 				Pass(executionContext);
 			} catch (Exception exception) {
@@ -89,7 +89,7 @@ namespace NTestify {
 			}
 
 			try {
-				RunFilters<PostTestFilter>(executionContext);
+				RunPostTestFilters(executionContext);
 			} catch (Exception filterException) {
 				Error(executionContext, filterException);
 			}
@@ -127,7 +127,12 @@ namespace NTestify {
 		/// <summary>
 		/// Runs any filters attached to the test after the test is run
 		/// </summary>
-		protected virtual void RunFilters<TFilter>(ExecutionContext executionContext) where TFilter : TestifyAttribute { }
+		protected virtual void RunPostTestFilters(ExecutionContext executionContext) { }
+
+		/// <summary>
+		/// Runs any filters attached to the test before the test is run
+		/// </summary>
+		protected virtual void RunPreTestFilters(ExecutionContext executionContext) { }
 
 		/// <summary>
 		/// Sets the result status
@@ -152,11 +157,19 @@ namespace NTestify {
 		/// Sets the initial state of the execution context and its
 		/// encapsulated result
 		/// </summary>
-		private void InitializeContext(ExecutionContext executionContext) {
+		private void Initialize(ExecutionContext executionContext) {
 			executionContext.Test = this;
 			executionContext.Result = CreateTestResult();
 			executionContext.Result.StartTime = DateTime.Now;
+			InitializeContext(executionContext);
 		}
+
+		/// <summary>
+		/// When overridden in a derived class, initializes the execution context
+		/// for pre test filters and before configuration
+		/// </summary>
+		/// <param name="executionContext"></param>
+		protected virtual void InitializeContext(ExecutionContext executionContext) { }
 
 		/// <summary>
 		/// Creates the test result that will be attached to the execution

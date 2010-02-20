@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 namespace NTestify {
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public static class ReflectionExtensions {
+
 		/// <summary>
 		/// A generic version of GetCustomAttributes
 		/// </summary>

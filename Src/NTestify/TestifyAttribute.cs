@@ -7,7 +7,7 @@ namespace NTestify {
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
 	public abstract class TestifyAttribute : Attribute {
 		/// <summary>
-		/// This method gets called before running a test
+		/// Executes some action with the current test's execution context
 		/// </summary>
 		public virtual void Execute(ExecutionContext executionContext) { }
 	}

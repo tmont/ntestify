@@ -63,6 +63,7 @@
     <Compile Include="ExpectationTest.cs" />
     <Compile Include="ExpectedExceptionTest.cs" />
     <Compile Include="ExpressionEqualityTest.cs" />
+    <Compile Include="IntegrationTest.cs" />
     <Compile Include="TestResultExtensionsForTesting.cs" />
     <Compile Include="TestSuiteTest.cs" />
     <Compile Include="TestMethodTest.cs" />
