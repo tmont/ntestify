@@ -140,13 +140,15 @@ namespace NTestify.Tests {
 		public void TestMethodThatHasFilters() { }
 	}
 
-	internal class FilterThatThrowsException : PreTestFilter {
+	[PreTestFilter]
+	internal class FilterThatThrowsException : TestFilter {
 		public override void Execute(ExecutionContext executionContext) {
 			throw new Exception("OH HAI!");
 		}
 	}
 
-	internal class FilterThatSetsProperty : PreTestFilter {
+	[PreTestFilter]
+	internal class FilterThatSetsProperty : TestFilter {
 		public override void Execute(ExecutionContext executionContext) {
 			Executed = true;
 		}

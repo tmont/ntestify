@@ -51,27 +51,16 @@ namespace NTestify {
 		/// </summary>
 		/// <exception cref="Test.TestIgnoredException">If the method is annotated with [Ignore]</exception>
 		protected override void RunPreTestFilters(ExecutionContext executionContext) {
-			var filters = method.GetAttributes<PreTestFilter>();
+			var filters = method
+				.GetAttributes<TestFilter>()
+				.Where(a => a.GetType().HasAttribute<PreTestFilter>());
 			if (filters.Any(attribute => attribute is IgnoreAttribute)) {
 				//if the test should be ignored, then we bail immediately without executing any other filters
-				throw new TestIgnoredException(filters.Where(attribute => attribute is IgnoreAttribute).Cast<IgnoreAttribute>().First().Reason);
+				throw new TestIgnoredException(filters.Cast<IgnoreAttribute>().First().Reason);
 			}
 
-			filters = filters.Union(GetSetupMethods(method.DeclaringType));
-			RunFilters(filters, executionContext);
-		}
-
-		private static IEnumerable<PreTestFilter> GetSetupMethods(Type declaringClass) {
-			return declaringClass
-				.GetMethods()
-				.Where(m => m.HasAttribute<SetupAttribute>())
-				.Select(m => {
-					var setup = m.GetAttributes<SetupAttribute>().First();
-					setup.Method = m;
-					return setup;
-				})
-				.Cast<PreTestFilter>()
-				.OrderBy(filter => filter.Order);
+			filters = filters.Concat(GetInvokableFilters<SetupAttribute>(method.DeclaringType));
+			RunFiltersInOrder(filters, executionContext);
 		}
 
 		/// <summary>
@@ -79,25 +68,24 @@ namespace NTestify {
 		/// </summary>
 		protected override void RunPostTestFilters(ExecutionContext executionContext) {
 			var filters = method
-				.GetAttributes<PostTestFilter>()
-				.Union(GetTearDownMethods(method.DeclaringType));
-			RunFilters(filters, executionContext);
+				.GetAttributes<TestFilter>()
+				.Where(a => a.GetType().HasAttribute<PostTestFilter>())
+				.Concat(GetInvokableFilters<TearDownAttribute>(method.DeclaringType));
+			RunFiltersInOrder(filters, executionContext);
 		}
 
-		private static IEnumerable<PostTestFilter> GetTearDownMethods(Type declaringClass) {
+		private static IEnumerable<TestFilter> GetInvokableFilters<TFilter>(Type declaringClass) where TFilter : InvokableFilter {
 			return declaringClass
 				.GetMethods()
-				.Where(m => m.HasAttribute<TearDownAttribute>())
+				.Where(m => m.HasAttribute<TFilter>())
 				.Select(m => {
-					var tearDown = m.GetAttributes<TearDownAttribute>().First();
-					tearDown.Method = m;
-					return tearDown;
-				})
-				.Cast<PostTestFilter>()
-				.OrderBy(filter => filter.Order);
+					var setup = m.GetAttributes<TFilter>().First();
+					setup.Method = m;
+					return setup;
+				}).Cast<TestFilter>();
 		}
 
-		private void RunFilters<TFilter>(IEnumerable<TFilter> filters, ExecutionContext executionContext) where TFilter : TestFilter {
+		private void RunFiltersInOrder<TFilter>(IEnumerable<TFilter> filters, ExecutionContext executionContext) where TFilter : TestFilter {
 			foreach (var filter in filters.OrderBy(f => f.Order)) {
 				try {
 					filter.Execute(executionContext);

@@ -10,23 +10,4 @@ namespace NTestify {
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
 	public sealed class TestableAttribute : Attribute { }
-
-	/// <summary>
-	/// When a method or class is annotated with a subclass, this filter will be executed after
-	/// a test runs
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-	public abstract class PostTestFilter : TestFilter { }
-
-	/// <summary>
-	/// When a method or class is annotated with a subclass, this filter will be executed before
-	/// a test runs
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-	public abstract class PreTestFilter : TestFilter { }
-
-	public abstract class TestFilter : TestifyAttribute {
-		public virtual int Order { get; set; }
-	}
-
 }

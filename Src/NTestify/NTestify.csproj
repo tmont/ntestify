@@ -67,6 +67,11 @@
       <DependentUpon>Assert.cs</DependentUpon>
     </Compile>
     <Compile Include="ExpectedExceptionAttribute.cs" />
+    <Compile Include="FilterOrder.cs" />
+    <Compile Include="InvokableFilter.cs" />
+    <Compile Include="PostTestFilter.cs" />
+    <Compile Include="PreTestFilter.cs" />
+    <Compile Include="SetupAttribute.cs" />
     <Compile Include="SimpleAssertions.cs">
       <DependentUpon>Assert.cs</DependentUpon>
     </Compile>
@@ -86,9 +91,11 @@
     <Compile Include="NullConfigurator.cs" />
     <Compile Include="ReflectedTestMethod.cs" />
     <Compile Include="ReflectionExtensions.cs" />
+    <Compile Include="TearDownAttribute.cs" />
     <Compile Include="Test.cs" />
     <Compile Include="TestableAttribute.cs" />
     <Compile Include="TestAttribute.cs" />
+    <Compile Include="TestFilter.cs" />
     <Compile Include="TestifyAttribute.cs" />
     <Compile Include="TestResult.cs" />
     <Compile Include="AssemblyTestRunner.cs" />

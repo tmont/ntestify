@@ -172,8 +172,7 @@ namespace NTestify {
 		protected virtual void InitializeContext(ExecutionContext executionContext) { }
 
 		/// <summary>
-		/// Creates the test result that will be attached to the execution
-		/// context after the test has been run
+		/// Creates the test result that will be attached to the execution context
 		/// </summary>
 		protected abstract ITestResult CreateTestResult();
 

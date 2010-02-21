@@ -1,5 +1,4 @@
 ﻿using System;
-using NTestify.Logging;
 
 namespace NTestify {
 	/// <summary>
@@ -7,30 +6,20 @@ namespace NTestify {
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
 	[Testable]
-	public class TestAttribute : PreTestFilter {
-		/// <summary>
-		/// Logger for this object
-		/// </summary>
-		protected ILogger Logger { get; private set; }
-
+	public class TestAttribute : TestifyAttribute {
 		/// <summary>
 		/// Description of the test
 		/// </summary>
-		public string Description { get; set; }
+		public virtual string Description { get; set; }
+
 		/// <summary>
 		/// Name of the category for this test
 		/// </summary>
-		public string Category { get; set; }
+		public virtual string Category { get; set; }
 
-		public TestAttribute() : this(new NullLogger()) { }
-
-		public TestAttribute(ILogger logger) {
-			Logger = logger;
-		}
-
-		///<inheritdoc/>
-		public override void Execute(ExecutionContext executionContext) {
-			Logger.Debug("About to run test [" + executionContext.Test.Name + "]");
-		}
+		/// <summary>
+		/// Name of the test
+		/// </summary>
+		public virtual string Name { get; set; }
 	}
 }

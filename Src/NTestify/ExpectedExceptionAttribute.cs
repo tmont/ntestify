@@ -4,9 +4,9 @@ namespace NTestify {
 	/// <summary>
 	/// Indicates that a test method is expected to throw an exception
 	/// </summary>
-	[Testable]
+	[Testable, PostTestFilter]
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-	public class ExpectedExceptionAttribute : PostTestFilter {
+	public class ExpectedExceptionAttribute : TestFilter {
 
 		/// <summary>
 		/// The expected exception message

@@ -38,7 +38,6 @@ namespace NTestify.Tests {
 			Ass.That(Lulz, Is.EqualTo(expected));
 		}
 
-
 		public class TestLulz {
 			[Setup]
 			public void Setup1() {
@@ -65,13 +64,14 @@ namespace NTestify.Tests {
 				Lulz += "test ";
 			}
 
-			[Test, MyPreFilter(Order = 2), MyPostFilter(Order = -2)]
+			[Test, MyPreFilter(Order = FilterOrder.AfterSetup), MyPostFilter(Order = FilterOrder.BeforeTearDown)]
 			public void Test2() {
 				Lulz += "test2 ";
 			}
 		}
 
-		public class MyPreFilter : PreTestFilter {
+		[PreTestFilter]
+		public class MyPreFilter : TestFilter {
 			public static Action Callback { get; set; }
 
 			public override void Execute(ExecutionContext executionContext) {
@@ -79,7 +79,8 @@ namespace NTestify.Tests {
 			}
 		}
 
-		public class MyPostFilter : PostTestFilter {
+		[PostTestFilter]
+		public class MyPostFilter : TestFilter {
 			public static Action Callback { get; set; }
 
 			public override void Execute(ExecutionContext executionContext) {
