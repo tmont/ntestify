@@ -25,6 +25,19 @@ namespace NTestify {
 			this.method = method;
 			this.instance = instance;
 			Name = instance.GetType().Name + "." + method.Name;
+
+			ApplyAttributeDetails();
+		}
+
+		private void ApplyAttributeDetails() {
+			var attribute = method.GetAttributes<TestAttribute>().FirstOrDefault();
+			if (attribute == null) {
+				return;
+			}
+
+			Name = attribute.Name ?? Name;
+			Description = attribute.Description;
+			Category = attribute.Category;
 		}
 
 		/// <summary>
@@ -56,7 +69,7 @@ namespace NTestify {
 				.Where(a => a.GetType().HasAttribute<PreTestFilter>());
 			if (filters.Any(attribute => attribute is IgnoreAttribute)) {
 				//if the test should be ignored, then we bail immediately without executing any other filters
-				throw new TestIgnoredException(filters.Cast<IgnoreAttribute>().First().Reason);
+				throw new TestIgnoredException(filters.Where(f => f is IgnoreAttribute).Cast<IgnoreAttribute>().First().Reason);
 			}
 
 			filters = filters.Concat(GetInvokableFilters<SetupAttribute>(method.DeclaringType));

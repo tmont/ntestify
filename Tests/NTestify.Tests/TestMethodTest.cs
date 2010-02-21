@@ -112,6 +112,14 @@ namespace NTestify.Tests {
 			AssertEvents(true, false, false, false);
 		}
 
+		[TestMethod]
+		public void Should_set_attribute_properties() {
+			var test = new ReflectedTestMethod(typeof(FakeTestClass).GetMethod("TestMethodThatHasName"), new FakeTestClass());
+			Ass.That(test.Name, Is.EqualTo("lolz"));
+			Ass.That(test.Category, Is.EqualTo("Da category"));
+			Ass.That(test.Description, Is.EqualTo("A test that has a name"));
+		}
+
 	}
 
 	internal class FakeTestClass {
@@ -138,6 +146,9 @@ namespace NTestify.Tests {
 
 		[FilterThatSetsProperty]
 		public void TestMethodThatHasFilters() { }
+
+		[Test(Name = "lolz", Category = "Da category", Description = "A test that has a name")]
+		public void TestMethodThatHasName() { }
 	}
 
 	[PreTestFilter]

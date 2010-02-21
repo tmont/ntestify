@@ -167,6 +167,8 @@ namespace NTestify.Tests {
 		public abstract void Run(ExecutionContext executionContext);
 
 		public string Name { get; set; }
+		public string Description { get; set; }
+		public string Category { get; set; }
 		public ITestConfigurator Configurator { get; set; }
 		public ITest Configure(ITestConfigurator configurator){
 			return this;

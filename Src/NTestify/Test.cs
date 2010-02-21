@@ -180,10 +180,9 @@ namespace NTestify {
 		/// </summary>
 		protected abstract void RunTest(ExecutionContext executionContext);
 
-		/// <summary>
-		/// Gets or sets the name of the test
-		/// </summary>
 		public string Name { get; set; }
+		public string Description { get; set; }
+		public string Category { get; set; }
 
 		/// <summary>
 		/// Gets or sets the logger associated with this test

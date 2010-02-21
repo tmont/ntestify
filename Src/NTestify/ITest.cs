@@ -18,6 +18,15 @@ namespace NTestify {
 		/// </summary>
 		string Name { get; set; }
 		/// <summary>
+		/// Gets or sets the description of the test
+		/// </summary>
+		string Description { get; set; }
+		/// <summary>
+		/// Gets or sets the category of the test
+		/// </summary>
+		string Category { get; set; }
+
+		/// <summary>
 		/// Uses the given configurator to configure the test
 		/// </summary>
 		ITest Configure(ITestConfigurator configurator);
