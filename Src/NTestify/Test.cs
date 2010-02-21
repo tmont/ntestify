@@ -61,11 +61,9 @@ namespace NTestify {
 		}
 		#endregion
 
-		private ITestConfigurator configurator;
-
-		public ITestConfigurator Configurator {
-			get { return configurator ?? (configurator = new NullConfigurator()); }
-			set { configurator = value; }
+		public ITest Configure(ITestConfigurator configurator) {
+			configurator.Configure(this);
+			return this;
 		}
 
 		protected Test() {
@@ -76,7 +74,6 @@ namespace NTestify {
 		///<inheritdoc/>
 		public void Run(ExecutionContext executionContext) {
 			Initialize(executionContext);
-			Configurator.Configure(executionContext.Test);
 			OnBeforeRun.Invoke(executionContext);
 			executionContext.Result.Status = TestStatus.Running;
 

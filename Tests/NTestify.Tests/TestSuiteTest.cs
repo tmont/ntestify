@@ -168,6 +168,10 @@ namespace NTestify.Tests {
 
 		public string Name { get; set; }
 		public ITestConfigurator Configurator { get; set; }
+		public ITest Configure(ITestConfigurator configurator){
+			return this;
+		}
+
 		public event Action<ExecutionContext> OnBeforeRun;
 		public event Action<ExecutionContext> OnAfterRun;
 		public event Action<ExecutionContext> OnIgnore;

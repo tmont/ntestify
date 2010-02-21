@@ -18,10 +18,9 @@ namespace NTestify {
 		/// </summary>
 		string Name { get; set; }
 		/// <summary>
-		/// Gets or sets the configurator that will be executed before running
-		/// the test
+		/// Uses the given configurator to configure the test
 		/// </summary>
-		ITestConfigurator Configurator { get; set; }
+		ITest Configure(ITestConfigurator configurator);
 
 		/// <summary>
 		/// Event that fires before a test runs

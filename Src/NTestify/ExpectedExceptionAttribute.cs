@@ -3,6 +3,7 @@
 namespace NTestify {
 	/// <summary>
 	/// Indicates that a test method is expected to throw an exception
+	/// TODO: this logic shouldn't be here, it should be in Test
 	/// </summary>
 	[Testable, PostTestFilter]
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]

@@ -38,6 +38,7 @@ namespace NTestify.Tests {
 			Ass.That(Lulz, Is.EqualTo(expected));
 		}
 
+		#region Mocks
 		public class TestLulz {
 			[Setup]
 			public void Setup1() {
@@ -68,6 +69,11 @@ namespace NTestify.Tests {
 			public void Test2() {
 				Lulz += "test2 ";
 			}
+
+			[Test(Name = "This is the name")]
+			public void TestWithName(){
+
+			}
 		}
 
 		[PreTestFilter]
@@ -87,6 +93,7 @@ namespace NTestify.Tests {
 				Callback();
 			}
 		}
+		#endregion
 
 	}
 

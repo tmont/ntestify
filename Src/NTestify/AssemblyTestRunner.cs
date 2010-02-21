@@ -21,9 +21,11 @@ namespace NTestify {
 		public virtual ITestResult RunAll(_Assembly assembly) {
 			var classSuites = GetClassSuites(assembly);
 			var unattachedTestMethods = GeUnattachedTestMethods(assembly);
-			var assemblySuite = new TestSuite { Name = assembly.GetName().Name, Logger = Logger, Configurator = TestSuiteConfigurator }
+			var assemblySuite = new TestSuite { Name = assembly.GetName().Name, Logger = Logger }
 				.AddTests(classSuites.Cast<ITest>())
 				.AddTests(unattachedTestMethods.Cast<ITest>());
+
+			assemblySuite.Configure(TestSuiteConfigurator);
 
 			return ((ITestRunner)this).RunTest(assemblySuite, new ExecutionContext { Test = assemblySuite });
 		}
@@ -36,7 +38,8 @@ namespace NTestify {
 			return (
 				from method in assembly.GetUnattachedTestMethods()
 				let instance = Activator.CreateInstance(method.DeclaringType)
-				select new ReflectedTestMethod(method, instance) { Logger = Logger, Configurator = TestMethodConfigurator }).ToList();
+				select new ReflectedTestMethod(method, instance) { Logger = Logger }.Configure(TestMethodConfigurator))
+			.Cast<ReflectedTestMethod>();
 		}
 
 		/// <summary>
@@ -49,10 +52,10 @@ namespace NTestify {
 				let instance = Activator.CreateInstance(type)
 				let innerTests = type
 					.GetTestMethods()
-					.Select(methodInfo => new ReflectedTestMethod(methodInfo, instance) { Logger = Logger, Configurator = TestMethodConfigurator })
+					.Select(methodInfo => new ReflectedTestMethod(methodInfo, instance) { Logger = Logger }.Configure(TestMethodConfigurator))
 					.Cast<ITest>()
-				select new TestSuite(innerTests) { Name = instance.GetType().Name, Logger = Logger, Configurator = TestSuiteConfigurator })
-			.ToList();
+				select new TestSuite(innerTests) { Name = instance.GetType().Name, Logger = Logger }.Configure(TestSuiteConfigurator)
+			).Cast<TestSuite>();
 		}
 
 		///<inheritdoc/>
