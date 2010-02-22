@@ -30,7 +30,9 @@ namespace NTestify {
 				return;
 			}
 
-			var exception = executionContext.ThrownException.GetBaseException();
+			var temp = executionContext.ThrownException.GetBaseException();
+			var exception = (temp is Test.TestErredException && ((Test.TestErredException)temp).CauseError != null) ? ((Test.TestErredException)temp).CauseError : temp;
+
 			if (exception.GetType() != ExpectedException) {
 				Fail(executionContext, string.Format(
 					"Expected exception of type {0}, but exception of type {1} was thrown.",

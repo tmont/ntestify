@@ -6,6 +6,14 @@ namespace NTestify {
 	/// many tests
 	/// </summary>
 	public interface ITestSuite : ITest {
+
+		/// <summary>
+		/// Gets the tests contained within the suite
+		/// </summary>
+		IEnumerable<ITest> Tests { get; }
+
+		IEnumerable<ITest> FlattenedTests { get; }
+
 		/// <summary>
 		/// Adds a test to the suite. Note that the test can also
 		/// be another test suite
@@ -16,5 +24,6 @@ namespace NTestify {
 		/// Adds a range of tests to the suite
 		/// </summary>
 		ITestSuite AddTests(IEnumerable<ITest> listOfTests);
+
 	}
 }

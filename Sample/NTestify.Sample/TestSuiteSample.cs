@@ -13,12 +13,12 @@ namespace NTestify.Sample {
 			Assert.Equal(1, 1);
 		}
 
-		[Test]
+		[Test(Category = "test")]
 		public void Should_fail() {
-			throw new TestAssertionException();
+			Assert.Equal(0, 1);
 		}
 
-		[Test]
+		[Test(Name = "foo")]
 		public void Should_err() {
 			throw new Exception("I AM ERROR.");
 		}
@@ -36,7 +36,7 @@ namespace NTestify.Sample {
 	}
 
 	public class TestSuiteSample2 {
-		[Test]
+		[Test(Category = "test")]
 		public void LollerSk8() { }
 	}
 }

@@ -5,6 +5,24 @@ using System.Runtime.InteropServices;
 using NTestify.Logging;
 
 namespace NTestify {
+
+	public class VerboseTestMethodConfigurator : ITestConfigurator {
+		public void Configure(ITest test) {
+			test.OnBeforeRun += context => Console.Write(test.Name + ": ");
+			test.OnError += context => Console.Write("ERROR ");
+			test.OnPass += context => Console.Write("PASS ");
+			test.OnFail += context => Console.Write("FAIL ");
+			test.OnIgnore += context => Console.Write("IGNORE ");
+			test.OnAfterRun += context => {
+				Console.WriteLine("(" + context.Result.ExecutionTimeInSeconds + ")");
+				if (!string.IsNullOrEmpty(context.Result.Message)) {
+					Console.WriteLine("  " + context.Result.Message);
+				}
+				Console.WriteLine(new string('-', 60));
+			};
+		}
+	}
+
 	/// <summary>
 	/// Test runner that scans an assembly for testable classes
 	/// and methods. This is the default test runner in NTestify.
@@ -13,6 +31,12 @@ namespace NTestify {
 		private ILogger logger;
 		private ITestConfigurator testSuiteConfigurator;
 		private ITestConfigurator testMethodConfigurator;
+
+		private readonly IList<IAccumulationFilter> filters;
+
+		public AssemblyTestRunner() {
+			filters = new List<IAccumulationFilter>();
+		}
 
 		/// <summary>
 		/// Runs all available tests in the assembly
@@ -23,9 +47,8 @@ namespace NTestify {
 			var unattachedTestMethods = GeUnattachedTestMethods(assembly);
 			var assemblySuite = new TestSuite { Name = assembly.GetName().Name, Logger = Logger }
 				.AddTests(classSuites.Cast<ITest>())
-				.AddTests(unattachedTestMethods.Cast<ITest>());
-
-			assemblySuite.Configure(TestSuiteConfigurator);
+				.AddTests(unattachedTestMethods.Cast<ITest>())
+				.Configure(TestSuiteConfigurator);
 
 			return ((ITestRunner)this).RunTest(assemblySuite, new ExecutionContext { Test = assemblySuite });
 		}
@@ -38,8 +61,8 @@ namespace NTestify {
 			return (
 				from method in assembly.GetUnattachedTestMethods()
 				let instance = Activator.CreateInstance(method.DeclaringType)
-				select new ReflectedTestMethod(method, instance) { Logger = Logger }.Configure(TestMethodConfigurator))
-			.Cast<ReflectedTestMethod>();
+				select new ReflectedTestMethod(method, instance) { Logger = Logger }.Configure(TestMethodConfigurator)
+			).Where(ApplyFilters).Cast<ReflectedTestMethod>();
 		}
 
 		/// <summary>
@@ -53,15 +76,29 @@ namespace NTestify {
 				let innerTests = type
 					.GetTestMethods()
 					.Select(methodInfo => new ReflectedTestMethod(methodInfo, instance) { Logger = Logger }.Configure(TestMethodConfigurator))
+					.Where(ApplyFilters)
 					.Cast<ITest>()
 				select new TestSuite(innerTests) { Name = instance.GetType().Name, Logger = Logger }.Configure(TestSuiteConfigurator)
-			).Cast<TestSuite>();
+			).Where(ApplyFilters).Cast<TestSuite>();
 		}
 
 		///<inheritdoc/>
 		ITestResult ITestRunner.RunTest(ITest test, ExecutionContext executionContext) {
 			test.Run(executionContext);
 			return executionContext.Result;
+		}
+
+		private bool ApplyFilters(ITest test) {
+			return filters.All(f => f.Filter(test));
+		}
+
+		public IEnumerable<IAccumulationFilter> Filters {
+			get { return filters; }
+		}
+
+		public ITestRunner AddFilter(IAccumulationFilter filter) {
+			filters.Add(filter);
+			return this;
 		}
 
 		/// <summary>

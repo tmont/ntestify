@@ -66,11 +66,16 @@
     <Compile Include="CollectionAssertions.cs">
       <DependentUpon>Assert.cs</DependentUpon>
     </Compile>
+    <Compile Include="Execution\CategoryAccumulationFilter.cs" />
+    <Compile Include="Execution\NameAccumulationFilter.cs" />
+    <Compile Include="Execution\NamespaceAccumulationFilter.cs" />
     <Compile Include="ExpectedExceptionAttribute.cs" />
     <Compile Include="FilterOrder.cs" />
+    <Compile Include="Execution\IAccumulationFilter.cs" />
     <Compile Include="InvokableFilter.cs" />
     <Compile Include="PostTestFilter.cs" />
     <Compile Include="PreTestFilter.cs" />
+    <Compile Include="Execution\RegexAccumulationFilter.cs" />
     <Compile Include="SetupAttribute.cs" />
     <Compile Include="SimpleAssertions.cs">
       <DependentUpon>Assert.cs</DependentUpon>
