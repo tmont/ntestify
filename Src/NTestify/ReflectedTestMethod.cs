@@ -9,12 +9,13 @@ namespace NTestify {
 	/// with the [Test] attribute
 	/// </summary>
 	public class ReflectedTestMethod : Test {
-		private readonly MethodInfo method;
+		public MethodInfo Method { get; protected set; }
 		private readonly object instance;
 
 		/// <param name="method">The test method to run. Cannot be null.</param>
 		/// <param name="instance">The object instance that the method belongs to</param>
 		public ReflectedTestMethod(MethodInfo method, object instance) {
+			Method = method;
 			if (method == null) {
 				throw new ArgumentNullException("method");
 			}
@@ -22,7 +23,6 @@ namespace NTestify {
 				throw new ArgumentNullException("instance");
 			}
 
-			this.method = method;
 			this.instance = instance;
 			Name = instance.GetType().Name + "." + method.Name;
 
@@ -30,7 +30,7 @@ namespace NTestify {
 		}
 
 		private void ApplyAttributeDetails() {
-			var attribute = method.GetAttributes<TestAttribute>().FirstOrDefault();
+			var attribute = Method.GetAttributes<TestAttribute>().FirstOrDefault();
 			if (attribute == null) {
 				return;
 			}
@@ -64,7 +64,7 @@ namespace NTestify {
 		/// </summary>
 		/// <exception cref="Test.TestIgnoredException">If the method is annotated with [Ignore]</exception>
 		protected override void RunPreTestFilters(ExecutionContext executionContext) {
-			var filters = method
+			var filters = Method
 				.GetAttributes<TestFilter>()
 				.Where(a => a.GetType().HasAttribute<PreTestFilter>());
 			if (filters.Any(attribute => attribute is IgnoreAttribute)) {
@@ -72,7 +72,7 @@ namespace NTestify {
 				throw new TestIgnoredException(filters.Where(f => f is IgnoreAttribute).Cast<IgnoreAttribute>().First().Reason);
 			}
 
-			filters = filters.Concat(GetInvokableFilters<SetupAttribute>(method.DeclaringType));
+			filters = filters.Concat(GetInvokableFilters<SetupAttribute>(Method.DeclaringType));
 			RunFiltersInOrder(filters, executionContext);
 		}
 
@@ -80,10 +80,10 @@ namespace NTestify {
 		/// Finds and executes each of the method filters
 		/// </summary>
 		protected override void RunPostTestFilters(ExecutionContext executionContext) {
-			var filters = method
+			var filters = Method
 				.GetAttributes<TestFilter>()
 				.Where(a => a.GetType().HasAttribute<PostTestFilter>())
-				.Concat(GetInvokableFilters<TearDownAttribute>(method.DeclaringType));
+				.Concat(GetInvokableFilters<TearDownAttribute>(Method.DeclaringType));
 			RunFiltersInOrder(filters, executionContext);
 		}
 
@@ -150,7 +150,7 @@ namespace NTestify {
 		/// Instance as the invocation context
 		/// </summary>
 		protected virtual void RunTestMethod(ExecutionContext executionContext) {
-			method.Invoke(executionContext.Instance, new object[] { });
+			Method.Invoke(executionContext.Instance, new object[] { });
 		}
 
 		/// <summary>
@@ -158,7 +158,7 @@ namespace NTestify {
 		/// </summary>
 		/// <exception cref="Test.TestErredException">If the method is not runnable</exception>
 		private void VerifyMethod() {
-			if (!method.IsRunnable()) {
+			if (!Method.IsRunnable()) {
 				throw new TestErredException(null, "The test method is invalid");
 			}
 		}
