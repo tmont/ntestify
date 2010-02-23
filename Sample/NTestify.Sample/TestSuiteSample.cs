@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace NTestify.Sample {
 	[Test]
@@ -23,12 +20,12 @@ namespace NTestify.Sample {
 			throw new Exception("I AM ERROR.");
 		}
 
-		[Ignore(Reason = "This test sux!")]
+		[Test, Ignore(Reason = "This test sux!")]
 		public void Should_be_ignored() {
 
 		}
 
-		[ExpectedException(typeof(Exception), ExpectedMessage = "yay!")]
+		[Test, ExpectedException(typeof(Exception), ExpectedMessage = "yay!")]
 		public void Should_throw_exception_and_win() {
 			throw new Exception("yay!");
 		}

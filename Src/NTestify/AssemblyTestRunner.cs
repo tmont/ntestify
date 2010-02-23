@@ -89,7 +89,7 @@ namespace NTestify {
 		}
 
 		private bool ApplyFilters(ITest test) {
-			return filters.All(f => f.Filter(test));
+			return Filters.All(f => f.Filter(test));
 		}
 
 		public IEnumerable<IAccumulationFilter> Filters {

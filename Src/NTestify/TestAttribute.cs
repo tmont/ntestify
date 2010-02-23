@@ -6,7 +6,7 @@ namespace NTestify {
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
 	[Testable]
-	public class TestAttribute : TestifyAttribute {
+	public class TestAttribute : TestifyAttribute, ITestInfo {
 		/// <summary>
 		/// Description of the test
 		/// </summary>

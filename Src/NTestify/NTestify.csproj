@@ -73,6 +73,7 @@
     <Compile Include="FilterOrder.cs" />
     <Compile Include="Execution\IAccumulationFilter.cs" />
     <Compile Include="InvokableFilter.cs" />
+    <Compile Include="ITestInfo.cs" />
     <Compile Include="PostTestFilter.cs" />
     <Compile Include="PreTestFilter.cs" />
     <Compile Include="Execution\RegexAccumulationFilter.cs" />

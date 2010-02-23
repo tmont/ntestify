@@ -33,14 +33,18 @@ namespace NTestify.Tests {
 			var method = instance.GetType().GetMethod(name);
 			var test = new ReflectedTestMethod(method, instance);
 
+			SetEventHandlers(test);
+
+			return test;
+		}
+
+		private void SetEventHandlers(ITest test){
 			test.OnBeforeRun += context => beforeTest = true;
 			test.OnAfterRun += context => afterTest = true;
 			test.OnError += context => testErred = true;
 			test.OnFail += context => testFailed = true;
 			test.OnPass += context => testPassed = true;
 			test.OnIgnore += context => testIgnored = true;
-
-			return test;
 		}
 
 		private void AssertEvents(bool passed, bool ignored, bool failed, bool erred) {
@@ -120,9 +124,23 @@ namespace NTestify.Tests {
 			Ass.That(test.Description, Is.EqualTo("A test that has a name"));
 		}
 
+		[TestMethod]
+		public void Method_can_be_static() {
+			var test = new ReflectedTestMethod(typeof(FakeTestClass).GetMethod("StaticMethod"), null);
+			SetEventHandlers(test);
+			executionContext.Instance = null;
+			test.Run(executionContext);
+
+			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Pass));
+			AssertEvents(true, false, false, false);
+		}
+
 	}
 
 	internal class FakeTestClass {
+
+		public static void StaticMethod() { }
+
 		public void TestMethodThatPasses() { }
 
 		public void TestMethodThatErrs() {

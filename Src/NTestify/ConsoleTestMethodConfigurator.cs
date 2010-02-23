@@ -4,7 +4,7 @@ namespace NTestify {
 
 	public class ConsoleTestSuiteConfigurator : ITestConfigurator {
 		public void Configure(ITest test){
-			test.OnBeforeRun += context => Console.WriteLine(context.Test.Name);
+			test.OnBeforeRun += context => Console.WriteLine("Suite: " + test.Name);
 		}
 	}
 

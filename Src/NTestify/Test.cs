@@ -5,7 +5,7 @@ namespace NTestify {
 	/// <summary>
 	/// Base class for all built-in, runnable tests
 	/// </summary>
-	public abstract class Test : ITest, ILoggable {
+	public abstract class Test : ITest, ITestInfo, ILoggable {
 
 		#region Inner exceptions
 		/// <summary>

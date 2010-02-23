@@ -5,26 +5,13 @@ namespace NTestify {
 	/// <summary>
 	/// Represents a testable object by the NTestify framework
 	/// </summary>
-	public interface ITest {
+	public interface ITest : ITestInfo {
 		/// <summary>
 		/// Runs the test, and sets the ExecutionContext's Result property
 		/// with the result of the test
 		/// </summary>
 		/// <param name="executionContext">The current test execution context</param>
 		void Run(ExecutionContext executionContext);
-
-		/// <summary>
-		/// Gets or sets the name of the test
-		/// </summary>
-		string Name { get; set; }
-		/// <summary>
-		/// Gets or sets the description of the test
-		/// </summary>
-		string Description { get; set; }
-		/// <summary>
-		/// Gets or sets the category of the test
-		/// </summary>
-		string Category { get; set; }
 
 		/// <summary>
 		/// Uses the given configurator to configure the test
