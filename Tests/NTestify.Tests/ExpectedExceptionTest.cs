@@ -10,7 +10,6 @@ namespace NTestify.Tests {
 	public class ExpectedExceptionTest {
 
 		private Mock<Test> test;
-		private readonly Exception exception = new Exception("I AM ERROR.");
 
 		[SetUp]
 		public void SetUp() {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Text;
 
 namespace NTestify.Constraint {
@@ -85,9 +86,9 @@ namespace NTestify.Constraint {
 				return true;
 			}
 
-			if (expected is ICollection) {
+			if (expected is IEnumerable) {
 				//collections will be handled separately
-				return CompareCollections((ICollection)expected, (ICollection)actual);
+				return CompareEnumerables((IEnumerable)expected, (IEnumerable)actual);
 			}
 
 			//if we get here, then both types are complex non-collections, so all we can do is fall back to Equals()
@@ -99,14 +100,18 @@ namespace NTestify.Constraint {
 			return true;
 		}
 
-		private bool CompareCollections(ICollection expected, ICollection actual) {
-			if (expected.Count != actual.Count) {
+		private bool CompareEnumerables(IEnumerable expected, IEnumerable actual) {
+			var typedExpected = expected.Cast<object>();
+			var typedActual = actual.Cast<object>();
+			var expectedCount = typedExpected.Count();
+			var actualCount = typedActual.Count();
+			if (expectedCount != actualCount) {
 				//different number of items
-				var difference = Math.Abs(expected.Count - actual.Count);
+				var difference = Math.Abs(expectedCount - actualCount);
 				reasonForFailure.Append(string.Format(
 					"Expected has {0} {1} {2} than Actual.",
 					difference,
-					(expected.Count < actual.Count) ? "less" : "more",
+					(expectedCount < actualCount) ? "less" : "more",
 					(difference == 1) ? "item" : "items"
 				));
 
@@ -116,17 +121,8 @@ namespace NTestify.Constraint {
 			if (expected is IDictionary) {
 				return CompareDictionaries((IDictionary)expected, (IDictionary)actual);
 			}
-			if (expected is IList) {
-				return CompareLists((IList)expected, (IList)actual);
-			}
 
-			//some custom implementation of ICollection, so just fall back to object.Equals()
-			if (!expected.Equals(actual)) {
-				reasonForFailure.Append("expected.Equals(actual) failed for two ICollection implementations.");
-				return false;
-			}
-
-			return true;
+			return CompareLists(typedExpected.ToList(), typedActual.ToList());
 		}
 
 		private bool CompareLists(IList expected, IList actual) {
@@ -171,7 +167,7 @@ namespace NTestify.Constraint {
 
 		///<inheritdoc/>
 		public override string FailMessage { get { return string.Format("Failed asserting that two objects are equal.\n{0}", reasonForFailure); } }
-		
+
 		///<inheritdoc/>
 		public override string NegatedFailMessage { get { return FailMessage.Replace(" are equal.", " are not equal"); } }
 	}

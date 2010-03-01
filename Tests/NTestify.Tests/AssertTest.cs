@@ -254,19 +254,9 @@ namespace NTestify.Tests {
 
 		[TestMethod]
 		[ExEx(ExpectedException = typeof(TestAssertionException), ExpectedMessage = "Failed asserting that two objects are equal.\n2 is not equal to 1.\nActual value does not match expected value at key foo: expected 1 but got 2.")]
-		public void Should_fail_because_actual_value_is_incorrect() {
+		public void Should_fail_because_actual_value_is_incorrect_for_dictionaries() {
 			Assert.NotEqual(new Dictionary<string, int> { { "foo", 1 } }, new Dictionary<string, int> { { "foo", 2 } });
 			Assert.Equal(new Dictionary<string, int> { { "foo", 1 } }, new Dictionary<string, int> { { "foo", 2 } });
-		}
-
-		[TestMethod]
-		[ExEx(ExpectedException = typeof(TestAssertionException), ExpectedMessage = "Failed asserting that two objects are equal.\nexpected.Equals(actual) failed for two ICollection implementations.")]
-		public void Should_fail_because_ICollections_are_different(){
-			var collection1 = new CollectionImplementation();
-			var collection2 = new CollectionImplementation();
-
-			Assert.NotEqual(collection1, collection2);
-			Assert.Equal(collection1, collection2);
 		}
 
 		#endregion
@@ -465,28 +455,6 @@ namespace NTestify.Tests {
 	}
 
 	#region Mocks
-	internal class CollectionImplementation : ObjectThatIsNeverEqual, ICollection {
-		public IEnumerator GetEnumerator(){
-			throw new NotImplementedException();
-		}
-
-		public void CopyTo(Array array, int index){
-			throw new NotImplementedException();
-		}
-
-		public int Count{
-			get { return 2; }
-		}
-
-		public object SyncRoot{
-			get { throw new NotImplementedException(); }
-		}
-
-		public bool IsSynchronized{
-			get { throw new NotImplementedException(); }
-		}
-	}
-
 	internal class ObjectThatIsAlwaysEqual {
 #pragma warning disable 659
 		public override bool Equals(object obj) {
