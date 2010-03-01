@@ -30,7 +30,7 @@ namespace NTestify {
 		/// </summary>
 		public DateTime EndTime { get; set; }
 		/// <summary>
-		/// How long the test took to execute
+		/// How long the test took to execute in ticks
 		/// </summary>
 		public long ExecutionTime { get { return EndTime.Ticks - StartTime.Ticks; } }
 		/// <summary>
@@ -47,7 +47,7 @@ namespace NTestify {
 		public IEnumerable<Exception> Errors { get { return errors; } }
 
 		/// <summary>
-		/// [fluent] Adds an error to the error stack
+		/// Adds an error to the error stack
 		/// </summary>
 		/// <param name="exception">The exception that caused the error. Cannot be null.</param>
 		public ITestResult AddError(Exception exception) {
