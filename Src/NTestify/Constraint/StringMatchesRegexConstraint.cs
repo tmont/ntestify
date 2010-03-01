@@ -8,7 +8,7 @@ namespace NTestify.Constraint {
 	public class StringMatchesRegexConstraint : BinaryConstraint<string> {
 		public StringMatchesRegexConstraint(string haystack, string regex) : base(haystack, regex) { }
 
-		public override bool Validate(){
+		public override bool Validate() {
 			return string.IsNullOrEmpty(Expected) ? string.IsNullOrEmpty(Actual) : Regex.IsMatch(Expected, Actual ?? string.Empty);
 		}
 

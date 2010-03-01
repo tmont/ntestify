@@ -11,6 +11,11 @@ namespace NTestify {
 	public class ReflectedTestMethod : Test, ITestMethodInfo {
 		private readonly object instance;
 
+		/// <summary>
+		/// Gets the method to invoke to run this test
+		/// </summary>
+		public MethodInfo Method { get; protected set; }
+
 		/// <param name="method">The test method to run. Cannot be null.</param>
 		/// <param name="instance">The object instance that the method belongs to, or null if a static method</param>
 		public ReflectedTestMethod(MethodInfo method, object instance) {
@@ -25,11 +30,6 @@ namespace NTestify {
 			ApplyAttributeDetails();
 			ApplyExpectedExceptionDetails();
 		}
-
-		/// <summary>
-		/// The method to invoke to run the test
-		/// </summary>
-		public MethodInfo Method { get; protected set; }
 
 		private void ApplyAttributeDetails() {
 			var testInfo = Method
@@ -67,7 +67,11 @@ namespace NTestify {
 			executionContext.Instance = instance;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Runs the test. This method should do the actual heavy lifting.
+		/// It should use the internal exceptions to signify the result of
+		/// the test, rather than setting the result property itself.
+		/// </summary>
 		protected override void RunTest(ExecutionContext executionContext) {
 			VerifyMethod();
 
@@ -170,7 +174,7 @@ namespace NTestify {
 		/// Instance as the invocation context
 		/// </summary>
 		protected virtual void RunTestMethod(ExecutionContext executionContext) {
-			Method.Invoke(executionContext.Instance, new object[] { });
+			Method.Invoke(executionContext.Instance, new object[0]);
 		}
 
 		/// <summary>

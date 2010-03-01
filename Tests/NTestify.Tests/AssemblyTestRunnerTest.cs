@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Moq;
+using NTestify.Execution;
 using NUnit.Framework;
 using TestMethod = NUnit.Framework.TestAttribute;
 using Ass = NUnit.Framework.Assert;

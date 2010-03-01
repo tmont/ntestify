@@ -1,13 +1,6 @@
 ﻿using System;
 
-namespace NTestify {
-
-	public class ConsoleTestSuiteConfigurator : ITestConfigurator {
-		public void Configure(ITest test){
-			test.OnBeforeRun += context => Console.WriteLine("Suite: " + test.Name);
-		}
-	}
-
+namespace NTestify.Configuration {
 	/// <summary>
 	/// The standard console output: "." means a test passed, "I" means a test was
 	/// ignored, "F" means a test failed, and "E" means a test erred.
@@ -25,15 +18,13 @@ namespace NTestify {
 		/// Creates a console configurator with DefaultMaxLineLength for the
 		/// maximum line length
 		/// </summary>
-		public ConsoleTestMethodConfigurator() : this(DefaultMaxLineLength) {
-
-		}
+		public ConsoleTestMethodConfigurator() : this(DefaultMaxLineLength) { }
 
 		/// <param name="maxLineLength">The maximum number of columns per line</param>
 		/// <exception cref="ArgumentOutOfRangeException"/>
 		public ConsoleTestMethodConfigurator(int maxLineLength) {
 			if (maxLineLength < MinLineLength) {
-				throw new ArgumentOutOfRangeException("maxLineLength", maxLineLength, "Value must be greater than " + MinLineLength);
+				throw new ArgumentOutOfRangeException("maxLineLength", maxLineLength, "Value must be greater than or equal to " + MinLineLength);
 			}
 
 			MaxLineLineLength = maxLineLength;

@@ -12,11 +12,8 @@ namespace NTestify {
 		/// </summary>
 		IEnumerable<ITest> Tests { get; }
 
-		IEnumerable<ITest> FlattenedTests { get; }
-
 		/// <summary>
-		/// Adds a test to the suite. Note that the test can also
-		/// be another test suite
+		/// Adds a test to the suite. This test can also be another test suite.
 		/// </summary>
 		ITestSuite AddTest(ITest test);
 

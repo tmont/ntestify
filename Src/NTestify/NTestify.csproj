@@ -51,7 +51,10 @@
   <ItemGroup>
     <Compile Include="Assert.cs" />
     <Compile Include="AssertionExtensionPoint.cs" />
-    <Compile Include="ConsoleTestMethodConfigurator.cs" />
+    <Compile Include="Configuration\ConsoleTestMethodConfigurator.cs" />
+    <Compile Include="Configuration\ConsoleTestSuiteConfigurator.cs" />
+    <Compile Include="Configuration\ITestConfigurator.cs" />
+    <Compile Include="Configuration\NullConfigurator.cs" />
     <Compile Include="Constraint\BinaryConstraint.cs" />
     <Compile Include="Constraint\ContainsConstraint.cs" />
     <Compile Include="Constraint\CountConstraint.cs" />
@@ -68,7 +71,9 @@
     </Compile>
     <Compile Include="Constraint\StringContainsConstraint.cs" />
     <Compile Include="Constraint\StringMatchesRegexConstraint.cs" />
+    <Compile Include="Execution\AssemblyTestRunner.cs" />
     <Compile Include="Execution\CategoryAccumulationFilter.cs" />
+    <Compile Include="Execution\ITestRunner.cs" />
     <Compile Include="Execution\NameAccumulationFilter.cs" />
     <Compile Include="Execution\NamespaceAccumulationFilter.cs" />
     <Compile Include="ExpectedExceptionAttribute.cs" />
@@ -76,6 +81,7 @@
     <Compile Include="Execution\IAccumulationFilter.cs" />
     <Compile Include="InvokableFilter.cs" />
     <Compile Include="ITestInfo.cs" />
+    <Compile Include="ITestMethodInfo.cs" />
     <Compile Include="PostTestFilter.cs" />
     <Compile Include="PreTestFilter.cs" />
     <Compile Include="Execution\RegexAccumulationFilter.cs" />
@@ -88,15 +94,12 @@
     </Compile>
     <Compile Include="Constraint\IConstraint.cs" />
     <Compile Include="IgnoreAttribute.cs" />
-    <Compile Include="ITestConfigurator.cs" />
     <Compile Include="ITestResult.cs" />
-    <Compile Include="ITestRunner.cs" />
     <Compile Include="ITestSuite.cs" />
     <Compile Include="Logging\ILoggable.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Log4NetLogger.cs" />
     <Compile Include="Logging\NullLogger.cs" />
-    <Compile Include="NullConfigurator.cs" />
     <Compile Include="ReflectedTestMethod.cs" />
     <Compile Include="ReflectionExtensions.cs" />
     <Compile Include="StringAssertions.cs">
@@ -109,7 +112,6 @@
     <Compile Include="TestFilter.cs" />
     <Compile Include="TestifyAttribute.cs" />
     <Compile Include="TestResult.cs" />
-    <Compile Include="AssemblyTestRunner.cs" />
     <Compile Include="TestSuite.cs" />
     <Compile Include="ITest.cs" />
     <Compile Include="TestAssertionException.cs" />
@@ -118,6 +120,7 @@
     <Compile Include="TestMethodResult.cs" />
     <Compile Include="TestStatus.cs" />
     <Compile Include="TestSuiteResult.cs" />
+    <Compile Include="Configuration\VerboseTestMethodConfigurator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

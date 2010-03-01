@@ -1,9 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
+using NTestify.Configuration;
 using NTestify.Execution;
-using NTestify.Logging;
 using NDesk.Options;
 
 namespace NTestify.ConsoleRunner {

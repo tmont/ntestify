@@ -2,27 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using NTestify.Configuration;
 using NTestify.Logging;
 
-namespace NTestify {
-
-	public class VerboseTestMethodConfigurator : ITestConfigurator {
-		public void Configure(ITest test) {
-			test.OnBeforeRun += context => Console.Write(test.Name + ": ");
-			test.OnError += context => Console.Write("ERROR ");
-			test.OnPass += context => Console.Write("PASS ");
-			test.OnFail += context => Console.Write("FAIL ");
-			test.OnIgnore += context => Console.Write("IGNORE ");
-			test.OnAfterRun += context => {
-				Console.WriteLine("(" + context.Result.ExecutionTimeInSeconds + ")");
-				if (!string.IsNullOrEmpty(context.Result.Message)) {
-					Console.WriteLine("  " + context.Result.Message);
-				}
-				Console.WriteLine(new string('-', 60));
-			};
-		}
-	}
-
+namespace NTestify.Execution {
 	/// <summary>
 	/// Test runner that scans an assembly for testable classes
 	/// and methods. This is the default test runner in NTestify.
@@ -62,7 +45,7 @@ namespace NTestify {
 				from method in assembly.GetUnattachedTestMethods()
 				let instance = Activator.CreateInstance(method.DeclaringType)
 				select new ReflectedTestMethod(method, instance) { Logger = Logger }.Configure(TestMethodConfigurator)
-			).Where(ApplyFilters).Cast<ReflectedTestMethod>();
+				).Where(ApplyFilters).Cast<ReflectedTestMethod>();
 		}
 
 		/// <summary>
@@ -79,10 +62,12 @@ namespace NTestify {
 					.Where(ApplyFilters)
 					.Cast<ITest>()
 				select new TestSuite(innerTests) { Name = instance.GetType().Name, Logger = Logger }.Configure(TestSuiteConfigurator)
-			).Where(ApplyFilters).Cast<TestSuite>();
+				).Where(ApplyFilters).Cast<TestSuite>();
 		}
 
-		///<inheritdoc/>
+		/// <summary>
+		/// Runs a single test or suite and returns a result
+		/// </summary>
 		ITestResult ITestRunner.RunTest(ITest test, ExecutionContext executionContext) {
 			test.Run(executionContext);
 			return executionContext.Result;
@@ -92,10 +77,16 @@ namespace NTestify {
 			return Filters.All(f => f.Filter(test));
 		}
 
+		/// <summary>
+		/// Gets all of the accumulation filters for this test runner
+		/// </summary>
 		public IEnumerable<IAccumulationFilter> Filters {
 			get { return filters; }
 		}
 
+		/// <summary>
+		/// Adds an accumulation filter to the test runner
+		/// </summary>
 		public ITestRunner AddFilter(IAccumulationFilter filter) {
 			filters.Add(filter);
 			return this;

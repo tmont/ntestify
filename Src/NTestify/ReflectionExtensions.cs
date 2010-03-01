@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace NTestify {
-	[EditorBrowsable(EditorBrowsableState.Never)]
 	public static class ReflectionExtensions {
 
 		/// <summary>

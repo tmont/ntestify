@@ -11,7 +11,7 @@ namespace NTestify {
 		/// <summary>
 		/// Exception that indicates that a test encountered an error
 		/// </summary>
-		internal sealed class TestErredException : Exception {
+		protected internal sealed class TestErredException : Exception {
 			/// <param name="error">The exception that caused the error</param>
 			/// <param name="reason">The reason the test erred</param>
 			public TestErredException(Exception error, string reason)
@@ -28,14 +28,14 @@ namespace NTestify {
 		/// <summary>
 		/// Exception that indicates that a test failed
 		/// </summary>
-		internal sealed class TestFailedException : Exception {
+		protected internal sealed class TestFailedException : Exception {
 			public TestFailedException(string message) : base(message) { }
 		}
 
 		/// <summary>
 		/// Exception that indicates that a test was ignored
 		/// </summary>
-		internal sealed class TestIgnoredException : Exception {
+		protected internal sealed class TestIgnoredException : Exception {
 			public TestIgnoredException(string reason) : base(reason) { }
 		}
 		#endregion
@@ -61,7 +61,16 @@ namespace NTestify {
 		}
 		#endregion
 
+		/// <summary>
+		/// Gets or sets the exception that is expected to be thrown during execution
+		/// of the test. If no exception is expected to be thrown, this value should
+		/// be null.
+		/// </summary>
 		public Type ExpectedException { get; set; }
+
+		/// <summary>
+		/// Gets or sets the message of the expected exception
+		/// </summary>
 		public string ExpectedExceptionMessage { get; set; }
 
 		public ITest Configure(ITestConfigurator configurator) {
@@ -74,7 +83,11 @@ namespace NTestify {
 			SetDefaultEventHandlers();
 		}
 
-		///<inheritdoc/>
+		/// <summary>
+		/// Runs the test, and sets the ExecutionContext's Result property
+		/// with the result of the test
+		/// </summary>
+		/// <param name="executionContext">The current test execution context</param>
 		public void Run(ExecutionContext executionContext) {
 			Initialize(executionContext);
 			OnBeforeRun.Invoke(executionContext);
@@ -108,7 +121,7 @@ namespace NTestify {
 		/// <summary>
 		/// Does the expected exception stuff
 		/// </summary>
-		private void HandleThrownException(ExecutionContext executionContext) {
+		protected void HandleThrownException(ExecutionContext executionContext) {
 			if (ExpectedException == null) {
 				return;
 			}
@@ -219,8 +232,19 @@ namespace NTestify {
 		/// </summary>
 		protected abstract void RunTest(ExecutionContext executionContext);
 
+		/// <summary>
+		/// Gets or sets the name of the test
+		/// </summary>
 		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or sets the description of the test
+		/// </summary>
 		public string Description { get; set; }
+
+		/// <summary>
+		/// Gets or sets the category for the test
+		/// </summary>
 		public string Category { get; set; }
 
 		/// <summary>

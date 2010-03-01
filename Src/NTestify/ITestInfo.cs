@@ -1,33 +1,21 @@
-using System.Reflection;
-
 namespace NTestify {
 	/// <summary>
 	/// Encapsulates information about a test
 	/// </summary>
 	public interface ITestInfo {
 		/// <summary>
-		/// Description of the test
+		/// Gets or sets the description of the test
 		/// </summary>
 		string Description { get; set; }
 
 		/// <summary>
-		/// Name of the category for this test
+		/// Gets or sets the category for the test
 		/// </summary>
 		string Category { get; set; }
 
 		/// <summary>
-		/// Name of the test
+		/// Gets or sets the name of the test
 		/// </summary>
 		string Name { get; set; }
-	}
-
-	/// <summary>
-	/// Encapsulates information about a test method
-	/// </summary>
-	public interface ITestMethodInfo : ITestInfo {
-		/// <summary>
-		/// The method to invoke to run this test
-		/// </summary>
-		MethodInfo Method { get; }
 	}
 }
