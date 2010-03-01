@@ -9,7 +9,7 @@ namespace NTestify.Constraint {
 		public StringMatchesRegexConstraint(string haystack, string regex) : base(haystack, regex) { }
 
 		public override bool Validate(){
-			return string.IsNullOrEmpty(Expected) ? string.IsNullOrEmpty(Actual) : Regex.IsMatch(Expected, Actual);
+			return string.IsNullOrEmpty(Expected) ? string.IsNullOrEmpty(Actual) : Regex.IsMatch(Expected, Actual ?? string.Empty);
 		}
 
 		public override string FailMessage {
@@ -17,7 +17,7 @@ namespace NTestify.Constraint {
 		}
 
 		public override string NegatedFailMessage {
-			get { return FailMessage.Replace(" matches ", " does not match"); }
+			get { return FailMessage.Replace(" matches ", " does not match "); }
 		}
 	}
 }

@@ -521,6 +521,12 @@ namespace NTestify.Tests {
 			Assert.Matches(foo, string.Empty);
 			Assert.Matches(string.Empty, string.Empty);
 		}
+
+		[TestMethod]
+		public void String_should_match_null_regex() {
+			Assert.Matches("foo", null);
+			Assert.Matches("foo", string.Empty);
+		}
 		#endregion
 		#endregion
 
