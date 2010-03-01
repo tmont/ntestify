@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NTestify.Sample", "Sample\N
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NTestify.Mock", "Src\NTestify.Mock\NTestify.Mock.csproj", "{3C4D948E-3B21-4429-9DD1-5F5543F2BA1E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NTestify.GuiRunner", "Src\NTestify.GuiRunner\NTestify.GuiRunner.csproj", "{1323B5ED-FA5F-4D54-A8D9-8128442CFF75}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{3C4D948E-3B21-4429-9DD1-5F5543F2BA1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C4D948E-3B21-4429-9DD1-5F5543F2BA1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C4D948E-3B21-4429-9DD1-5F5543F2BA1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1323B5ED-FA5F-4D54-A8D9-8128442CFF75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1323B5ED-FA5F-4D54-A8D9-8128442CFF75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1323B5ED-FA5F-4D54-A8D9-8128442CFF75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1323B5ED-FA5F-4D54-A8D9-8128442CFF75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
