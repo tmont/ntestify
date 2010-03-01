@@ -174,6 +174,10 @@ namespace NTestify.Tests {
 			return this;
 		}
 
+		public Type ExpectedException { get; set; }
+
+		public string ExpectedExceptionMessage { get; set; }
+
 		public event Action<ExecutionContext> OnBeforeRun;
 		public event Action<ExecutionContext> OnAfterRun;
 		public event Action<ExecutionContext> OnIgnore;

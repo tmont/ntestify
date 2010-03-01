@@ -23,6 +23,7 @@ namespace NTestify {
 			Name = method.DeclaringType.Name + "." + method.Name;
 
 			ApplyAttributeDetails();
+			ApplyExpectedExceptionDetails();
 		}
 
 		/// <summary>
@@ -44,6 +45,19 @@ namespace NTestify {
 			Name = testInfo.Name ?? Name;
 			Description = testInfo.Description;
 			Category = testInfo.Category;
+		}
+
+		private void ApplyExpectedExceptionDetails() {
+			var exceptionDetails = Method
+				.GetAttributes<ExpectedExceptionAttribute>()
+				.FirstOrDefault();
+
+			if (exceptionDetails == null) {
+				return;
+			}
+
+			ExpectedException = exceptionDetails.ExpectedException;
+			ExpectedExceptionMessage = exceptionDetails.ExpectedMessage;
 		}
 
 		/// <summary>
@@ -130,7 +144,7 @@ namespace NTestify {
 		/// Handles exceptions raised during a test
 		/// </summary>
 		/// <exception cref="Test.TestFailedException">If an assertion failed</exception>
-		/// <exception cref="Test.TestErredException">If anything other a TestAssertionException was thrown</exception>
+		/// <exception cref="Test.TestErredException">If anything other than a TestAssertionException was thrown</exception>
 		private static void HandleException(Exception exception) {
 			var actualException = exception.GetBaseException();
 			if (actualException is TestAssertionException) {

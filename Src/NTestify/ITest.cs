@@ -19,6 +19,18 @@ namespace NTestify {
 		ITest Configure(ITestConfigurator configurator);
 
 		/// <summary>
+		/// Gets or sets the exception that is expected to be thrown during execution
+		/// of the test. If no exception is expected to be thrown, this value should
+		/// be null.
+		/// </summary>
+		Type ExpectedException { get; set; }
+
+		/// <summary>
+		/// Gets or sets the message of the expected exception
+		/// </summary>
+		string ExpectedExceptionMessage { get; set; }
+
+		/// <summary>
 		/// Event that fires before a test runs
 		/// </summary>
 		event Action<ExecutionContext> OnBeforeRun;

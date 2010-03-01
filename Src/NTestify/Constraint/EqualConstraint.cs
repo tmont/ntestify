@@ -86,7 +86,7 @@ namespace NTestify.Constraint {
 			}
 
 			if (expected is ICollection) {
-				//collection will be handled separately
+				//collections will be handled separately
 				return CompareCollections((ICollection)expected, (ICollection)actual);
 			}
 

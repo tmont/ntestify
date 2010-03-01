@@ -38,7 +38,7 @@ namespace NTestify.Tests {
 			return test;
 		}
 
-		private void SetEventHandlers(ITest test){
+		private void SetEventHandlers(ITest test) {
 			test.OnBeforeRun += context => beforeTest = true;
 			test.OnAfterRun += context => afterTest = true;
 			test.OnError += context => testErred = true;
@@ -135,53 +135,70 @@ namespace NTestify.Tests {
 			AssertEvents(true, false, false, false);
 		}
 
+		[TestMethod]
+		public void Should_apply_expected_exception_stuff() {
+			var test = new ReflectedTestMethod(typeof(FakeTestClass).GetMethod("TestMethodThatErrs"), instance) {
+				ExpectedException = typeof(Exception),
+				ExpectedExceptionMessage = "hi there!"
+			};
+
+			SetEventHandlers(test);
+			test.Run(executionContext);
+
+			Ass.That(executionContext.Result.Status, Is.EqualTo(TestStatus.Pass));
+			AssertEvents(true, false, false, false);
+		}
+
+		#region Mocks
+		internal class FakeTestClass {
+
+			public static void StaticMethod() { }
+
+			public void TestMethodThatPasses() { }
+
+			public void TestMethodThatErrs() {
+				throw new Exception("hi there!");
+			}
+
+			public void TestMethodThatFails() {
+				throw new TestAssertionException();
+			}
+
+			public void TestMethodThatIsInvalid(int foo) { }
+
+			[FilterThatThrowsException, Ignore(Reason = "this test sux!")]
+			public void TestMethodThatIsIgnored() {
+				throw new Exception("This should never get thrown");
+			}
+			[FilterThatThrowsException]
+			public void TestMethodThatHasABadFilter() {
+				throw new Exception("This should never get thrown");
+			}
+
+			[FilterThatSetsProperty]
+			public void TestMethodThatHasFilters() { }
+
+			[Test(Name = "lolz", Category = "Da category", Description = "A test that has a name")]
+			public void TestMethodThatHasName() { }
+		}
+
+		[PreTestFilter]
+		internal class FilterThatThrowsException : TestFilter {
+			public override void Execute(ExecutionContext executionContext) {
+				throw new Exception("OH HAI!");
+			}
+		}
+
+		[PreTestFilter]
+		internal class FilterThatSetsProperty : TestFilter {
+			public override void Execute(ExecutionContext executionContext) {
+				Executed = true;
+			}
+
+			public static bool Executed { get; private set; }
+		}
+		#endregion
 	}
 
-	internal class FakeTestClass {
-
-		public static void StaticMethod() { }
-
-		public void TestMethodThatPasses() { }
-
-		public void TestMethodThatErrs() {
-			throw new Exception("hi there!");
-		}
-
-		public void TestMethodThatFails() {
-			throw new TestAssertionException();
-		}
-
-		public void TestMethodThatIsInvalid(int foo) { }
-
-		[FilterThatThrowsException, Ignore(Reason = "this test sux!")]
-		public void TestMethodThatIsIgnored() {
-			throw new Exception("This should never get thrown");
-		}
-		[FilterThatThrowsException]
-		public void TestMethodThatHasABadFilter() {
-			throw new Exception("This should never get thrown");
-		}
-
-		[FilterThatSetsProperty]
-		public void TestMethodThatHasFilters() { }
-
-		[Test(Name = "lolz", Category = "Da category", Description = "A test that has a name")]
-		public void TestMethodThatHasName() { }
-	}
-
-	[PreTestFilter]
-	internal class FilterThatThrowsException : TestFilter {
-		public override void Execute(ExecutionContext executionContext) {
-			throw new Exception("OH HAI!");
-		}
-	}
-
-	[PreTestFilter]
-	internal class FilterThatSetsProperty : TestFilter {
-		public override void Execute(ExecutionContext executionContext) {
-			Executed = true;
-		}
-
-		public static bool Executed { get; private set; }
-	}
+	
 }

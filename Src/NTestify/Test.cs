@@ -5,7 +5,7 @@ namespace NTestify {
 	/// <summary>
 	/// Base class for all built-in, runnable tests
 	/// </summary>
-	public abstract class Test : ITest, ITestInfo, ILoggable {
+	public abstract class Test : ITest, ILoggable {
 
 		#region Inner exceptions
 		/// <summary>
@@ -61,6 +61,9 @@ namespace NTestify {
 		}
 		#endregion
 
+		public Type ExpectedException { get; set; }
+		public string ExpectedExceptionMessage { get; set; }
+
 		public ITest Configure(ITestConfigurator configurator) {
 			configurator.Configure(this);
 			return this;
@@ -85,6 +88,8 @@ namespace NTestify {
 				executionContext.ThrownException = exception;
 			}
 
+			HandleThrownException(executionContext);
+
 			try {
 				RunPostTestFilters(executionContext);
 			} catch (Exception filterException) {
@@ -98,6 +103,40 @@ namespace NTestify {
 			InvokeStatusEvent(executionContext);
 			executionContext.Result.EndTime = DateTime.Now;
 			OnAfterRun.Invoke(executionContext);
+		}
+
+		/// <summary>
+		/// Does the expected exception stuff
+		/// </summary>
+		private void HandleThrownException(ExecutionContext executionContext) {
+			if (ExpectedException == null) {
+				return;
+			}
+
+			if (executionContext.ThrownException == null) {
+				Fail(executionContext, string.Format("Expected exception of type {0} was never thrown.", ExpectedException.GetFriendlyName()));
+				return;
+			}
+
+			var temp = executionContext.ThrownException.GetBaseException();
+			var thrownException = (temp is TestErredException && ((TestErredException)temp).CauseError != null) ? ((TestErredException)temp).CauseError : temp;
+
+			if (thrownException.GetType() != ExpectedException) {
+				Fail(executionContext, string.Format(
+					"Expected exception of type {0}, but exception of type {1} was thrown.",
+					ExpectedException.GetFriendlyName(),
+					thrownException.GetType().GetFriendlyName()
+				));
+			} else if (!string.IsNullOrEmpty(ExpectedExceptionMessage) && thrownException.Message != ExpectedExceptionMessage) {
+				Fail(executionContext, string.Format(
+					"Expected exception message did not match actual exception message.\nExpected: {0}\nActual:   {1}",
+					ExpectedExceptionMessage,
+					thrownException.Message
+				));
+			} else {
+				//the test threw the correct exception with the correct message, so the result should be pass
+				Pass(executionContext);
+			}
 		}
 
 		/// <summary>
