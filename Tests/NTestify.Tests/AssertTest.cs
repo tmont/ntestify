@@ -279,7 +279,7 @@ namespace NTestify.Tests {
 		public void Should_pass_because_objects_are_the_same_reference() {
 			var obj = new ObjectThatIsNeverEqual();
 			Assert.Equal(obj, obj);
-			
+
 			var obj2 = new ObjectThatIsAlwaysEqual();
 			Assert.Equal(obj2, obj2);
 		}
@@ -289,7 +289,7 @@ namespace NTestify.Tests {
 		#region Simple Assertions
 		#region Boolean Assertions
 		[TestMethod]
-		public void Should_be_true(){
+		public void Should_be_true() {
 			Assert.True(true);
 		}
 
@@ -300,7 +300,7 @@ namespace NTestify.Tests {
 
 		[TestMethod]
 		[ExEx(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that false is true.")]
-		public void False_should_not_be_true(){
+		public void False_should_not_be_true() {
 			Assert.True(false);
 		}
 
@@ -407,7 +407,7 @@ namespace NTestify.Tests {
 		#region Collection Assertions
 		#region Contains
 		[TestMethod]
-		public void Collection_should_contain_value(){
+		public void Collection_should_contain_value() {
 			Assert.Contains(new[] { 1 }, 1);
 			Assert.Contains(new[] { "foo" }, "foo");
 			Assert.Contains(new[] { 'a' }, 'a');
@@ -440,7 +440,7 @@ namespace NTestify.Tests {
 		#region Count
 		[TestMethod]
 		[ExEx(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that the number of items in an object of type System.Object[] is 1.")]
-		public void Null_should_be_treated_as_empty_enumerable(){
+		public void Null_should_be_treated_as_empty_enumerable() {
 			Assert.Count<object>(null, 0); //should pass
 			Assert.Count<object>(null, 1);
 		}
@@ -452,6 +452,78 @@ namespace NTestify.Tests {
 		}
 		#endregion
 		#endregion
+
+		#region String Assertions
+		#region Contains
+		[TestMethod]
+		public void String_should_contain_string() {
+			Assert.Contains("foo", "f");
+			Assert.Contains("foo", "o");
+			Assert.Contains("foo", "fo");
+			Assert.Contains("foo", "oo");
+			Assert.Contains("foo", "foo");
+		}
+
+		[TestMethod]
+		public void String_should_contain_null() {
+			Assert.Contains("foo", null);
+		}
+
+		[TestMethod]
+		public void Null_string_should_contain_null() {
+			Assert.Contains(null, null);
+		}
+
+		[TestMethod]
+		[ExEx(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that the string \"\" contains the string \"foo\".")]
+		public void Null_string_should_not_contain_nonempty_string() {
+			const string foo = null;
+			Assert.NotContains(foo, "foo");
+			Assert.Contains(foo, "foo");
+		}
+
+		[TestMethod]
+		[ExEx(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that the string \"foo\" contains the string \"bar\".")]
+		public void String_should_not_contain_string() {
+			Assert.NotContains("foo", "bar");
+			Assert.Contains("foo", "bar");
+		}
+		#endregion
+
+		#region Matches
+		[TestMethod]
+		public void String_should_match_regex() {
+			Assert.Matches("foobar", ".*");
+			Assert.Matches("foobar", "^fo+");
+		}
+
+		[TestMethod]
+		[ExEx(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that the string \"foobar\" matches the regular expression \"^$\".")]
+		public void String_should_not_match_regex() {
+			Assert.NotMatches("foobar", "hello");
+			Assert.NotMatches("foobar", "^$");
+			Assert.Matches("foobar", "^$");
+		}
+
+		[TestMethod]
+		[ExEx(typeof(TestAssertionException), ExpectedMessage = "Failed asserting that the string \"\" matches the regular expression \"^$\".")]
+		public void Null_string_should_not_match_regex() {
+			const string foo = null;
+			Assert.NotMatches(foo, "hello");
+			Assert.Matches(foo, "^$");
+		}
+
+		[TestMethod]
+		public void Empty_string_should_match_null_regex() {
+			const string foo = null;
+			Assert.Matches(foo, null);
+			Assert.Matches(string.Empty, null);
+			Assert.Matches(foo, string.Empty);
+			Assert.Matches(string.Empty, string.Empty);
+		}
+		#endregion
+		#endregion
+
 	}
 
 	#region Mocks

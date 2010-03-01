@@ -6,7 +6,8 @@ using System.Text;
 namespace NTestify.Constraint {
 
 	/// <summary>
-	/// Constraint that validates the equality of two objects
+	/// Constraint that validates the equality of two objects.
+	/// TODO Add expression equality in here
 	/// </summary>
 	public class EqualConstraint : BinaryConstraint<object> {
 

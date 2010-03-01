@@ -66,6 +66,8 @@
     <Compile Include="CollectionAssertions.cs">
       <DependentUpon>Assert.cs</DependentUpon>
     </Compile>
+    <Compile Include="Constraint\StringContainsConstraint.cs" />
+    <Compile Include="Constraint\StringMatchesRegexConstraint.cs" />
     <Compile Include="Execution\CategoryAccumulationFilter.cs" />
     <Compile Include="Execution\NameAccumulationFilter.cs" />
     <Compile Include="Execution\NamespaceAccumulationFilter.cs" />
@@ -97,6 +99,9 @@
     <Compile Include="NullConfigurator.cs" />
     <Compile Include="ReflectedTestMethod.cs" />
     <Compile Include="ReflectionExtensions.cs" />
+    <Compile Include="StringAssertions.cs">
+      <DependentUpon>Assert.cs</DependentUpon>
+    </Compile>
     <Compile Include="TearDownAttribute.cs" />
     <Compile Include="Test.cs" />
     <Compile Include="TestableAttribute.cs" />

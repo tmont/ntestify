@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using NTestify.Constraint;
+﻿using NTestify.Constraint;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -53,12 +52,8 @@ namespace NTestify {
 		/// <summary>
 		/// Safely casts a non-generic IEnumerable
 		/// </summary>
-		private static IEnumerable<object> SafeCast<T>(IEnumerable<T> enumerable){
-			if (enumerable == null) {
-				return Enumerable.Empty<object>();
-			}
-
-			return enumerable.Cast<object>();
+		private static IEnumerable<object> SafeCast<T>(IEnumerable<T> enumerable) {
+			return (enumerable == null) ? Enumerable.Empty<object>() : enumerable.Cast<object>();
 		}
 
 		/// <summary>
