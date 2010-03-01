@@ -116,9 +116,17 @@ namespace NTestify.Constraint {
 			if (expected is IDictionary) {
 				return CompareDictionaries((IDictionary)expected, (IDictionary)actual);
 			}
+			if (expected is IList) {
+				return CompareLists((IList)expected, (IList)actual);
+			}
 
-			//if it's not a dictionary, it's a list
-			return CompareLists((IList)expected, (IList)actual);
+			//some custom implementation of ICollection, so just fall back to object.Equals()
+			if (!expected.Equals(actual)) {
+				reasonForFailure.Append("expected.Equals(actual) failed for two ICollection implementations.");
+				return false;
+			}
+
+			return true;
 		}
 
 		private bool CompareLists(IList expected, IList actual) {
@@ -143,15 +151,16 @@ namespace NTestify.Constraint {
 				if (!actual.Contains(key)) {
 					reasonForFailure.Append(string.Format(
 						"Actual does not contain key {0}.",
-						(key is string || key.GetType().IsPrimitive) ? key : "fix me" //TODO this needs to show some sort of friendly object description
+						key
 					));
 					return false;
 				}
 				if (!AreEqual(expected[key], actual[key])) {
 					reasonForFailure.Append(TheCorrectNewLineChar).Append(string.Format(
-						"Actual value does not match expected value at key {0}: {1}.",
+						"Actual value does not match expected value at key {0}: expected {1} but got {2}.",
 						key,
-						expected[key]
+						expected[key],
+						actual[key]
 					));
 					return false;
 				}
@@ -164,6 +173,6 @@ namespace NTestify.Constraint {
 		public override string FailMessage { get { return string.Format("Failed asserting that two objects are equal.\n{0}", reasonForFailure); } }
 		
 		///<inheritdoc/>
-		public override string NegatedFailMessage { get { return "Failed asserting that two objects are not equal."; } }
+		public override string NegatedFailMessage { get { return FailMessage.Replace(" are equal.", " are not equal"); } }
 	}
 }
