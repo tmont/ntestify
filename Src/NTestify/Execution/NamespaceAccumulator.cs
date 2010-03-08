@@ -19,11 +19,10 @@ namespace NTestify.Execution {
 			var ns = typeContainedInNamespace.Namespace;
 			if (ns == null) {
 				//e.g. anonymous type
-				throw new ArgumentException("Type given is not contained within a namespace");
+				throw new ArgumentException("Type given is not contained within a namespace", "typeContainedInNamespace");
 			}
 
 			var unattachedMethodAccumulator = new UnattachedMethodAccumulator();
-
 			return typeContainedInNamespace
 				.Assembly
 				.GetTestClasses()

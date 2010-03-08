@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using NTestify.Configuration;
 
@@ -23,10 +21,8 @@ namespace NTestify.Execution {
 		/// </summary>
 		/// <param name="assembly">The assembly in which to search for tests</param>
 		public virtual ITestResult RunAll(_Assembly assembly) {
-			var suite = new AssemblyAccumulator()
-				.Accumulate(assembly, Filters, Configurator)
-				.Single();
-
+			var tests = new AssemblyAccumulator().Accumulate(assembly, Filters, Configurator);
+			var suite = new TestSuite(tests) { Name = assembly.GetName().Name }.Configure(Configurator);
 			return ((ITestRunner)this).RunTest(suite, new ExecutionContext { Test = suite });
 		}
 

@@ -22,6 +22,7 @@ namespace NTestify {
 
 		public ClassSuite(Type @class) {
 			Class = @class;
+			Name = Class.Name;
 			AddTests(Accumulator.Accumulate(Class, Enumerable.Empty<IAccumulationFilter>(), new NullConfigurator()));
 		}
 

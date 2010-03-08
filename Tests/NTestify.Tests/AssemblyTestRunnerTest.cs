@@ -3,9 +3,25 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Moq;
 using NTestify.Execution;
+using NTestify.Tests.AssemblyHelpers;
 using NUnit.Framework;
 using TestMethod = NUnit.Framework.TestAttribute;
 using Ass = NUnit.Framework.Assert;
+
+namespace NTestify.Tests.AssemblyHelpers {
+	[Test]
+	internal class FakeAssemblyTestClass {
+
+		[Test]
+		public void FakeTest() { }
+
+	}
+
+	internal class FakeAssemblyTestClassThatIsNotATest {
+		[Test]
+		public void AnotherFakeTest() { }
+	}
+}
 
 namespace NTestify.Tests {
 	[TestFixture]
@@ -41,18 +57,4 @@ namespace NTestify.Tests {
 
 	}
 
-	#region Mocks
-	[Test]
-	internal class FakeAssemblyTestClass {
-
-		[Test]
-		public void FakeTest() { }
-
-	}
-
-	internal class FakeAssemblyTestClassThatIsNotATest {
-		[Test]
-		public void AnotherFakeTest() { }
-	}
-	#endregion
 }
