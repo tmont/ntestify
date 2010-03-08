@@ -5,6 +5,9 @@ using System.Runtime.InteropServices;
 using NTestify.Configuration;
 
 namespace NTestify.Execution {
+	/// <summary>
+	/// Accumulates all tests within an assembly
+	/// </summary>
 	public class AssemblyAccumulator : ITestAccumulator<_Assembly> {
 		public IEnumerable<ITest> Accumulate(_Assembly assembly, IEnumerable<IAccumulationFilter> filters, ITestConfigurator configurator) {
 			var namespaceAccumulator = new NamespaceAccumulator();
