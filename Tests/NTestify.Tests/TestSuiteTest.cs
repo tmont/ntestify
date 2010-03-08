@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NTestify.Configuration;
 using NUnit.Framework;
 using TestMethod = NUnit.Framework.TestAttribute;
 using Ass = NUnit.Framework.Assert;
@@ -170,7 +171,7 @@ namespace NTestify.Tests {
 		public string Description { get; set; }
 		public string Category { get; set; }
 		public ITestConfigurator Configurator { get; set; }
-		public ITest Configure(ITestConfigurator configurator){
+		public ITest Configure(ITestConfigurator configurator) {
 			return this;
 		}
 

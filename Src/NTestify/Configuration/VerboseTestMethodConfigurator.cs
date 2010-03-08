@@ -1,6 +1,6 @@
 using System;
 
-namespace NTestify {
+namespace NTestify.Configuration {
 	public class VerboseTestMethodConfigurator : ITestConfigurator {
 		public void Configure(ITest test) {
 			test.OnBeforeRun += context => Console.Write(test.Name + ": ");

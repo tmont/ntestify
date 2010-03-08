@@ -46,8 +46,7 @@ namespace NTestify.ConsoleRunner {
 			var assembly = Assembly.LoadFrom(dllPath);
 
 			var runner = new AssemblyTestRunner {
-				TestMethodConfigurator = new VerboseTestMethodConfigurator(),
-				TestSuiteConfigurator = new ConsoleTestSuiteConfigurator()
+				Configurator = new AssemblyConfigurator(new ConsoleTestSuiteConfigurator(), new VerboseTestMethodConfigurator())
 			};
 
 			if (!string.IsNullOrEmpty(name)) {

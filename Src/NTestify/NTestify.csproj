@@ -51,6 +51,8 @@
   <ItemGroup>
     <Compile Include="Assert.cs" />
     <Compile Include="AssertionExtensionPoint.cs" />
+    <Compile Include="ClassSuite.cs" />
+    <Compile Include="Configuration\AssemblyConfigurator.cs" />
     <Compile Include="Configuration\ConsoleTestMethodConfigurator.cs" />
     <Compile Include="Configuration\ConsoleTestSuiteConfigurator.cs" />
     <Compile Include="Configuration\ITestConfigurator.cs" />
@@ -71,17 +73,25 @@
     </Compile>
     <Compile Include="Constraint\StringContainsConstraint.cs" />
     <Compile Include="Constraint\StringMatchesRegexConstraint.cs" />
+    <Compile Include="Execution\AccumulatorExtensions.cs" />
+    <Compile Include="Execution\AssemblyAccumulator.cs" />
     <Compile Include="Execution\AssemblyTestRunner.cs" />
     <Compile Include="Execution\CategoryAccumulationFilter.cs" />
+    <Compile Include="Execution\ClassAccumulator.cs" />
+    <Compile Include="Execution\ITestAccumulator.cs" />
     <Compile Include="Execution\ITestRunner.cs" />
     <Compile Include="Execution\NameAccumulationFilter.cs" />
     <Compile Include="Execution\NamespaceAccumulationFilter.cs" />
+    <Compile Include="Execution\NamespaceAccumulator.cs" />
+    <Compile Include="Execution\UnattachedMethodAccumulator.cs" />
     <Compile Include="ExpectedExceptionAttribute.cs" />
     <Compile Include="FilterOrder.cs" />
     <Compile Include="Execution\IAccumulationFilter.cs" />
+    <Compile Include="IAccumulatable.cs" />
     <Compile Include="InvokableFilter.cs" />
     <Compile Include="ITestInfo.cs" />
     <Compile Include="ITestMethodInfo.cs" />
+    <Compile Include="NamespaceSuite.cs" />
     <Compile Include="PostTestFilter.cs" />
     <Compile Include="PreTestFilter.cs" />
     <Compile Include="Execution\RegexAccumulationFilter.cs" />

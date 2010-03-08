@@ -1,4 +1,5 @@
 ﻿using System;
+using NTestify.Configuration;
 
 namespace NTestify {
 	

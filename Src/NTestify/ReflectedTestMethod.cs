@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -93,7 +92,7 @@ namespace NTestify {
 				.Where(a => a.GetType().HasAttribute<PreTestFilter>());
 			if (filters.Any(attribute => attribute is IgnoreAttribute)) {
 				//if the test should be ignored, then we bail immediately without executing any other filters
-				throw new TestIgnoredException(filters.Where(f => f is IgnoreAttribute).Cast<IgnoreAttribute>().First().Reason);
+				throw new TestIgnoredException(filters.Where(filter => filter is IgnoreAttribute).Cast<IgnoreAttribute>().First().Reason);
 			}
 
 			filters = filters.Concat(GetInvokableFilters<SetupAttribute>(Method.DeclaringType));
@@ -109,39 +108,6 @@ namespace NTestify {
 				.Where(a => a.GetType().HasAttribute<PostTestFilter>())
 				.Concat(GetInvokableFilters<TearDownAttribute>(Method.DeclaringType));
 			RunFiltersInOrder(filters, executionContext);
-		}
-
-		private static IEnumerable<TestFilter> GetInvokableFilters<TFilter>(Type declaringClass) where TFilter : InvokableFilter {
-			return declaringClass
-				.GetMethods()
-				.Where(m => m.HasAttribute<TFilter>())
-				.Select(m => {
-					var setup = m.GetAttributes<TFilter>().First();
-					setup.Method = m;
-					return setup;
-				}).Cast<TestFilter>();
-		}
-
-		private void RunFiltersInOrder<TFilter>(IEnumerable<TFilter> filters, ExecutionContext executionContext) where TFilter : TestFilter {
-			foreach (var filter in filters.OrderBy(f => f.Order)) {
-				try {
-					filter.Execute(executionContext);
-				} catch (Exception exception) {
-					OnFilterError(exception, filter, executionContext);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Called when a filter encounters an error
-		/// </summary>
-		/// <param name="exception">The raised exception</param>
-		/// <param name="filter">The filter that encountered the error</param>
-		/// <param name="executionContext">The current test execution context</param>
-		/// <exception cref="Test.TestErredException"/>
-		protected virtual void OnFilterError(Exception exception, object filter, ExecutionContext executionContext) {
-			var message = string.Format("Encountered an error while trying to run method filter of type \"{0}\"", filter.GetType().GetFriendlyName());
-			throw new TestErredException(exception, message);
 		}
 
 		/// <summary>

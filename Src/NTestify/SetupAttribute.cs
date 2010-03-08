@@ -13,4 +13,16 @@ namespace NTestify {
 			set { throw new InvalidOperationException("Order of setup attributes cannot change"); }
 		}
 	}
+
+	/// <summary>
+	/// When a method is annotated with [SuiteSetup], it will be invoked before
+	/// the suite is run
+	/// </summary>
+	public sealed class SuiteSetupAttribute : InvokableFilter { }
+
+	/// <summary>
+	/// When a method is annotated with [SuiteTearDown], it will be invoked
+	/// after the suite is run
+	/// </summary>
+	public sealed class SuiteTearDownAttribute : InvokableFilter { }
 }

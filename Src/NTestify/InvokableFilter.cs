@@ -17,6 +17,6 @@ namespace NTestify {
 		/// <summary>
 		/// The method to invoke
 		/// </summary>
-		internal MethodInfo Method { get; set; }
+		protected internal MethodInfo Method { get; set; }
 	}
 }

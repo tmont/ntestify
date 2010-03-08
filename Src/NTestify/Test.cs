@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using NTestify.Configuration;
 using NTestify.Logging;
 
 namespace NTestify {
@@ -73,7 +76,11 @@ namespace NTestify {
 		/// </summary>
 		public string ExpectedExceptionMessage { get; set; }
 
+		/// <summary>
+		/// Uses the given configurator to configure the test
+		/// </summary>
 		public ITest Configure(ITestConfigurator configurator) {
+			configurator = configurator ?? new NullConfigurator();
 			configurator.Configure(this);
 			return this;
 		}
@@ -291,6 +298,48 @@ namespace NTestify {
 		/// </summary>
 		protected void Pass(ExecutionContext executionContext) {
 			executionContext.Result.Status = TestStatus.Pass;
+		}
+
+		/// <summary>
+		/// Gets all methods that are invokable filters
+		/// </summary>
+		/// <typeparam name="TFilter">The type of filter to search for</typeparam>
+		/// <param name="declaringClass">The class to search</param>
+		protected static IEnumerable<TestFilter> GetInvokableFilters<TFilter>(Type declaringClass) where TFilter : InvokableFilter {
+			return declaringClass
+				.GetMethods()
+				.Where(m => m.HasAttribute<TFilter>())
+				.Select(m => {
+					var setup = m.GetAttributes<TFilter>().First();
+					setup.Method = m;
+					return setup;
+				}).Cast<TestFilter>();
+		}
+
+		/// <summary>
+		/// Runs all filters ordered by their Order property
+		/// </summary>
+		/// <typeparam name="TFilter">The type of filters to run</typeparam>
+		protected void RunFiltersInOrder<TFilter>(IEnumerable<TFilter> filters, ExecutionContext executionContext) where TFilter : TestFilter {
+			foreach (var filter in filters.OrderBy(f => f.Order)) {
+				try {
+					filter.Execute(executionContext);
+				} catch (Exception exception) {
+					OnFilterError(exception, filter, executionContext);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Called when a filter encounters an error
+		/// </summary>
+		/// <param name="exception">The raised exception</param>
+		/// <param name="filter">The filter that encountered the error</param>
+		/// <param name="executionContext">The current test execution context</param>
+		/// <exception cref="TestErredException"/>
+		protected virtual void OnFilterError(Exception exception, object filter, ExecutionContext executionContext) {
+			var message = string.Format("Encountered an error while trying to run method filter of type \"{0}\"", filter.GetType().GetFriendlyName());
+			throw new TestErredException(exception, message);
 		}
 
 	}

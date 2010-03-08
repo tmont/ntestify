@@ -108,5 +108,11 @@ namespace NTestify {
 		public static bool IsMockable(this Type type) {
 			return !type.IsSealed;
 		}
+
+		public static IEnumerable<T> Walk<T>(this IEnumerable<T> enumerable, Action<T> callback) {
+			var list = enumerable.ToList();
+			list.ForEach(callback);
+			return list.AsEnumerable();
+		}
 	}
 }
