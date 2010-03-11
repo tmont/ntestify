@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace NTestify {
@@ -93,6 +94,7 @@ namespace NTestify {
 			tests.AddRange(listOfTests);
 			return this;
 		}
+
 	}
 
 }

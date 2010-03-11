@@ -32,15 +32,17 @@ namespace NTestify {
 		/// </summary>
 		/// <exception cref="Test.TestIgnoredException">If the class is annotated with [Ignore]</exception>
 		protected override void RunPreTestFilters(ExecutionContext executionContext) {
-			var filters = Class
-				.GetAttributes<TestFilter>()
-				.Where(a => a.GetType().HasAttribute<PreSuiteFilter>());
-			if (filters.Any(attribute => attribute is IgnoreAttribute)) {
-				//if the suite should be ignored, then we bail immediately without executing any other filters
-				throw new TestIgnoredException(filters.Where(filter => filter is IgnoreAttribute).Cast<IgnoreAttribute>().First().Reason);
+			//check if the entire suite should be ignored first
+			if (Class.HasAttribute<IgnoreAttribute>()) {
+				throw new TestIgnoredException(Class.GetAttributes<IgnoreAttribute>().First().Reason);
 			}
 
-			filters = filters.Concat(GetInvokableFilters<SuiteSetupAttribute>(Class));
+			var filters = GetInvokableFilters<SuiteSetupAttribute>(Class)
+				.Union(Class
+					.GetAttributes<TestFilter>()
+					.Where(filter => filter.GetType().HasAttribute<PreSuiteFilter>())
+				);
+
 			RunFiltersInOrder(filters, executionContext);
 		}
 
@@ -48,10 +50,12 @@ namespace NTestify {
 		/// Finds and executes each of the post suite filters
 		/// </summary>
 		protected override void RunPostTestFilters(ExecutionContext executionContext) {
-			var filters = Class
-				.GetAttributes<TestFilter>()
-				.Where(a => a.GetType().HasAttribute<PostSuiteFilter>())
-				.Concat(GetInvokableFilters<SuiteTearDownAttribute>(Class));
+			var filters = GetInvokableFilters<SuiteTearDownAttribute>(Class)
+				.Union(Class
+					.GetAttributes<TestFilter>()
+					.Where(filter => filter.GetType().HasAttribute<PostSuiteFilter>())
+				);
+			
 			RunFiltersInOrder(filters, executionContext);
 		}
 

@@ -3,11 +3,9 @@ namespace NTestify.Configuration {
 		private readonly ITestConfigurator suiteConfigurator;
 		private readonly ITestConfigurator methodConfigurator;
 
-		public AssemblyConfigurator() : this(new ConsoleTestSuiteConfigurator(), new ConsoleTestMethodConfigurator()) {
+		public AssemblyConfigurator() : this(new ConsoleTestSuiteConfigurator(), new ConsoleTestMethodConfigurator()) { }
 
-		}
-
-		public AssemblyConfigurator(ITestConfigurator suiteConfigurator, ITestConfigurator methodConfigurator){
+		public AssemblyConfigurator(ITestConfigurator suiteConfigurator, ITestConfigurator methodConfigurator) {
 			this.suiteConfigurator = suiteConfigurator;
 			this.methodConfigurator = methodConfigurator;
 		}

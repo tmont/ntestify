@@ -6,8 +6,8 @@ using NTestify.Configuration;
 namespace NTestify.Execution {
 	/// <summary>
 	/// Test runner that scans an assembly for testable classes
-	/// and methods. This is the default test runner used the NTestify
-	/// console and GUI applications.
+	/// and methods. This is the default test runner used by the NTestify
+	/// console application.
 	/// </summary>
 	public class AssemblyTestRunner : ITestRunner {
 		private readonly ICollection<IAccumulationFilter> filters;

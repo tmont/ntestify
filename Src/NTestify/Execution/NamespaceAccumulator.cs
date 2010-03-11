@@ -22,14 +22,13 @@ namespace NTestify.Execution {
 				throw new ArgumentException("Type given is not contained within a namespace", "typeContainedInNamespace");
 			}
 
-			var unattachedMethodAccumulator = new UnattachedMethodAccumulator();
 			return typeContainedInNamespace
 				.Assembly
 				.GetTestClasses()
 				.Where(type => type.Namespace == ns)
 				.Select(type => new ClassSuite(type))
 				.Cast<ITest>()
-				.Concat(unattachedMethodAccumulator
+				.Concat(new UnattachedMethodAccumulator()
 					.Accumulate(typeContainedInNamespace.Assembly, filters, configurator)
 					.Where(test => ((ITestMethodInfo)test).Method.DeclaringType.Namespace == ns)
 				);

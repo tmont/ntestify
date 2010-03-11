@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace NTestify {
 	/// <summary>
@@ -37,7 +36,7 @@ namespace NTestify {
 		IEnumerable<Exception> Errors { get; }
 
 		/// <summary>
-		/// [fluent] Adds an error to the error stack
+		/// Adds an error to the error stack
 		/// </summary>
 		/// <param name="exception"></param>
 		ITestResult AddError(Exception exception);

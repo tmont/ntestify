@@ -7,34 +7,35 @@ using NDesk.Options;
 
 namespace NTestify.ConsoleRunner {
 	class Program {
+		
+		static string dllPath;
+		static bool showHelp;
+		static string name;
+		static string suiteName;
+		static string category;
+		static string suiteCategory;
+		static string namespaceName;
+		static readonly OptionSet Options = new OptionSet {
+			{ "dll=", "The {PATH} to the dll or exe to scan for tests", v => dllPath = v},
+			{"h|help|usage", "Show usage", v => showHelp = (v != null)},
+			{"name=", "{REGEX} to filter test methods by name", v => name = v},
+			{"category=", "{REGEX} to filter test methods by category", v => category = v},
+			{"suite-category=", "{REGEX} to filter test suites by category", v => suiteCategory = v},
+			{"suite-name=", "{REGEX} to filter test suites by name", v => suiteName = v},
+			{"namespace=", "Run only tests under the given {NAMESPACE}", v => namespaceName = v}
+		};
+
+
 		static void Main(string[] args) {
-			string dllPath = null;
-			var showHelp = false;
-			string name = null;
-			string suiteName = null;
-			string category = null;
-			string suiteCategory = null;
-			string namespaceName = null;
-
-			var options = new OptionSet {
-				{ "dll=", "The {PATH} to the dll or exe to scan for tests", v => dllPath = v},
-				{"h|help|usage", "Show usage", v => showHelp = (v != null)},
-				{"name=", "{REGEX} to filter test methods by name", v => name = v},
-				{"category=", "{REGEX} to filter test methods by category", v => category = v},
-				{"suite-category=", "{REGEX} to filter test suites by category", v => suiteCategory = v},
-				{"suite-name=", "{REGEX} to filter test suites by name", v => suiteName = v},
-				{"namespace=", "Run only tests under the given {NAMESPACE}", v => namespaceName = v}
-			};
-
 			try {
-				options.Parse(args);
+				Options.Parse(args);
 			} catch (OptionException e) {
 				ShowError("Argument error: {0}", e.Message);
 				return;
 			}
 
 			if (showHelp) {
-				ShowUsage(options);
+				ShowUsage(Options);
 				return;
 			}
 
@@ -79,9 +80,9 @@ namespace NTestify.ConsoleRunner {
 
 		private static void PrintVersionString() {
 			var assembly = Assembly.GetAssembly(typeof(ITest));
-			var name = assembly.GetName();
+			var assemblyName = assembly.GetName();
 
-			Console.WriteLine(name.Name + " " + name.Version + " by " + assembly.GetAttributes<AssemblyCompanyAttribute>().First().Company);
+			Console.WriteLine(assemblyName.Name + " " + assemblyName.Version + " by " + assembly.GetAttributes<AssemblyCompanyAttribute>().First().Company);
 			Console.WriteLine();
 		}
 
