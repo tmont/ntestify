@@ -37,12 +37,7 @@ namespace NTestify {
 				throw new TestIgnoredException(Class.GetAttributes<IgnoreAttribute>().First().Reason);
 			}
 
-			var filters = GetInvokableFilters<SuiteSetupAttribute>(Class)
-				.Union(Class
-					.GetAttributes<TestFilter>()
-					.Where(filter => filter.GetType().HasAttribute<PreSuiteFilter>())
-				);
-
+			var filters = Class.GetInvokableFilters<SuiteSetupAttribute>().Union(Class.GetFilters<PreSuiteFilter>());
 			RunFiltersInOrder(filters, executionContext);
 		}
 
@@ -50,12 +45,7 @@ namespace NTestify {
 		/// Finds and executes each of the post suite filters
 		/// </summary>
 		protected override void RunPostTestFilters(ExecutionContext executionContext) {
-			var filters = GetInvokableFilters<SuiteTearDownAttribute>(Class)
-				.Union(Class
-					.GetAttributes<TestFilter>()
-					.Where(filter => filter.GetType().HasAttribute<PostSuiteFilter>())
-				);
-			
+			var filters = Class.GetInvokableFilters<SuiteTearDownAttribute>().Union(Class.GetFilters<PostSuiteFilter>());
 			RunFiltersInOrder(filters, executionContext);
 		}
 

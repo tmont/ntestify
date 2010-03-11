@@ -301,26 +301,9 @@ namespace NTestify {
 		}
 
 		/// <summary>
-		/// Gets all methods that are invokable filters
-		/// </summary>
-		/// <typeparam name="TFilter">The type of filter to search for</typeparam>
-		/// <param name="type">The class to search</param>
-		protected static IEnumerable<TestFilter> GetInvokableFilters<TFilter>(Type type) where TFilter : InvokableFilter {
-			return type
-				.GetMethods()
-				.Where(m => m.HasAttribute<TFilter>())
-				.Select(m => {
-					var invokable = m.GetAttributes<TFilter>().First();
-					invokable.Method = m;
-					return invokable;
-				}).Cast<TestFilter>();
-		}
-
-		/// <summary>
 		/// Runs all filters ordered by their Order property
 		/// </summary>
-		/// <typeparam name="TFilter">The type of filters to run</typeparam>
-		protected void RunFiltersInOrder<TFilter>(IEnumerable<TFilter> filters, ExecutionContext executionContext) where TFilter : TestFilter {
+		protected void RunFiltersInOrder(IEnumerable<TestFilter> filters, ExecutionContext executionContext){
 			foreach (var filter in filters.OrderBy(f => f.Order)) {
 				try {
 					filter.Execute(executionContext);
@@ -337,7 +320,7 @@ namespace NTestify {
 		/// <param name="filter">The filter that encountered the error</param>
 		/// <param name="executionContext">The current test execution context</param>
 		/// <exception cref="TestErredException"/>
-		protected virtual void OnFilterError(Exception exception, object filter, ExecutionContext executionContext) {
+		protected virtual void OnFilterError(Exception exception, TestFilter filter, ExecutionContext executionContext) {
 			var message = string.Format("Encountered an error while trying to run method filter of type \"{0}\"", filter.GetType().GetFriendlyName());
 			throw new TestErredException(exception, message);
 		}

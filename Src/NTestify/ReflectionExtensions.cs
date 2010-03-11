@@ -114,5 +114,32 @@ namespace NTestify {
 			list.ForEach(callback);
 			return list.AsEnumerable();
 		}
+
+		/// <summary>
+		/// Gets filters attached to the specified custom attribute provider
+		/// </summary>
+		/// <typeparam name="TFilter">The type of filter to retrieve</typeparam>
+		/// <param name="attributeProvider">The provider to search on</param>
+		public static IEnumerable<TestFilter> GetFilters<TFilter>(this ICustomAttributeProvider attributeProvider) where TFilter : Attribute {
+			return attributeProvider
+				.GetAttributes<TestFilter>()
+				.Where(filter => filter.GetType().HasAttribute<TFilter>());
+		}
+
+		/// <summary>
+		/// Gets all methods that are invokable filters
+		/// </summary>
+		/// <typeparam name="TFilter">The type of filter to search for</typeparam>
+		/// <param name="type">The class to search</param>
+		public static IEnumerable<TestFilter> GetInvokableFilters<TFilter>(this Type type) where TFilter : InvokableFilter {
+			return type
+				.GetMethods()
+				.Where(m => m.HasAttribute<TFilter>())
+				.Select(m => {
+					var invokable = m.GetAttributes<TFilter>().First();
+					invokable.Method = m;
+					return invokable;
+				}).Cast<TestFilter>();
+		}
 	}
 }

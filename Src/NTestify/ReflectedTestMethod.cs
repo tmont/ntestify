@@ -87,15 +87,13 @@ namespace NTestify {
 		/// </summary>
 		/// <exception cref="Test.TestIgnoredException">If the method is annotated with [Ignore]</exception>
 		protected override void RunPreTestFilters(ExecutionContext executionContext) {
-			var filters = Method
-				.GetAttributes<TestFilter>()
-				.Where(a => a.GetType().HasAttribute<PreTestFilter>());
+			var filters = Method.GetFilters<PreTestFilter>();
 			if (filters.Any(attribute => attribute is IgnoreAttribute)) {
 				//if the test should be ignored, then we bail immediately without executing any other filters
 				throw new TestIgnoredException(filters.Where(filter => filter is IgnoreAttribute).Cast<IgnoreAttribute>().First().Reason);
 			}
 
-			filters = filters.Concat(GetInvokableFilters<SetupAttribute>(Method.DeclaringType));
+			filters = filters.Concat(Method.DeclaringType.GetInvokableFilters<SetupAttribute>());
 			RunFiltersInOrder(filters, executionContext);
 		}
 
@@ -104,9 +102,9 @@ namespace NTestify {
 		/// </summary>
 		protected override void RunPostTestFilters(ExecutionContext executionContext) {
 			var filters = Method
-				.GetAttributes<TestFilter>()
-				.Where(a => a.GetType().HasAttribute<PostTestFilter>())
-				.Concat(GetInvokableFilters<TearDownAttribute>(Method.DeclaringType));
+				.GetFilters<PostTestFilter>()
+				.Concat(Method.DeclaringType.GetInvokableFilters<TearDownAttribute>());
+
 			RunFiltersInOrder(filters, executionContext);
 		}
 

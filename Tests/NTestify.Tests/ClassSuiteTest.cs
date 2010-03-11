@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TestMethod = NUnit.Framework.TestAttribute;
 using Ass = NUnit.Framework.Assert;
 
