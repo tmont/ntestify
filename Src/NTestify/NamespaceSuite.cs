@@ -32,6 +32,6 @@ namespace NTestify {
 
 			AddTests(Accumulator.Accumulate(typeContainedInNamespace, Enumerable.Empty<IAccumulationFilter>(), new NullConfigurator()));
 		}
-		
+
 	}
 }

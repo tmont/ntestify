@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using NTestify.Configuration;
 
 namespace NTestify.Execution {
+
 	/// <summary>
 	/// Test runner that scans an assembly for testable classes
 	/// and methods. This is the default test runner used by the NTestify
@@ -19,11 +20,28 @@ namespace NTestify.Execution {
 		/// <summary>
 		/// Runs all available tests in the assembly
 		/// </summary>
-		/// <param name="assembly">The assembly in which to search for tests</param>
-		public virtual ITestResult RunAll(_Assembly assembly) {
-			var tests = new AssemblyAccumulator().Accumulate(assembly, Filters, Configurator);
-			var suite = new TestSuite(tests) { Name = assembly.GetName().Name }.Configure(Configurator);
-			return ((ITestRunner)this).RunTest(suite, new ExecutionContext { Test = suite });
+		/// <param name="assembly">The assembly to scan for tests</param>
+		public ITestResult RunAll(_Assembly assembly) {
+			var test = CreateTest(assembly);
+			return ((ITestRunner)this).RunTest(test, CreateContext(test));
+		}
+
+		/// <summary>
+		/// Creates the assembly suite
+		/// </summary>
+		/// <param name="assembly">The assembly to scan for tests</param>
+		protected virtual ITest CreateTest(_Assembly assembly) {
+			var test = new AssemblySuite(assembly, Filters, Configurator);
+			test.Configure(Configurator);
+			return test;
+		}
+
+		/// <summary>
+		/// Creates the execution context
+		/// </summary>
+		/// <param name="test">The assembly suite</param>
+		protected virtual ExecutionContext CreateContext(ITest test) {
+			return new ExecutionContext();
 		}
 
 		/// <summary>
@@ -35,6 +53,7 @@ namespace NTestify.Execution {
 		/// Runs a single test or suite and returns a result
 		/// </summary>
 		ITestResult ITestRunner.RunTest(ITest test, ExecutionContext executionContext) {
+			executionContext.Test = test;
 			test.Run(executionContext);
 			return executionContext.Result;
 		}
@@ -42,9 +61,7 @@ namespace NTestify.Execution {
 		/// <summary>
 		/// Gets all of the accumulation filters for this test runner
 		/// </summary>
-		public IEnumerable<IAccumulationFilter> Filters {
-			get { return filters; }
-		}
+		public IEnumerable<IAccumulationFilter> Filters { get { return filters; } }
 
 		/// <summary>
 		/// Adds an accumulation filter to the test runner
