@@ -35,7 +35,7 @@ namespace NTestify {
 		}
 
 		/// <summary>
-		/// Gets all methods for a type that testable by NTestify
+		/// Gets all methods for a type that are testable by NTestify
 		/// </summary>
 		public static IEnumerable<MethodInfo> GetTestMethods(this Type type) {
 			return type
@@ -89,7 +89,7 @@ namespace NTestify {
 		/// all the un/signed flavors)
 		/// </summary>
 		public static bool IsNumeric(this Type type) {
-			return type.IsPrimitive && (type != typeof(object) && type != typeof(bool) && type != typeof(string) && type != typeof(char));
+			return type.IsPrimitive && type != typeof(object) && type != typeof(bool) && type != typeof(string) && type != typeof(char);
 		}
 
 		/// <summary>

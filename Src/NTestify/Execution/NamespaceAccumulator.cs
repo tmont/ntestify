@@ -26,7 +26,7 @@ namespace NTestify.Execution {
 				.Assembly
 				.GetTestClasses()
 				.Where(type => type.Namespace == ns)
-				.Select(type => new ClassSuite(type))
+				.Select(type => new ClassSuite(type, filters, configurator).Configure(configurator))
 				.Cast<ITest>()
 				.Concat(new UnattachedMethodAccumulator()
 					.Accumulate(typeContainedInNamespace.Assembly, filters, configurator)

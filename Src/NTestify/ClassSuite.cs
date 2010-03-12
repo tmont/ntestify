@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NTestify.Configuration;
 using NTestify.Execution;
@@ -20,10 +21,12 @@ namespace NTestify {
 		/// </summary>
 		public ITestAccumulator<Type> Accumulator { get { return accumulator; } }
 
-		public ClassSuite(Type @class) {
+		public ClassSuite(Type @class) : this(@class, Enumerable.Empty<IAccumulationFilter>(), new NullConfigurator()) { }
+
+		public ClassSuite(Type @class, IEnumerable<IAccumulationFilter> filters, ITestConfigurator configurator) {
 			Class = @class;
 			Name = Class.Name;
-			AddTests(Accumulator.Accumulate(Class, Enumerable.Empty<IAccumulationFilter>(), new NullConfigurator()));
+			AddTests(Accumulator.Accumulate(Class, filters, configurator));
 		}
 
 		/// <summary>
@@ -37,16 +40,20 @@ namespace NTestify {
 				throw new TestIgnoredException(Class.GetAttributes<IgnoreAttribute>().First().Reason);
 			}
 
-			var filters = Class.GetInvokableFilters<SuiteSetupAttribute>().Union(Class.GetFilters<PreSuiteFilter>());
-			RunFiltersInOrder(filters, executionContext);
+			RunFiltersInOrder(GetFilters<SuiteSetupAttribute, PreSuiteFilter>(), executionContext);
 		}
 
 		/// <summary>
 		/// Finds and executes each of the post suite filters
 		/// </summary>
 		protected override void RunPostTestFilters(ExecutionContext executionContext) {
-			var filters = Class.GetInvokableFilters<SuiteTearDownAttribute>().Union(Class.GetFilters<PostSuiteFilter>());
-			RunFiltersInOrder(filters, executionContext);
+			RunFiltersInOrder(GetFilters<SuiteTearDownAttribute, PostSuiteFilter>(), executionContext);
+		}
+
+		private IEnumerable<TestFilter> GetFilters<TInvokableFilter, TSuiteFilter>() where TInvokableFilter : InvokableFilter where TSuiteFilter : Attribute {
+			return Class
+				.GetInvokableFilters<TInvokableFilter>()
+				.Union(Class.GetFilters<TSuiteFilter>());
 		}
 
 	}

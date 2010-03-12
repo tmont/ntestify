@@ -18,13 +18,13 @@ namespace NTestify {
 		/// <param name="method">The test method to run. Cannot be null.</param>
 		/// <param name="instance">The object instance that the method belongs to, or null if a static method</param>
 		public ReflectedTestMethod(MethodInfo method, object instance) {
-			Method = method;
 			if (method == null) {
 				throw new ArgumentNullException("method");
 			}
 
+			Method = method;
 			this.instance = instance;
-			Name = method.DeclaringType.Name + "." + method.Name;
+			Name = Method.DeclaringType.Name + "." + method.Name;
 
 			ApplyAttributeDetails();
 			ApplyExpectedExceptionDetails();
@@ -72,7 +72,9 @@ namespace NTestify {
 		/// the test, rather than setting the result property itself.
 		/// </summary>
 		protected override void RunTest(ExecutionContext executionContext) {
-			VerifyMethod();
+			if (!Method.IsRunnable()) {
+				throw new TestErredException(null, "The test method is invalid");
+			}
 
 			try {
 				RunTestMethod(executionContext);
@@ -135,20 +137,10 @@ namespace NTestify {
 
 		/// <summary>
 		/// Invokes the test method with zero arguments, using the execution context's 
-		/// Instance as the invocation context
+		/// Instance property as the invocation context
 		/// </summary>
 		protected virtual void RunTestMethod(ExecutionContext executionContext) {
 			Method.Invoke(executionContext.Instance, new object[0]);
-		}
-
-		/// <summary>
-		/// Verifies that the test method is a valid, testable method
-		/// </summary>
-		/// <exception cref="Test.TestErredException">If the method is not runnable</exception>
-		private void VerifyMethod() {
-			if (!Method.IsRunnable()) {
-				throw new TestErredException(null, "The test method is invalid");
-			}
 		}
 	}
 }
