@@ -17,10 +17,12 @@ namespace NTestify {
 		protected internal sealed class TestErredException : Exception {
 			/// <param name="error">The exception that caused the error</param>
 			/// <param name="reason">The reason the test erred</param>
-			public TestErredException(Exception error, string reason)
-				: base(reason) {
+			public TestErredException(Exception error, string reason) : base(reason) {
 				CauseError = error;
 			}
+
+			/// <param name="reason">The reason the test erred</param>
+			public TestErredException(string reason) : this(null, reason) { }
 
 			/// <summary>
 			/// The exception that caused the error
@@ -80,8 +82,7 @@ namespace NTestify {
 		/// Uses the given configurator to configure the test
 		/// </summary>
 		public ITest Configure(ITestConfigurator configurator) {
-			configurator = configurator ?? new NullConfigurator();
-			configurator.Configure(this);
+			(configurator ?? new NullConfigurator()).Configure(this);
 			return this;
 		}
 
