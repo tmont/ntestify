@@ -5,7 +5,7 @@ namespace NTestify.Configuration {
 	/// The standard console output: "." means a test passed, "I" means a test was
 	/// ignored, "F" means a test failed, and "E" means a test erred.
 	/// </summary>
-	public class ConsoleTestMethodConfigurator : ITestConfigurator {
+	public class ConsoleTestMethodConfigurator : VariableVerbosityConfigurator<ReflectedTestMethod> {
 
 		private int currentLineLength;
 		/// <summary>
@@ -18,11 +18,13 @@ namespace NTestify.Configuration {
 		/// Creates a console configurator with DefaultMaxLineLength for the
 		/// maximum line length
 		/// </summary>
-		public ConsoleTestMethodConfigurator() : this(DefaultMaxLineLength) { }
+		public ConsoleTestMethodConfigurator() : this(VerbosityLevel.Default, DefaultMaxLineLength) { }
 
+		/// <param name="verbosityLevel">The verbosity level</param>
 		/// <param name="maxLineLength">The maximum number of columns per line</param>
 		/// <exception cref="ArgumentOutOfRangeException"/>
-		public ConsoleTestMethodConfigurator(int maxLineLength) {
+		public ConsoleTestMethodConfigurator(VerbosityLevel verbosityLevel, int maxLineLength)
+			: base(verbosityLevel) {
 			if (maxLineLength < MinLineLength) {
 				throw new ArgumentOutOfRangeException("maxLineLength", maxLineLength, "Value must be greater than or equal to " + MinLineLength);
 			}
@@ -35,18 +37,6 @@ namespace NTestify.Configuration {
 		/// </summary>
 		public int MaxLineLineLength { get; private set; }
 
-		/// <summary>
-		/// Sets up the events for the test to output the relevant character (., I, F, E)
-		/// based on the test result
-		/// </summary>
-		/// <param name="test">The test to configure</param>
-		public void Configure(ITest test) {
-			test.OnError += context => WriteResult('E');
-			test.OnPass += context => WriteResult('.');
-			test.OnFail += context => WriteResult('F');
-			test.OnIgnore += context => WriteResult('I');
-		}
-
 		private void WriteResult(char indicator) {
 			if (currentLineLength == 0) {
 				Console.Write("  ");
@@ -57,5 +47,11 @@ namespace NTestify.Configuration {
 			currentLineLength = (currentLineLength + 1) % MaxLineLineLength;
 		}
 
+		protected override void ConfigureTest(ReflectedTestMethod test) {
+			test.OnError += context => WriteResult('E');
+			test.OnPass += context => WriteResult('.');
+			test.OnFail += context => WriteResult('F');
+			test.OnIgnore += context => WriteResult('I');
+		}
 	}
 }
