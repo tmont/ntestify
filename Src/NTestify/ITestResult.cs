@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using NTestify.Configuration;
 
@@ -36,6 +37,11 @@ namespace NTestify {
 		/// All errors that occurred during test execution
 		/// </summary>
 		IEnumerable<Exception> Errors { get; }
+
+		/// <summary>
+		/// The stack trace in the event of a failure
+		/// </summary>
+		StackTrace StackTrace { get; set; }
 
 		/// <summary>
 		/// Adds an error to the error stack

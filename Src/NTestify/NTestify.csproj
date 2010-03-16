@@ -86,6 +86,7 @@
     <Compile Include="Execution\NamespaceAccumulator.cs" />
     <Compile Include="Execution\UnattachedMethodAccumulator.cs" />
     <Compile Include="ExpectedExceptionAttribute.cs" />
+    <Compile Include="FilteredTrace.cs" />
     <Compile Include="FilterOrder.cs" />
     <Compile Include="Execution\IAccumulationFilter.cs" />
     <Compile Include="IAccumulatable.cs" />

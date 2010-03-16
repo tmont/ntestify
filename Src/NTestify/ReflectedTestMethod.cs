@@ -119,7 +119,7 @@ namespace NTestify {
 			var actualException = exception.GetBaseException();
 			if (actualException is TestAssertionException) {
 				//an assertion failed
-				throw new TestFailedException(actualException.Message);
+				throw new TestFailedException(actualException.Message, actualException);
 			}
 
 			throw new TestErredException(actualException, actualException.Message);

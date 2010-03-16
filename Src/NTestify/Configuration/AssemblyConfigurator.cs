@@ -132,6 +132,7 @@ namespace NTestify.Configuration {
 					case TestStatus.Fail:
 					case TestStatus.Ignore:
 						Writer.WriteLine(result.Message);
+						Writer.WriteLine(result.StackTrace);
 						break;
 				}
 			}

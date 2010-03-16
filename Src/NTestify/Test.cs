@@ -17,7 +17,8 @@ namespace NTestify {
 		protected internal sealed class TestErredException : Exception {
 			/// <param name="error">The exception that caused the error</param>
 			/// <param name="reason">The reason the test erred</param>
-			public TestErredException(Exception error, string reason) : base(reason) {
+			public TestErredException(Exception error, string reason)
+				: base(reason) {
 				CauseError = error;
 			}
 
@@ -28,13 +29,19 @@ namespace NTestify {
 			/// The exception that caused the error
 			/// </summary>
 			public Exception CauseError { get; private set; }
+
+			public override string StackTrace {
+				get {
+					return new FilteredTrace(this).ToString();
+				}
+			}
 		}
 
 		/// <summary>
 		/// Exception that indicates that a test failed
 		/// </summary>
 		protected internal sealed class TestFailedException : Exception {
-			public TestFailedException(string message) : base(message) { }
+			public TestFailedException(string message, Exception innerException) : base(message, innerException) { }
 		}
 
 		/// <summary>
@@ -292,6 +299,9 @@ namespace NTestify {
 		protected void Fail(ExecutionContext executionContext, string message) {
 			executionContext.Result.Status = TestStatus.Fail;
 			executionContext.Result.Message = message;
+			if (executionContext.ThrownException != null) {
+				executionContext.Result.StackTrace = new FilteredTrace(executionContext.ThrownException.GetBaseException());
+			}
 		}
 
 		/// <summary>
@@ -304,7 +314,7 @@ namespace NTestify {
 		/// <summary>
 		/// Runs all filters ordered by their Order property
 		/// </summary>
-		protected void RunFiltersInOrder(IEnumerable<TestFilter> filters, ExecutionContext executionContext){
+		protected void RunFiltersInOrder(IEnumerable<TestFilter> filters, ExecutionContext executionContext) {
 			foreach (var filter in filters.OrderBy(f => f.Order)) {
 				try {
 					filter.Execute(executionContext);
