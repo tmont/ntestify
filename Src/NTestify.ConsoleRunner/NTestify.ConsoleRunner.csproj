@@ -53,6 +53,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleAssemblyConfigurator.cs" />
+    <Compile Include="ConsoleRunnerConfigurator.cs" />
+    <Compile Include="ConsoleTestRunner.cs" />
+    <Compile Include="ConsoleTestSuite.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -61,11 +65,6 @@
       <Project>{F7D5A8C5-1B6D-40FA-A229-EC9DBDCFA6CD}</Project>
       <Name>NTestify</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="log4net.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

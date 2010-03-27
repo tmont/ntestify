@@ -110,9 +110,10 @@ namespace NTestify {
 		}
 
 		public static IEnumerable<T> Walk<T>(this IEnumerable<T> enumerable, Action<T> callback) {
-			var list = enumerable.ToList();
-			list.ForEach(callback);
-			return list.AsEnumerable();
+			foreach (var thing in enumerable) {
+				callback(thing);
+				yield return thing;
+			}
 		}
 
 		/// <summary>

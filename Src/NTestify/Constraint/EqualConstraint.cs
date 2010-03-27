@@ -63,8 +63,8 @@ namespace NTestify.Constraint {
 				//if they're not the same type, that's a big fail
 				reasonForFailure.Append(string.Format(
 					"{1} is not a {0}.",
-					expectedType.UnderlyingSystemType.GetFriendlyName(),
-					actualType.UnderlyingSystemType.GetFriendlyName()
+					expectedType.GetFriendlyName(),
+					actualType.GetFriendlyName()
 				));
 				return false;
 			}

@@ -53,12 +53,13 @@
     <Compile Include="Assert.cs" />
     <Compile Include="AssertionExtensionPoint.cs" />
     <Compile Include="ClassSuite.cs" />
-    <Compile Include="Configuration\AssemblyConfigurator.cs" />
     <Compile Include="Configuration\ConsoleTestMethodConfigurator.cs" />
     <Compile Include="Configuration\ConsoleTestSuiteConfigurator.cs" />
     <Compile Include="Configuration\IResultWriter.cs" />
     <Compile Include="Configuration\ITestConfigurator.cs" />
     <Compile Include="Configuration\NullConfigurator.cs" />
+    <Compile Include="Configuration\VariableVerbosityConfigurator.cs" />
+    <Compile Include="Configuration\VerbosityLevel.cs" />
     <Compile Include="Constraint\BinaryConstraint.cs" />
     <Compile Include="Constraint\ContainsConstraint.cs" />
     <Compile Include="Constraint\CountConstraint.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Execution\NameAccumulationFilter.cs" />
     <Compile Include="Execution\NamespaceAccumulationFilter.cs" />
     <Compile Include="Execution\NamespaceAccumulator.cs" />
+    <Compile Include="Execution\TestSuiteRunner.cs" />
     <Compile Include="Execution\UnattachedMethodAccumulator.cs" />
     <Compile Include="ExpectedExceptionAttribute.cs" />
     <Compile Include="FilteredTrace.cs" />

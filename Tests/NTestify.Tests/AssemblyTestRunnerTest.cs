@@ -40,9 +40,9 @@ namespace NTestify.Tests {
 				.Setup(a => a.GetName())
 				.Returns(new AssemblyName("A Fake Assembly"));
 
-			var runner = new AssemblyTestRunner();
+			var runner = new AssemblyTestRunner(assembly.Object);
 
-			var result = runner.RunAll(assembly.Object).CastTo<TestSuiteResult>();
+			var result = runner.RunAll().CastTo<TestSuiteResult>();
 			Ass.That(result.Status, Is.EqualTo(TestStatus.Pass));
 
 			//verify that the tests that got run were the ones we wanted

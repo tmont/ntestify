@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("NTestify.Sample")]
+[assembly: AssemblyTitle("NTestify.Sample2")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Tommy Montgomery")]
-[assembly: AssemblyProduct("NTestify.Sample")]
+[assembly: AssemblyProduct("NTestify.Sample2")]
 [assembly: AssemblyCopyright("Copyright © Tommy Montgomery 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("b659cbf6-da5a-4898-abd8-da7138afcd6b")]
+[assembly: Guid("bf8ef0ef-e5ac-449f-b352-595fe1ad4d0a")]
 
 // Version information for an assembly consists of the following four values:
 //

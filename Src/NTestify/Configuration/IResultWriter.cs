@@ -77,10 +77,10 @@ namespace NTestify.Configuration {
 			var erredTests = result.InnerErredTests.Count();
 
 			writer.WriteHorizontalRuler();
-			writer.WriteLine("Passing tests: {0} ({1}%)", passedTests, Math.Round((double)passedTests / count * 100d, 2));
-			writer.WriteLine("Ignored tests: {0} ({1}%)", ignoredTests, Math.Round((double)ignoredTests / count * 100d, 2));
-			writer.WriteLine("Erring tests:  {0} ({1}%)", erredTests, Math.Round((double)erredTests / count * 100d, 2));
-			writer.WriteLine("Failing tests: {0} ({1}%)", failedTests, Math.Round((double)failedTests / count * 100d, 2));
+			writer.WriteLine("Passing tests: {0} ({1:0.00}%)", passedTests, (double)passedTests / count * 100d);
+			writer.WriteLine("Ignored tests: {0} ({1:0.00}%)", ignoredTests, (double)ignoredTests / count * 100d);
+			writer.WriteLine("Erring tests:  {0} ({1:0.00}%)", erredTests, (double)erredTests / count * 100d);
+			writer.WriteLine("Failing tests: {0} ({1:0.00}%)", failedTests, (double)failedTests / count * 100d);
 			writer.WriteHorizontalRuler();
 			writer.WriteLine("Total:         {0}", count);
 		}

@@ -1,74 +1,33 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
-using NTestify.Configuration;
+﻿using System.Runtime.InteropServices;
 
 namespace NTestify.Execution {
 
 	/// <summary>
 	/// Test runner that scans an assembly for testable classes
-	/// and methods. This is the default test runner used by the NTestify
-	/// console application.
+	/// and methods
 	/// </summary>
-	public class AssemblyTestRunner : ITestRunner {
-		private readonly ICollection<IAccumulationFilter> filters;
+	public class AssemblyTestRunner : TestSuiteRunner {
+		private readonly _Assembly assembly;
 
-		public AssemblyTestRunner() {
-			filters = new Collection<IAccumulationFilter>();
+		public AssemblyTestRunner(_Assembly assembly) {
+			this.assembly = assembly;
 		}
 
 		/// <summary>
 		/// Runs all available tests in the assembly
 		/// </summary>
-		/// <param name="assembly">The assembly to scan for tests</param>
-		public ITestResult RunAll(_Assembly assembly) {
-			var test = CreateTest(assembly);
-			return ((ITestRunner)this).RunTest(test, CreateContext(test));
+		public override TestSuiteResult RunAll() {
+			return RunTest(CreateTest(assembly));
 		}
 
 		/// <summary>
 		/// Creates the assembly suite
 		/// </summary>
-		/// <param name="assembly">The assembly to scan for tests</param>
-		protected virtual ITest CreateTest(_Assembly assembly) {
-			var test = new AssemblySuite(assembly, Filters, Configurator);
+		/// <param name="assemblyToScan">The assembly to scan for tests</param>
+		protected virtual ITestSuite CreateTest(_Assembly assemblyToScan) {
+			var test = new AssemblySuite(assemblyToScan, Filters, Configurator);
 			test.Configure(Configurator);
 			return test;
-		}
-
-		/// <summary>
-		/// Creates the execution context
-		/// </summary>
-		/// <param name="test">The assembly suite</param>
-		protected virtual ExecutionContext CreateContext(ITest test) {
-			return new ExecutionContext();
-		}
-
-		/// <summary>
-		/// Configurator to use to configure each test
-		/// </summary>
-		public ITestConfigurator Configurator { get; set; }
-
-		/// <summary>
-		/// Runs a single test or suite and returns a result
-		/// </summary>
-		ITestResult ITestRunner.RunTest(ITest test, ExecutionContext executionContext) {
-			executionContext.Test = test;
-			test.Run(executionContext);
-			return executionContext.Result;
-		}
-
-		/// <summary>
-		/// Gets all of the accumulation filters for this test runner
-		/// </summary>
-		public IEnumerable<IAccumulationFilter> Filters { get { return filters; } }
-
-		/// <summary>
-		/// Adds an accumulation filter to the test runner
-		/// </summary>
-		public ITestRunner AddFilter(IAccumulationFilter filter) {
-			filters.Add(filter);
-			return this;
 		}
 
 	}
