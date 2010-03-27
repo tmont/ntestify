@@ -73,6 +73,11 @@ namespace NTestify {
 		}
 		#endregion
 
+		public ITest Configure(ITestConfigurator configurator) {
+			(configurator ?? new NullConfigurator()).Configure(this);
+			return this;
+		}
+
 		/// <summary>
 		/// Gets or sets the exception that is expected to be thrown during execution
 		/// of the test. If no exception is expected to be thrown, this value should
@@ -84,14 +89,6 @@ namespace NTestify {
 		/// Gets or sets the message of the expected exception
 		/// </summary>
 		public string ExpectedExceptionMessage { get; set; }
-
-		/// <summary>
-		/// Uses the given configurator to configure the test
-		/// </summary>
-		public ITest Configure(ITestConfigurator configurator) {
-			(configurator ?? new NullConfigurator()).Configure(this);
-			return this;
-		}
 
 		protected Test() {
 			Logger = new NullLogger();

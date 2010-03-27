@@ -19,8 +19,7 @@ namespace NTestify.Execution {
 				types.Add(allTypes.Where(type => type.Namespace == temp).First());
 			}
 
-			return types
-				.SelectMany(type => namespaceAccumulator.Accumulate(type, filters, configurator));
+			return types.SelectMany(type => namespaceAccumulator.Accumulate(type, filters, configurator));
 		}
 	}
 }

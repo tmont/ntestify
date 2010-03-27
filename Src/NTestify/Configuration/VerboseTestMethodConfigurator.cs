@@ -3,6 +3,10 @@ using System;
 namespace NTestify.Configuration {
 	public class VerboseTestMethodConfigurator : ITestConfigurator {
 		public void Configure(ITest test) {
+			if (!(test is ReflectedTestMethod)) {
+				return;
+			}
+
 			test.OnBeforeRun += context => Console.Write(test.Name + ": ");
 			test.OnError += context => Console.Write("ERROR ");
 			test.OnPass += context => Console.Write("PASS ");

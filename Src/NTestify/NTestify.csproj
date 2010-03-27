@@ -56,6 +56,7 @@
     <Compile Include="Configuration\AssemblyConfigurator.cs" />
     <Compile Include="Configuration\ConsoleTestMethodConfigurator.cs" />
     <Compile Include="Configuration\ConsoleTestSuiteConfigurator.cs" />
+    <Compile Include="Configuration\IResultWriter.cs" />
     <Compile Include="Configuration\ITestConfigurator.cs" />
     <Compile Include="Configuration\NullConfigurator.cs" />
     <Compile Include="Constraint\BinaryConstraint.cs" />
